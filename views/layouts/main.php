@@ -1,81 +1,64 @@
 <?php
+/* @var $this \yii\web\View */
+/* @var $content string */
 
-/** @var yii\web\View $this */
-/** @var string $content */
+use yii\helpers\Html;
 
-use app\assets\AppAsset;
-use app\widgets\Alert;
-use yii\bootstrap4\Breadcrumbs;
-use yii\bootstrap4\Html;
-use yii\bootstrap4\Nav;
-use yii\bootstrap4\NavBar;
+app\assets\AppAsset::register($this);
+\hail812\adminlte3\assets\FontAwesomeAsset::register($this);
+\hail812\adminlte3\assets\AdminLteAsset::register($this);
+$this->registerCssFile('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700');
+$this->registerCssFile('https://kit.fontawesome.com/8ced7a5d16.js');
 
-AppAsset::register($this);
+$assetDir = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>" class="h-100">
+<html lang="<?= Yii::$app->language ?>">
+
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="d-flex flex-column h-100">
-<?php $this->beginBody() ?>
 
-<header>
+<body>
+    <?php $this->beginBody() ?>
+    <?= $this->render('content', ['content' => $content, 'assetDir' => $assetDir]) ?>
+
     <?php
-    NavBar::begin([
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
+    \yii\bootstrap4\Modal::begin([
+        'title' => '<div id="modalHeader"></div>',
+        'id' => 'modal',
+        'closeButton' => ['id' => 'close-button'],
+        'size' => 'modal-xl',
         'options' => [
-            'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
+            'tabindex' => false // important for Select2 to work properly
         ],
     ]);
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
-    ]);
-    NavBar::end();
+    echo "<div id='modalContent'>
+                <center><span class='fa fa-spinner fa-spin fa-3x text-info'></span></center>
+            </div>";
+    \yii\bootstrap4\Modal::end();
     ?>
-</header>
 
-<main role="main" class="flex-shrink-0">
-    <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
-        <?= Alert::widget() ?>
-        <?= $content ?>
-    </div>
-</main>
+    <?php
+    $this->registerJsFile(
+        '@web/js/jquery.dataTables.min.js',
+        ['depends' => [\yii\web\JqueryAsset::class]]
+    );
 
-<footer class="footer mt-auto py-3 text-muted">
-    <div class="container">
-        <p class="float-left">&copy; My Company <?= date('Y') ?></p>
-        <p class="float-right"><?= Yii::powered() ?></p>
-    </div>
-</footer>
+    $this->registerJsFile(
+        "@web/js/ajax-modal-popup.js",
+        ['depends' => [\yii\web\JqueryAsset::class]]
+    );
 
-<?php $this->endBody() ?>
+    $this->endBody();
+    ?>
 </body>
+
 </html>
 <?php $this->endPage() ?>

@@ -1,49 +1,59 @@
 <?php
 
-/** @var yii\web\View $this */
-/** @var yii\bootstrap4\ActiveForm $form */
-/** @var app\models\LoginForm $model */
-
-use yii\bootstrap4\ActiveForm;
-use yii\bootstrap4\Html;
-
-$this->title = 'Login';
-$this->params['breadcrumbs'][] = $this->title;
+use yii\helpers\Html;
 ?>
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="card col-sm-8 offset-sm-2">
+    <div class="card-body login-card-body">
+        <div class="offset-lg-4 col-lg-8 pl-5">
+            <img src="/img/logo.jpeg" class="mx-auto" style="width: 200px;">
+        </div>
+        <p class="login-box-msg mr-3">Ingresa tus credenciales para iniciar sesión</p>
+        <?php $form = \yii\bootstrap4\ActiveForm::begin(['id' => 'login-form']) ?>
 
-    <p>Please fill out the following fields to login:</p>
+        <?=
+                $form->field($model, 'username', [
+                    'options' => ['class' => 'form-group has-feedback'],
+                    'inputTemplate' => '{input}<div class="input-group-append"><div class="input-group-text"><span class="fas fa-envelope"></span></div></div>',
+                    'template' => '{beginWrapper}{input}{error}{endWrapper}',
+                    'wrapperOptions' => ['class' => 'input-group mb-3']
+                ])
+                ->label(false)
+                ->textInput(['placeholder' => $model->getAttributeLabel('username')])
+        ?>
 
-    <?php $form = ActiveForm::begin([
-        'id' => 'login-form',
-        'layout' => 'horizontal',
-        'fieldConfig' => [
-            'template' => "{label}\n{input}\n{error}",
-            'labelOptions' => ['class' => 'col-lg-1 col-form-label mr-lg-3'],
-            'inputOptions' => ['class' => 'col-lg-3 form-control'],
-            'errorOptions' => ['class' => 'col-lg-7 invalid-feedback'],
-        ],
-    ]); ?>
+        <?=
+                $form->field($model, 'password', [
+                    'options' => ['class' => 'form-group has-feedback'],
+                    'inputTemplate' => '{input}<div class="input-group-append"><div class="input-group-text"><span class="fas fa-lock"></span></div></div>',
+                    'template' => '{beginWrapper}{input}{error}{endWrapper}',
+                    'wrapperOptions' => ['class' => 'input-group mb-3']
+                ])
+                ->label(false)
+                ->passwordInput(['placeholder' => $model->getAttributeLabel('password')])
+        ?>
 
-        <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
-
-        <?= $form->field($model, 'password')->passwordInput() ?>
-
-        <?= $form->field($model, 'rememberMe')->checkbox([
-            'template' => "<div class=\"offset-lg-1 col-lg-3 custom-control custom-checkbox\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
-        ]) ?>
-
-        <div class="form-group">
-            <div class="offset-lg-1 col-lg-11">
-                <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+        <div class="row">
+            <div class="col-8">
+                <?=
+                $form->field($model, 'rememberMe')->checkbox([
+                    'template' => '<div class="icheck-primary">{input}{label}</div>',
+                    'labelOptions' => [
+                        'class' => ''
+                    ],
+                    'uncheck' => null
+                ])
+                ?>
+            </div>
+            <div class="col-4">
+                <?= Html::submitButton('Iniciar Sesión', ['class' => 'btn btn-primary btn-block']) ?>
             </div>
         </div>
 
-    <?php ActiveForm::end(); ?>
+        <?php \yii\bootstrap4\ActiveForm::end(); ?>
 
-    <div class="offset-lg-1" style="color:#999;">
-        You may login with <strong>admin/admin</strong> or <strong>demo/demo</strong>.<br>
-        To modify the username/password, please check out the code <code>app\models\User::$users</code>.
+        <p class="mb-1">
+            <a href="forgot-password.html">Olvidé mi Contraseña</a>
+        </p>
     </div>
+    <!-- /.login-card-body -->
 </div>

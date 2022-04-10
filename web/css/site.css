@@ -1,45 +1,78 @@
-main > .container {
+/*
+html,
+body {
+    height: 100%;
+}
+
+.wrap {
+    min-height: 100%;
+    height: auto;
+    margin: 0 auto -60px;
+    padding: 0 0 60px;
+}
+
+.wrap > .container {
     padding: 70px 15px 20px;
 }
 
 .footer {
-    background-color: #f5f5f5;
-    font-size: .9em;
     height: 60px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
 }
 
-.footer > .container {
-    padding-right: 15px;
-    padding-left: 15px;
+.jumbotron {
+    text-align: center;
+    background-color: transparent;
+}
+
+.jumbotron .btn {
+    font-size: 21px;
+    padding: 14px 24px;
 }
 
 .not-set {
     color: #c55;
     font-style: italic;
 }
-
+*/
 /* add sorting icons to gridview sort links */
 a.asc:after, a.desc:after {
-    content: '';
-    left: 3px;
+    position: relative;
+    top: 1px;
     display: inline-block;
-    width: 0;
-    height: 0;
-    border: solid 5px transparent;
-    margin: 4px 4px 2px 4px;
-    background: transparent;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    padding-left: 5px;
 }
 
 a.asc:after {
-    border-bottom: solid 7px #212529;
-    border-top-width: 0;
+    content: /*"\e113"*/ "\e151";
 }
 
 a.desc:after {
-    border-top: solid 7px #212529;
-    border-bottom-width: 0;
+    content: /*"\e114"*/ "\e152";
 }
 
+.sort-numerical a.asc:after {
+    content: "\e153";
+}
+
+.sort-numerical a.desc:after {
+    content: "\e154";
+}
+
+.sort-ordinal a.asc:after {
+    content: "\e155";
+}
+
+.sort-ordinal a.desc:after {
+    content: "\e156";
+}
+/*
 .grid-view th {
     white-space: nowrap;
 }
@@ -57,11 +90,12 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
-
+*/
 /* align the logout "link" (button in form) of the navbar */
+/*
 .nav li > form > button.logout {
-    padding-top: 7px;
-    color: rgba(255, 255, 255, 0.5);
+    padding: 15px;
+    border: none;
 }
 
 @media(max-width:767px) {
@@ -69,16 +103,307 @@ a.desc:after {
         display:block;
         text-align: left;
         width: 100%;
-        padding: 10px 0;
+        padding: 10px 15px;
     }
 }
 
 .nav > li > form > button.logout:focus,
 .nav > li > form > button.logout:hover {
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.75);
 }
 
 .nav > li > form > button.logout:focus {
     outline: none;
+}
+*/
+.bg-info-light {
+    background-color: #9bd8eb !important;
+}
+
+/* ESTILOS PARA EL DATATABLE */
+input[type=search] {
+    padding: .375rem .75rem;
+    margin-left: 5px;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+select[name=DataTables_Table_0_length] {
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.dataTables_length {
+    font-size: 1.1rem;
+    font-weight: 400 !important;
+    margin: 0;
+}
+.dataTables_filter {
+    font-size: 1.1rem;
+    font-weight: 400 !important;
+    margin: 0;
+}
+.tooltip-inner {background-color: white !important; color: black !important; max-width: 400px !important;}
+.arrow {color: white !important;}
+
+.next {
+    background-color: #17a2b8!important;
+    border-color: #ddd;
+    color: white !important;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.next:hover {
+    color: white !important;
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+.previous {
+    background-color: #17a2b8!important;
+    border-color: #ddd;
+    color: white !important;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.previous:hover {
+    color: white !important;
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+.paginate_button {
+    color: #212529;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+    display: inline-block;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid #aaa;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+.paginate_button:hover {
+    color: white !important;
+}
+
+.current {
+    background-color: #ccc;
+    border-color: #ddd;
+    color: white;
+}
+
+/* CHECKBOXES CON ESTILO SWITCH */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-sm {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 17px;
+}
+
+/* Hide default HTML checkbox */
+.switch-sm input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.slider-sm {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider-sm:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider-sm {
+    background-color: #2196F3;
+}
+
+input:focus + .slider-sm {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider-sm:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.slider-sm.round {
+    border-radius: 34px;
+}
+
+.slider-sm.round:before {
+    border-radius: 50%;
+}
+
+/* Select2 */
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #888 transparent transparent transparent;
+    border-style: solid;
+    border-width: 5px 4px 0 4px;
+    height: 0;
+    left: 50%;
+    margin-left: -4px;
+    margin-top: 5px !important;
+    position: absolute;
+    top: 50%;
+    width: 0;
+}
+
+.select2-container {
+    box-sizing: border-box;
+    display: block !important;
+    margin: 0;
+    position: relative;
+}
+
+.select2-container .select2-selection--single {
+    box-sizing: border-box;
+    cursor: pointer;
+    display: block !important;
+    height: 40px !important;
+    user-select: none;
+}
+
+.centrar-vertical-horizontal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.select-style {
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    width: 100%;
+    padding-left: 2px;
+    color: #444;
 }
