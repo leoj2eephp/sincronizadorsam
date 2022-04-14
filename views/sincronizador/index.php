@@ -515,7 +515,7 @@ $(document).ready(function() {
         $("#syncExcel>i").addClass("fa-spinner");
         
         var excelData = [];
-        $(".cargaMasiva:checked").each(function(index, obj) {
+        $(".cargaMasiva:checked").each(function(index, obj) {            
             $($(obj).parents()[2]).each(function(index, input) {
                 let rindeGastos = new Object();
                 rindeGastos.fecha = $(input).children()[0].value;
@@ -536,7 +536,7 @@ $(document).ready(function() {
         });
         
         $.ajax({
-            url: "/sincronizador/sincronizar-con-chipax",
+            url: "/sincronizadorsam/web/sincronizador/sincronizar-con-chipax",
             type: "post",
             data: JSON.stringify(excelData),
             dataType: "json",
@@ -545,7 +545,7 @@ $(document).ready(function() {
                 $("#syncExcel>i").removeClass("fa-spinner");
                 $("#syncExcel>i").addClass("fa-file-excel");
                 $("#syncExcel").attr("disabled", false);
-                window.open("/chipax/web/chipax/download-excel", "_blank");
+                window.open("/sincronizadorsam/web/sincronizador/download-excel", "_blank");
             }
         });
     });

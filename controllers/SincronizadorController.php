@@ -81,4 +81,20 @@ class SincronizadorController extends Controller {
         $chipaxApiService->sincronizarCategorias();
         $chipaxApiService->sincronizarChipaxData();
     }
+
+    public function actionSincronizarConChipax() {
+        $json = file_get_contents("php://input");
+        $data = json_decode($json);
+
+        $carga = new \app\models\CargaMasivaForm();
+        $carga->generarExcel($data);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return "ok";
+    }
+
+    public function actionDownloadExcel() {
+        $full_path = \Yii::getAlias("@app") . DIRECTORY_SEPARATOR . \app\models\CargaMasivaForm::COMPLETE_FILE_PATH;
+        \app\components\Helper::download_file($full_path);
+    }
 }

@@ -263,9 +263,8 @@ class Helper {
 
         return $model;
     }
-    
+
     public static function getTiposCombustiblesSam() {
-        
     }
 
     public static function chipaxSecret($retraso) {
@@ -275,5 +274,4 @@ class Helper {
         $encrypted = md5($secret);
         return $encrypted;
     }
-
 }
