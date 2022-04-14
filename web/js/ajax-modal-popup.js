@@ -33,7 +33,7 @@ $(function () {
         if (validaTotal()) {
             var indice = $("#indiceTabla").val();
             $.ajax({
-                url: "/modal/sync-sam-post",
+                url: "/sincronizadorsam/web/modal/sync-sam-post",
                 type: "post",
                 data: $("#sam-modal").serialize(),
                 dataType: "html",
@@ -42,22 +42,18 @@ $(function () {
                     if (data.indexOf("ok") != -1) {
                         $("#sync_" + indice).css("display", "none");
                     }
-//                    setTimeout(function () {
-//                        $('#modal').modal('hide');
-//                    }, 5000);
                 }
             });
         } else {
             $("#errorMsg").html("Los montos de los vehículos deben coincidir con el valor del gasto.");
         }
-
     });
 
     $(document).on("submit", "#uploadDTE", function (e) {
         e.preventDefault();
 
         $.ajax({
-            url: "/chipax/web/modal/upload-dte",
+            url: "/sincronizadorsam/web/modal/upload-dte",
             type: "post",
             data: new FormData(this),
             dataType: "html",

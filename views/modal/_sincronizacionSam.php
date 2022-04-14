@@ -26,7 +26,7 @@ use yii\helpers\ArrayHelper;
             <?= $form->field($model, "fecha")->hiddenInput()->label(false) ?>
             <input type="hidden" id="indiceTabla" value="<?= $indice ?>" />
             <?=
-            $form->field($model, 'faena_seleccionada')->widget(\kartik\select2\Select2::classname(), [
+            $form->field($model, 'faena_seleccionada')->widget(\kartik\select2\Select2::class, [
                 'data' => ArrayHelper::map($model->faena, "id", "nombre"),
                 'options' => ['placeholder' => 'Centro de Costo / Faena', "id" => "faena"],
                 'theme' => 'default',
@@ -47,6 +47,8 @@ use yii\helpers\ArrayHelper;
                         'allowClear' => true,
                     ],
                 ]);
+            else :
+                echo $form->field($model, "tipo_combustible_id")->hiddenInput()->label(false);
             endif;
             ?>
             <?php /*

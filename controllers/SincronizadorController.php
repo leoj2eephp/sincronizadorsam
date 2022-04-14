@@ -65,10 +65,6 @@ class SincronizadorController extends Controller {
             [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
         )->all();
 
-        /* echo "<pre>";
-        print_r($rindeGastos);
-        die; */
-
         return $this->render("index", [
             "fecha_desde" => $fecha_desde,
             "fecha_hasta" => $fecha_hasta,

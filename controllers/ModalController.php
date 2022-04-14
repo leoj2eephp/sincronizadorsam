@@ -23,28 +23,25 @@ class ModalController extends Controller {
     }
 
     public function actionSyncSam() {
+        $id = $_GET["id"];
         $tipo = $_GET["tipo"];
-        $prorrata = null;
+        $prorrata = ProrrataChipax::find()->where("id = :id", [":id" => $id])->one();
         $compra = null;
         $gasto = null;
         $honorario = null;
         $remuneracion = null;
         switch ($tipo) {
             case "compra":
-                $compra = CompraChipax::find()->one();
-                $prorrata = ProrrataChipax::find()->where("compra_chipax_id = :compra_id", [":compra_id" => $compra->id])->one();
+                $compra = CompraChipax::find()->where("id = :id", [":id" => $prorrata->compra_chipax_id])->one();
                 break;
             case "gasto":
-                $compra = GastoChipax::find()->one();
-                $prorrata = ProrrataChipax::find()->where("gasto_chipax_id = :compra_id", [":compra_id" => $compra->id])->one();
+                $gasto = GastoChipax::find()->where("id = :id", [":id" => $prorrata->gasto_chipax_id])->one();
                 break;
             case "honorario":
-                $compra = HonorarioChipax::find()->one();
-                $prorrata = ProrrataChipax::find()->where("honorario_chipax_id = :compra_id", [":compra_id" => $compra->id])->one();
+                $honorario = HonorarioChipax::find()->where("id = :id", [":id" => $prorrata->honorario_chipax_id])->one();
                 break;
             case "remuneracion":
-                $compra = RemuneracionChipax::find()->one();
-                $prorrata = ProrrataChipax::find()->where("remuneracion_chipax_id = :compra_id", [":compra_id" => $compra->id])->one();
+                $remuneracion = RemuneracionChipax::find()->where("id = :id", [":id" => $prorrata->remuneracion_chipax_id])->one();
                 break;
             default:
                 $tipo = "";
@@ -59,7 +56,7 @@ class ModalController extends Controller {
         $faenas_decoded = json_decode($faenas);
         if (isset($faenas_decoded)) {
             $model->faena = json_decode($faenas)->faenas;
-        }
+        }|
         */
         // Llamo a la API de Sam para obtener los tipos de de combustibles
         /* $tipo_combustibles_sam = $model->getTiposCombustibles();
@@ -73,6 +70,7 @@ class ModalController extends Controller {
         $model->nota = "";
         //$model->nota = "TESTING API!!";
         $model->neto = $prorrata->monto;
+        $model->tipo_combustible_id = 0;
 
         if (null !== $compra) {
             $model->nombre_proveedor = $compra->razon_social;
@@ -98,13 +96,17 @@ class ModalController extends Controller {
             $model->tipo_documento_seleccionado = "Otros";
         } else if (null !== $remuneracion) {
             $model->nro_documento = $remuneracion["id"];
-            $model->nombre_proveedor = $remuneracion["empleado"]["nombre"] . " " . $remuneracion["empleado"]["apellido"];
+            $model->nombre_proveedor = $remuneracion["nombre_empleado"] . " " . $remuneracion["apellido_empleado"];
             $model->fecha = $remuneracion["periodo"];
-            $model->categoria = CategoriaChipax::findOne($remuneracion["prorratas"][0]["cuenta_id"])->nombre;
-            $model->linea_negocio = LineaNegocioChipax::findOne($remuneracion["prorratas"][0]["linea_negocio_id"])->nombre;
-            $model->neto = $remuneracion["prorratas"][0]["monto"];
+            $model->categoria = $categoria->nombre;
+            $model->linea_negocio = $prorrata->linea_negocio;
+            $model->neto = $prorrata->monto;
             $remu = true;
         }
+
+        /* echo "<pre>";
+        print_r($model);
+        die; */
 
         Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
         if (!$remu) {
@@ -131,11 +133,11 @@ class ModalController extends Controller {
 
                 $vehiculosValores[] = $vehiculo;
             }
-
             $model->vehiculos_seleccionados = $vehiculosValores;
 
             $result = $model->sendData();
             $respuesta = json_decode($result);
+
             Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
 
             if ($respuesta->status == "OK") {
@@ -152,7 +154,7 @@ class ModalController extends Controller {
                 ]);
             }
         } catch (Exception $ex) {
-            echo $ex->message;
+            echo $ex->getMessage();
             die;
         }
     }

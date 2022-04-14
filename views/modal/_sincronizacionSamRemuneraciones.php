@@ -6,7 +6,7 @@ use yii\widgets\ActiveForm;
 <div class="profesional-create">
     <?php
     $form = ActiveForm::begin([
-                "id" => "sam-modal",
+        "id" => "sam-modal",
     ]);
     ?>
 
@@ -16,6 +16,13 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col col-sm-6" style="border-right: 1px solid #ccc; padding-right: 10px;">
+            <?= $form->field($model, "categoria")->hiddenInput()->label(false) ?>
+            <?= $form->field($model, "nombre_proveedor")->hiddenInput()->label(false) ?>
+            <?= $form->field($model, "rut_proveedor")->hiddenInput()->label(false) ?>
+            <?= $form->field($model, "nro_documento")->hiddenInput()->label(false) ?>
+            <?= $form->field($model, "nota")->hiddenInput()->label(false) ?>
+            <?= $form->field($model, "fecha")->hiddenInput()->label(false) ?>
+            <?= $form->field($model, "tipo_combustible_id")->hiddenInput()->label(false) ?>
             <!-- EN CASO DE SER REMUNERACIÓN O GASTO SE UTILIZARÁ ESTE FORMULARIO MÁS BREVE -->
             <div class="row">
                 <div class="col col-sm-6">
@@ -41,7 +48,8 @@ use yii\widgets\ActiveForm;
                 </div>
             </div>
             <?= $form->field($model, "neto")->hiddenInput(["id" => "montoNeto"])->label(false) ?>
-            <?php // $form->field($model, 'neto')->input("text", ["readonly" => "readonly"]); ?>
+            <?php // $form->field($model, 'neto')->input("text", ["readonly" => "readonly"]); 
+            ?>
         </div>
         <div class="col col-sm-6" id="form-column">
             <?php
@@ -51,7 +59,8 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="box-footer col-sm-12">
-        <?php //Html::submitButton('Reagendar Hora', ['class' => 'btn btn-success pull-left', 'name' => 'action', 'value' => 'reagendar'])         ?>
+        <?php //Html::submitButton('Reagendar Hora', ['class' => 'btn btn-success pull-left', 'name' => 'action', 'value' => 'reagendar'])         
+        ?>
         <?= Html::button('Sincronizar', ['class' => 'btn btn-primary pull-right', 'name' => 'action', 'value' => 'sync', 'id' => 'sync']) ?>
         <span id="spanSubtotal" class="pl-8" style="font-weight: bold;">SUMA SUBTOTALES: $ <?= number_format($model->neto, 0, ",", ".") ?></span>
         <span id="spanTotal" class="pl-8 float-right" style="font-weight: bold;">MONTO TOTAL: $ <?= number_format($model->neto, 0, ",", ".") ?></span>

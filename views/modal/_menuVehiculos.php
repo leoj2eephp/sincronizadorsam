@@ -6,7 +6,7 @@
         <label>Agregar Vehículo</label>
     </div>
     <div class="col col-sm-2 centrar-vertical-horizontal">
-        <button type="button" class="addCar btn btn-success"><i class="fas fa-plus" ></i></button>
+        <button type="button" class="addCar btn btn-success"><i class="fas fa-plus"></i></button>
     </div>
 </div>
 <div class="row fila-vehiculos mb-1">
@@ -25,7 +25,7 @@
         <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style" style="background-color: white;">
             <?php
             foreach ($model->vehiculos as $vehi) {
-                echo "<option value='$vehi->value'>$vehi->value</option>";
+                echo "<option value='" . $vehi["vehiculo"] . "'>" . $vehi["vehiculo"] . "</option>";
             }
             ?>
         </select>
@@ -46,7 +46,6 @@
                 </button>
             </div>
         </div>
-        <input type="number" class="form-control valor" name="PoliticaGastosForm[valores_vehiculos][]" placeholder="Valor"
-               value="<?= $model->neto ?>"/>
+        <input type="number" class="form-control valor" name="PoliticaGastosForm[valores_vehiculos][]" placeholder="Valor" value="<?= $model->neto ?>" />
     </div>
 </div>

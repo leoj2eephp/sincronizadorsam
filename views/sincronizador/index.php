@@ -221,7 +221,7 @@ $rindeGastosParaExcel = array();
                                                 'class' => 'showModalButton btn btn-sm btn-primary',
                                                 'title' => "Sincronizar con SAM", "id" => "sync_" . $indice,
                                                 'value' => Url::to([
-                                                    "/modal/sync-sam", "id" => $compra->id, "tipo" => "compra", "i" => $indice
+                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "compra", "i" => $indice
                                                 ]),
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);
@@ -300,19 +300,14 @@ $rindeGastosParaExcel = array();
                                         if ($gastos->sincronizado) {
                                             echo "";
                                         } else {
-                                            //echo !\app\models\SamSincro::isSamSincronizedFolio($gastos->num_documento, $gastos->proveedor) ?
-                                            echo true ?
-                                                Html::button('<i class="fa fa-sync"></i>', [
-                                                    'class' => 'showModalButton btn btn-sm btn-primary',
-                                                    'title' => "Sincronizar con SAM", 'id' => 'sync_' . $indice,
-                                                    'value' => \yii\helpers\Url::to([
-                                                        "/modal/sync-sam", "prorrata" => $p, "model" => $model,
-                                                        "gasto" => $gastos, "descripcion" => $gastos->descripcion, "i" => $indice
-                                                    ]),
-                                                    'data-toggle' => 'modal', 'data-target' => '#modalvote'
-                                                ]) : "";
-                                            //                                                        \yii\helpers\Html::a('<i class="fa fa-sync"></i>', ["modal/sync-sam"],
-                                            //                                                                ['title' => 'Sincronizar con SAM', 'data-pjax' => '0', "class" => "showModalButton"]) : ''
+                                            echo Html::button('<i class="fa fa-sync"></i>', [
+                                                'class' => 'showModalButton btn btn-sm btn-primary',
+                                                'title' => "Sincronizar con SAM", 'id' => 'sync_' . $indice,
+                                                'value' => Url::to([
+                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "gasto", "i" => $indice
+                                                ]),
+                                                'data-toggle' => 'modal', 'data-target' => '#modalvote'
+                                            ]);
                                         }
                                         ?>
                                     </td>
@@ -381,18 +376,13 @@ $rindeGastosParaExcel = array();
                                         if ($honorarios->sincronizado) {
                                             echo "";
                                         } else {
-                                            //echo !\app\models\SamSincro::isSamSincronizedFolio($honorarios->numero_boleta, $honorarios->nombre_emisor) ?
-                                            echo true ?
-                                                Html::button('<i class="fa fa-sync"></i>', [
-                                                    'class' => 'showModalButton btn btn-sm btn-primary', 'title' => "Sincronizar con SAM",
-                                                    'value' => \yii\helpers\Url::to([
-                                                        "/modal/sync-sam", "prorrata" => $p,
-                                                        "descripcion" => $model->descripcion, "honorario" => $honorarios, "i" => $indice
-                                                    ]),
-                                                    'data-toggle' => 'modal', 'data-target' => '#modalvote'
-                                                ]) : "";
-                                            //                                                        \yii\helpers\Html::a('<i class="fa fa-sync"></i>', ["modal/sync-sam"],
-                                            //                                                                ['title' => 'Sincronizar con SAM', 'data-pjax' => '0', "class" => "showModalButton"]) : ''
+                                            echo Html::button('<i class="fa fa-sync"></i>', [
+                                                'class' => 'showModalButton btn btn-sm btn-primary', 'title' => "Sincronizar con SAM",
+                                                'value' => Url::to([
+                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "honorario", "i" => $indice
+                                                ]),
+                                                'data-toggle' => 'modal', 'data-target' => '#modalvote'
+                                            ]);
                                         }
                                         ?>
                                     </td>
@@ -432,18 +422,13 @@ $rindeGastosParaExcel = array();
                                         if ($remuneraciones->sincronizado) {
                                             echo "";
                                         } else {
-                                            //echo !\app\models\SamSincro::isSamSincronizedFolio($remuneraciones->id, $remuneraciones->empleado->rut) ?
-                                            echo true ?
-                                                Html::button('<i class="fa fa-sync"></i>', [
-                                                    'class' => 'showModalButton btn btn-sm btn-primary', 'title' => "Sincronizar con SAM",
-                                                    'value' => \yii\helpers\Url::to([
-                                                        "/modal/sync-sam", "prorrata" => $p,
-                                                        "descripcion" => $model->descripcion, "remuneracion" => $remuneraciones, "i" => $indice
-                                                    ]),
-                                                    'data-toggle' => 'modal', 'data-target' => '#modalvote'
-                                                ]) : "";
-                                            //                                                        \yii\helpers\Html::a('<i class="fa fa-sync"></i>', ["modal/sync-sam"],
-                                            //                                                                ['title' => 'Sincronizar con SAM', 'data-pjax' => '0', "class" => "showModalButton"]) : ''
+                                            echo Html::button('<i class="fa fa-sync"></i>', [
+                                                'class' => 'showModalButton btn btn-sm btn-primary', 'title' => "Sincronizar con SAM",
+                                                'value' => Url::to([
+                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "remuneracion", "i" => $indice
+                                                ]),
+                                                'data-toggle' => 'modal', 'data-target' => '#modalvote'
+                                            ]);
                                         }
                                         ?>
                                     </td>
