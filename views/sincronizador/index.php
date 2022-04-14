@@ -135,14 +135,14 @@ $rindeGastosParaExcel = array();
                 <thead>
                     <tr class="bg-info">
                         <th style="text-overflow: ellipsis; width: 250px;">Razón Social</th>
-                        <th style="">Rut Emisor</th>
-                        <th style="">Folio</th>
+                        <th>Rut Emisor</th>
+                        <th>Folio</th>
                         <th style="min-width: 84px !important; width: 9% !important;">Fecha Emisión</th>
-                        <th style="">N° Doc</th>
-                        <th style="">Neto</th>
+                        <th>N° Doc</th>
+                        <th>Neto</th>
                         <th style="max-width: 250px !important;">Descripción</th>
-                        <th style="">Tipo Movimiento</th>
-                        <th style="">Algo</th>
+                        <th>Tipo Movimiento</th>
+                        <th>Algo</th>
                         <th class="sorting_disabled">Acciones</th>
                     </tr>
                 </thead>
@@ -151,7 +151,7 @@ $rindeGastosParaExcel = array();
                     $indice = 0;
                     if (count($model->compras) > 0) {
                         foreach ($model->compras as $compra) :
-                            $rindeSincronizado = GastoCompleta::isSincronizedWithChipax($compra->folio, $compra->fecha_emision);
+                            //$rindeSincronizado = GastoCompleta::isSincronizedWithChipax($compra->folio, $compra->fecha_emision);
                             /* if (count($rindeSincronizado) == 0) {
                                         $rindeSincronizado = app\models\RindeGastos::getCombustibleExpenseByNumDoc($combustibles, trim($compra->folio));
                                     } */
@@ -161,18 +161,18 @@ $rindeGastosParaExcel = array();
                                 $color = "bg-info-light";
                     ?>
                                 <tr <?php
-                                    if (count($rindeSincronizado) > 0) {
+                                    if ($compra->sincronizado) {
                                         $compra->sincronizado = true;
-                                        $rindeGastosSincronizados[] = $rindeSincronizado[0]->nro_documento;
+                                        $rindeGastosSincronizados[] = $compra->gastoCompleta[0]->nro_documento;
                                         $cantidad_sincronizados++;
                                         echo 'data-toggle="tooltip" data-html="true"
-                                                    title="' . "<div class='bg-info text-uppercase text-bold'>" . $rindeSincronizado[0]->gasto->supplier .
-                                            ' (' . $rindeSincronizado[0]->rut_proveedor . ')</div>';
+                                                    title="' . "<div class='bg-info text-uppercase text-bold'>" . $compra->gastoCompleta[0]->gasto->supplier .
+                                            ' (' . $compra->gastoCompleta[0]->rut_proveedor . ')</div>';
                                         $total_montos = 0;  // esto es solo para los casos en los que Chipax tiene desglosado un registro que es único en RindeGastos
-                                        foreach ($rindeSincronizado as $rinde) :
+                                        foreach ($compra->gastoCompleta as $rinde) :
                                             $total_montos += $rinde->gasto->net;
                                         endforeach;
-                                        foreach ($rindeSincronizado as $i => $rinde) :
+                                        foreach ($compra->gastoCompleta as $i => $rinde) :
                                             if ($rinde->gasto->net == $p->monto || $rinde->gasto->total == $p->monto || $rinde->gasto->net == $total_montos) {
                                                 $color = "bg-info-light";
                                                 $css_totales = "text-info font-weight-bold";
@@ -240,7 +240,7 @@ $rindeGastosParaExcel = array();
                     }
                     if (count($model->gastos) > 0) {
                         foreach ($model->gastos as $gastos) :
-                            $rindeSincronizado = GastoCompleta::isSincronizedWithChipax($gastos->num_documento, $gastos->fecha);
+                            //$rindeSincronizado = GastoCompleta::isSincronizedWithChipax($gastos->num_documento, $gastos->fecha);
                             /* if (count($rindeSincronizado) == 0) {
                                         $rindeSincronizado = app\models\RindeGastos::getCombustibleExpenseByNumDoc($combustibles, trim($gastos->num_documento));
                                     } */
@@ -250,11 +250,11 @@ $rindeGastosParaExcel = array();
                                 $color = "bg-info-light";
                         ?>
                                 <tr <?php
-                                    if (count($rindeSincronizado) > 0) {
+                                    if ($gastos->sincronizado) {
                                         $gastos->sincronizado = true;
-                                        $rindeGastosSincronizados[] = $rindeSincronizado[0]->nro_documento;
+                                        $rindeGastosSincronizados[] = $gastos->gastoCompleta[0]->nro_documento;
                                         $cantidad_sincronizados++;
-                                        foreach ($rindeSincronizado as $i => $rinde) :
+                                        foreach ($gastos->gastoCompleta as $i => $rinde) :
                                             if ($rinde->gasto->net == $p->monto || $rinde->gasto->total == $p->monto) {
                                                 $color = "bg-info-light";
                                                 $css_totales = "text-info font-weight-bold";
@@ -319,19 +319,19 @@ $rindeGastosParaExcel = array();
                     }
                     if (count($model->honorarios) > 0) {
                         foreach ($model->honorarios as $honorarios) :
-                            $rindeSincronizado = GastoCompleta::isSincronizedWithChipax($honorarios->numero_boleta, $honorarios->fecha_emision);
+                            //$rindeSincronizado = GastoCompleta::isSincronizedWithChipax($honorarios->numero_boleta, $honorarios->fecha_emision);
                             $mostrado = array();
                             foreach ($honorarios->prorrataChipax as $p) :
                                 $color = "bg-info-light";
                                 $cantidad_registros++;
                             ?>
                                 <tr <?php
-                                    if (count($rindeSincronizado) > 0) {
+                                    if ($honorarios->sincronizado) {
                                         $honorarios->sincronizado = true;
-                                        $rindeGastosSincronizados[] = $rindeSincronizado[0]->nro_documento;
+                                        $rindeGastosSincronizados[] = $honorarios->gastoCompleta[0]->nro_documento;
                                         $cantidad_sincronizados++;
                                         // Filtrar aquí si ha habido algún cambio
-                                        foreach ($rindeSincronizado as $i => $rinde) :
+                                        foreach ($honorarios->gastoCompleta as $i => $rinde) :
                                             if ($rinde->gasto->net == $p->monto || $rinde->gasto->total == $p->monto) {
                                                 $color = "bg-info-light";
                                                 $css_totales = "text-info font-weight-bold";
@@ -378,6 +378,7 @@ $rindeGastosParaExcel = array();
                                         } else {
                                             echo Html::button('<i class="fa fa-sync"></i>', [
                                                 'class' => 'showModalButton btn btn-sm btn-primary', 'title' => "Sincronizar con SAM",
+                                                'id' => 'sync_' . $indice,
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "tipo" => "honorario", "i" => $indice
                                                 ]),
@@ -424,6 +425,7 @@ $rindeGastosParaExcel = array();
                                         } else {
                                             echo Html::button('<i class="fa fa-sync"></i>', [
                                                 'class' => 'showModalButton btn btn-sm btn-primary', 'title' => "Sincronizar con SAM",
+                                                'id' => 'sync_' . $indice,
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "tipo" => "remuneracion", "i" => $indice
                                                 ]),

@@ -21,6 +21,7 @@ use Yii;
  * @property string|null $email_empleado
  *
  * @property ProrrataChipax[] $prorrataChipax
+ * @property GastoCompleta $gastoCompleta
  */
 class RemuneracionChipax extends \yii\db\ActiveRecord {
 
@@ -40,7 +41,7 @@ class RemuneracionChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'empresa_id', 'periodo', 'empleado_id', 'monto_liquido', 'moneda_id', 'nombre_empleado', 'apellido_empleado', 'rut_empleado'], 'required'],
             [['id', 'empresa_id', 'usuario_id', 'empleado_id', 'monto_liquido', 'moneda_id'], 'integer'],
-            [['periodo'], 'safe'],
+            [['periodo', "sincronizado"], 'safe'],
             [['liquidacion'], 'string', 'max' => 150],
             [['nombre_empleado', 'apellido_empleado', 'email_empleado'], 'string', 'max' => 45],
             [['rut_empleado'], 'string', 'max' => 12],
@@ -75,5 +76,14 @@ class RemuneracionChipax extends \yii\db\ActiveRecord {
      */
     public function getProrrataChipax() {
         return $this->hasMany(ProrrataChipax::class, ['remuneracion_chipax_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[GastoCompleta]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGastoCompleta() {
+        return $this->hasMany(GastoCompleta::class, ['nro_documento' => 'folio']);
     }
 }

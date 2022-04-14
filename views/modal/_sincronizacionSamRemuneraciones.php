@@ -23,6 +23,7 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, "nota")->hiddenInput()->label(false) ?>
             <?= $form->field($model, "fecha")->hiddenInput()->label(false) ?>
             <?= $form->field($model, "tipo_combustible_id")->hiddenInput()->label(false) ?>
+            <input type="hidden" id="indiceTabla" value="<?= $indice ?>" />
             <!-- EN CASO DE SER REMUNERACIÓN O GASTO SE UTILIZARÁ ESTE FORMULARIO MÁS BREVE -->
             <div class="row">
                 <div class="col col-sm-6">

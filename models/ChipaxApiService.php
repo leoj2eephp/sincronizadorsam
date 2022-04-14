@@ -38,9 +38,6 @@ class ChipaxApiService {
         } else {
             $flujo[] = FlujoCajaCartola::convert2Model($request->getData()["docs"], $fecha_desde, $fecha_hasta);
         }
-
-        echo "<pre>";
-        print_r($flujo);
     }
 
     public function getLineasNegocio() {

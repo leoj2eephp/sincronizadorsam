@@ -43,22 +43,57 @@ class SincronizadorController extends Controller {
         }
 
         $model = new FlujoCajaCartola();
-        $model->compras = CompraChipax::find()->with("prorrataChipax")->where(
+        $model->compras = CompraChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
             "fecha_emision >= :desde AND fecha_emision <= :hasta",
             [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
         )->all();
-        $model->gastos = GastoChipax::find()->with("prorrataChipax")->where(
+
+        foreach ($model->compras as $compra) {
+            if (count($compra->gastoCompleta) > 0) {
+                $compra->sincronizado = 1;
+            } else {
+                $compra->sincronizado = 0;
+            }
+        }
+
+        $model->gastos = GastoChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
             "fecha >= :desde AND fecha <= :hasta",
             [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
         )->all();
-        $model->honorarios = HonorarioChipax::find()->with("prorrataChipax")->where(
+
+        foreach ($model->gastos as $gasto) {
+            if (count($gasto->gastoCompleta) > 0) {
+                $gasto->sincronizado = 1;
+            } else {
+                $gasto->sincronizado = 0;
+            }
+        }
+
+        $model->honorarios = HonorarioChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
             "fecha_emision >= :desde AND fecha_emision <= :hasta",
             [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
         )->all();
-        $model->remuneracions = RemuneracionChipax::find()->with("prorrataChipax")->where(
+
+        foreach ($model->honorarios as $honorario) {
+            if (count($honorario->gastoCompleta) > 0) {
+                $honorario->sincronizado = 1;
+            } else {
+                $honorario->sincronizado = 0;
+            }
+        }
+
+        $model->remuneracions = RemuneracionChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
             "periodo >= :desde AND periodo <= :hasta",
             [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
         )->all();
+
+        foreach ($model->remuneracions as $remu) {
+            if (count($remu->gastoCompleta) > 0) {
+                $remu->sincronizado = 1;
+            } else {
+                $remu->sincronizado = 0;
+            }
+        }
 
         $rindeGastos = Gasto::find()->joinWith("gastoCompleta")->where(
             "issue_date > :desde AND issue_date <= :hasta",
@@ -75,6 +110,7 @@ class SincronizadorController extends Controller {
     }
 
     public function actionSincronizar() {
+        ini_set('max_execution_time', '1000');
         $chipaxApiService = new ChipaxApiService();
         $lineasNegocio = $chipaxApiService->getLineasNegocio();
         LineaNegocioChipax::sincronizarDatos($lineasNegocio);
