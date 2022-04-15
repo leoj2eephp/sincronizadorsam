@@ -110,7 +110,7 @@ class SincronizadorController extends Controller {
     }
 
     public function actionSincronizar() {
-        ini_set('max_execution_time', '1000');
+        set_time_limit(0);
         $chipaxApiService = new ChipaxApiService();
         $lineasNegocio = $chipaxApiService->getLineasNegocio();
         LineaNegocioChipax::sincronizarDatos($lineasNegocio);
