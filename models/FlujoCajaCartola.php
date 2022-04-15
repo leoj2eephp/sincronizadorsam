@@ -235,6 +235,7 @@ class FlujoCajaCartola {
                     } else {
                         echo "Hubo en error al insertar Compra.";
                         echo join(",", $compras->getFirstErrors());
+                        continue;
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en CompraChipax");
@@ -293,8 +294,9 @@ class FlujoCajaCartola {
                             }
                         }
                     } else {
-                        // echo "Hubo en error al insertar Gasto.";
-                        // echo join(",", $gasto->getFirstErrors());
+                        echo "Hubo en error al insertar Gasto.";
+                        echo join(",", $gasto->getFirstErrors());
+                        continue;
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en GastoChipax");
@@ -351,8 +353,9 @@ class FlujoCajaCartola {
                             }
                         }
                     } else {
-                        // echo "Hubo en error al insertar Honorario.";
-                        // echo join(",", $honorario->getFirstErrors());
+                        echo "Hubo en error al insertar Honorario.";
+                        echo join(",", $honorario->getFirstErrors());
+                        continue;
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en HonorarioChipax");
@@ -414,8 +417,9 @@ class FlujoCajaCartola {
                             }
                         }
                     } else {
-                        // echo "Hubo en error al insertar Remuneración.";
-                        // echo join(",", $remuneracion->getFirstErrors());
+                        echo "Hubo en error al insertar Remuneración.";
+                        echo join(",", $remuneracion->getFirstErrors());
+                        continue;
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en RemuneracionChipax");
