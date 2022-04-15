@@ -234,7 +234,7 @@ class FlujoCajaCartola {
                         }
                     } else {
                         echo "Hubo en error al insertar Compra.";
-                        echo join(",", $compras->getFirstErrors());
+                        //echo join(",", $compras->getFirstErrors());
                         continue;
                     }
                 } catch (Exception $ex) {
@@ -295,7 +295,7 @@ class FlujoCajaCartola {
                         }
                     } else {
                         echo "Hubo en error al insertar Gasto.";
-                        echo join(",", $gasto->getFirstErrors());
+                        //echo join(",", $gasto->getFirstErrors());
                         continue;
                     }
                 } catch (Exception $ex) {
@@ -354,7 +354,7 @@ class FlujoCajaCartola {
                         }
                     } else {
                         echo "Hubo en error al insertar Honorario.";
-                        echo join(",", $honorario->getFirstErrors());
+                        //echo join(",", $honorario->getFirstErrors());
                         continue;
                     }
                 } catch (Exception $ex) {
@@ -418,7 +418,7 @@ class FlujoCajaCartola {
                         }
                     } else {
                         echo "Hubo en error al insertar Remuneración.";
-                        echo join(",", $remuneracion->getFirstErrors());
+                        //echo join(",", $remuneracion->getFirstErrors());
                         continue;
                     }
                 } catch (Exception $ex) {
