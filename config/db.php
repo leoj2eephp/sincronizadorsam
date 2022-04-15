@@ -9,9 +9,9 @@ return [
     'charset' => 'utf8', */
 
     //PRODUCCIÓN !!
-    'connectionString' => 'mysql:host=127.0.0.1;dbname=cot27290_SAMQA',
+    'dsn' => 'mysql:host=127.0.0.1;dbname=cot27290_SAM',
     'emulatePrepare' => true,
-    'username' => 'cot27290_SAMQA',
+    'username' => 'cot27290_SAM',
     'password' => '?)ZkEI(O]nDl',
     'charset' => 'utf8',
     'enableParamLogging' => true,
