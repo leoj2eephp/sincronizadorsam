@@ -14,7 +14,7 @@ return [
     'username' => 'cot27290_SAM',
     'password' => '?)ZkEI(O]nDl',
     'charset' => 'utf8',
-    'enableParamLogging' => true,
+    //'enableParamLogging' => true,
 
     // Schema cache options (for production environment)
     //'enableSchemaCache' => true,
