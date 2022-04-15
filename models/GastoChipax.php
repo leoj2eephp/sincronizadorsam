@@ -37,7 +37,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['id', 'descripcion', 'fecha', 'moneda_id', 'monto', 'num_documento', 'proveedor'], 'required'],
+            [['id', 'descripcion', 'fecha', 'moneda_id', 'monto', 'proveedor'], 'required'],
             [['id', 'moneda_id', 'monto', 'usuario_id'], 'integer'],
             [['fecha', 'sincronizado'], 'safe'],
             [['proveedor', 'responsable'], 'string', 'max' => 100],

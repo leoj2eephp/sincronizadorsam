@@ -395,8 +395,9 @@ class FlujoCajaCartola {
                         }
                     }
                 } else {
-                    echo "Hubo en error al insertar Remuneración.";
-                    echo join(",", $remuneracion->getFirstErrors());
+                    continue;
+                    // echo "Hubo en error al insertar Remuneración.";
+                    // echo join(",", $remuneracion->getFirstErrors());
                 }
 
                 //$flujoCajaCartola->remuneracions[] = $remuneracion;
