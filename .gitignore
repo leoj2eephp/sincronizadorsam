@@ -56,3 +56,6 @@ documents/loaded - copia (4).xml
 documents/loaded - copia.xml
 workspace.code-workspace
 documents/CargaMasiva.xls
+web/index.php
+config/db_local.php
+config/web_local.php
