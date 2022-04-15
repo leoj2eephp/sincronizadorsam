@@ -233,7 +233,7 @@ class FlujoCajaCartola {
                             }
                         }
                     } else {
-                        echo "Hubo en error al insertar Compra.";
+                        // echo "Hubo en error al insertar Compra.";
                         //echo join(",", $compras->getFirstErrors());
                         continue;
                     }
@@ -294,7 +294,7 @@ class FlujoCajaCartola {
                             }
                         }
                     } else {
-                        echo "Hubo en error al insertar Gasto.";
+                        // echo "Hubo en error al insertar Gasto.";
                         //echo join(",", $gasto->getFirstErrors());
                         continue;
                     }
@@ -353,7 +353,7 @@ class FlujoCajaCartola {
                             }
                         }
                     } else {
-                        echo "Hubo en error al insertar Honorario.";
+                        // echo "Hubo en error al insertar Honorario.";
                         //echo join(",", $honorario->getFirstErrors());
                         continue;
                     }
@@ -417,7 +417,7 @@ class FlujoCajaCartola {
                             }
                         }
                     } else {
-                        echo "Hubo en error al insertar Remuneración.";
+                        //echo "Hubo en error al insertar Remuneración.";
                         //echo join(",", $remuneracion->getFirstErrors());
                         continue;
                     }
