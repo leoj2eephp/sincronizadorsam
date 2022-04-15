@@ -12,7 +12,7 @@ class ChipaxApiService {
 
         /*         $fecha_desde = null !== $start_date ? $start_date : date("Y-m-d", strtotime(date("Y-m-d") . " - 1 month"));
         $fecha_hasta = null !== $end_date ? $end_date : date("Y-m-d"); */
-        $fecha_desde = date("Y-m-d", strtotime("2022-01-01"));
+        $fecha_desde = date("Y-m-d", strtotime("2018-01-01"));
         $fecha_hasta = date("Y-m-d");
         $request = $client->createRequest()
             ->setHeaders(['content-type' => 'application/json'])
