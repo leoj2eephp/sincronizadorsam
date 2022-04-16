@@ -47,19 +47,17 @@ class FlujoCajaCartola {
         86680 => 'CG.- 02 Petróleo',
     ];
 
-    public static function convert2Model($jsonArreglo, $fecha_desde = null, $fecha_hasta = null) {
-        $data = array();
+    public static function convert2Model($jsonArreglo) {
+        //$data = array();
         $sw = false;
         $flujoCajaCartola = null;
         $folios = array();   // para verificar si existe algún folio repetido
-
-        ProrrataChipax::deleteAll();
-        CompraChipax::deleteAll();
-        GastoChipax::deleteAll();
-        HonorarioChipax::deleteAll();
-        RemuneracionChipax::deleteAll();
+        $gastosFolios = array();
+        $honoFolios = array();
+        $remuFolios = array();
 
         foreach ($jsonArreglo as $json) {
+            /*
             foreach ($json["Compras"] as $c) {
                 $fecha_emision = \app\components\Helper::formatToDBDate($c["fecha_emision"]);
                 if ($fecha_desde !== null) {
@@ -163,9 +161,9 @@ class FlujoCajaCartola {
                         break;
                 }
             }
-
-            if (!$sw)
-                continue;
+            */
+            // if (!$sw)
+            //     continue;
 
             $flujoCajaCartola = new FlujoCajaCartola();
             $flujoCajaCartola->abono = $json["abono"];
@@ -175,7 +173,6 @@ class FlujoCajaCartola {
             $flujoCajaCartola->id = $json["id"];
             $flujoCajaCartola->cuenta_corriente_id = $json["cuenta_corriente_id"];
             $flujoCajaCartola->tipo_cartola_id = $json["tipo_cartola_id"];
-            //$flujoCajaCartola->sincronizacion_id_anterior = $anterior;
 
             foreach ($json["Compras"] as $c) {
                 try {   // este bloque evitará que haya un folio duplicado mostrándose
@@ -186,19 +183,6 @@ class FlujoCajaCartola {
                     echo "<pre>";
                     print_r($ex);
                     break;
-                }
-
-                if ($fecha_desde !== null) {
-                    if ($c["fecha_emision"] < $fecha_desde) {
-                        $sw = false;
-                        break;
-                    }
-                }
-                if ($fecha_hasta !== null) {
-                    if ($c["fecha_emision"] > $fecha_hasta) {
-                        $sw = false;
-                        break;
-                    }
                 }
 
                 $compras = new CompraChipax();
@@ -212,30 +196,30 @@ class FlujoCajaCartola {
                 $compras->tipo = $c["tipo"];
 
                 try {
-                    if ($compras->save()) {
-                        foreach ($c["Prorratas"] as $pro) {
-                            if ($pro["linea_negocio_id"] == 5671 || array_key_exists($p["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                                $prorrata = new ProrrataChipax();
-                                $prorrata->cuenta_id = $pro["cuenta_id"];
-                                $prorrata->filtro_id = $pro["filtro_id"];
-                                $prorrata->id = $pro["id"];
-                                $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
-                                $prorrata->linea_negocio = $linea_negocio->nombre;
-                                $prorrata->compra_chipax_id = $pro["foreign_key"];
-                                $prorrata->modelo = $pro["modelo"];
-                                $prorrata->monto = $pro["monto"];
-                                $prorrata->periodo = $pro["periodo"];
-                                //$compras->prorratas[] = $prorrata;
-                                if (!$prorrata->save()) {
-                                    echo "Hubo un error al insertar las prorratas";
-                                    echo join(", ", $prorrata->getFirstErrors());
-                                }
-                            }
+                    foreach ($c["Prorratas"] as $pro) {
+                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
+                            continue;
                         }
-                    } else {
-                        // echo "Hubo en error al insertar Compra.";
-                        //echo join(",", $compras->getFirstErrors());
-                        continue;
+                        if ($compras->save()) {
+                            $prorrata = new ProrrataChipax();
+                            $prorrata->cuenta_id = $pro["cuenta_id"];
+                            $prorrata->filtro_id = $pro["filtro_id"];
+                            $prorrata->id = $pro["id"];
+                            $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
+                            $prorrata->linea_negocio = $linea_negocio->nombre;
+                            $prorrata->compra_chipax_id = $pro["foreign_key"];
+                            $prorrata->modelo = $pro["modelo"];
+                            $prorrata->monto = $pro["monto"];
+                            $prorrata->periodo = $pro["periodo"];
+                            if (!$prorrata->save()) {
+                                echo "Hubo un error al insertar las prorratas";
+                                echo join(", ", $prorrata->getFirstErrors());
+                            }
+                        } else {
+                            // echo "Hubo en error al insertar Compra.";
+                            //echo join(",", $compras->getFirstErrors());
+                            continue;
+                        }
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en CompraChipax");
@@ -247,18 +231,16 @@ class FlujoCajaCartola {
             }
 
             foreach ($json["Gastos"] as $g) {
-                if ($fecha_desde !== null) {
-                    if ($g["fecha"] < $fecha_desde) {
-                        $sw = false;
-                        break;
+                try {   // este bloque evitará que haya un folio duplicado mostrándose
+                    if (array_search($g["num_documento"], $gastosFolios) !== false) {
+                        continue;
                     }
+                } catch (\yii\base\ErrorException $ex) {
+                    echo "<pre>";
+                    print_r($ex);
+                    break;
                 }
-                if ($fecha_hasta !== null) {
-                    if ($g["fecha"] > $fecha_hasta) {
-                        $sw = false;
-                        break;
-                    }
-                }
+
                 $gasto = new GastoChipax();
                 $gasto->descripcion = $g["descripcion"];
                 $gasto->fecha = $g["fecha"];
@@ -272,31 +254,32 @@ class FlujoCajaCartola {
                 $gasto->usuario_id = $g["usuario_id"];
 
                 try {
-                    if ($gasto->save()) {
-                        foreach ($g["Prorratas"] as $pro) {
-                            if ($pro["linea_negocio_id"] == 5671 || array_key_exists($p["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                                $prorrata = new ProrrataChipax();
-                                $prorrata->cuenta_id = $pro["cuenta_id"];
-                                $prorrata->filtro_id = $pro["filtro_id"];
-                                $prorrata->gasto_chipax_id = $pro["foreign_key"];
-                                $prorrata->id = $pro["id"];
-                                $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
-                                $prorrata->linea_negocio = $linea_negocio->nombre;
-                                $prorrata->modelo = $pro["modelo"];
-                                $prorrata->monto = $pro["monto"];
-                                $prorrata->periodo = $pro["periodo"];
-
-                                //$gasto->prorratas[] = $prorrata;
-                                if (!$prorrata->save()) {
-                                    echo "Hubo un error al insertar las prorratas";
-                                    echo join(", ", $prorrata->getFirstErrors());
-                                }
-                            }
+                    foreach ($g["Prorratas"] as $pro) {
+                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
+                            continue;
                         }
-                    } else {
-                        // echo "Hubo en error al insertar Gasto.";
-                        //echo join(",", $gasto->getFirstErrors());
-                        continue;
+                        if ($gasto->save()) {
+                            $prorrata = new ProrrataChipax();
+                            $prorrata->cuenta_id = $pro["cuenta_id"];
+                            $prorrata->filtro_id = $pro["filtro_id"];
+                            $prorrata->gasto_chipax_id = $pro["foreign_key"];
+                            $prorrata->id = $pro["id"];
+                            $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
+                            $prorrata->linea_negocio = $linea_negocio->nombre;
+                            $prorrata->modelo = $pro["modelo"];
+                            $prorrata->monto = $pro["monto"];
+                            $prorrata->periodo = $pro["periodo"];
+
+                            //$gasto->prorratas[] = $prorrata;
+                            if (!$prorrata->save()) {
+                                echo "Hubo un error al insertar las prorratas";
+                                echo join(", ", $prorrata->getFirstErrors());
+                            }
+                        } else {
+                            // echo "Hubo en error al insertar Gasto.";
+                            //echo join(",", $gasto->getFirstErrors());
+                            continue;
+                        }
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en GastoChipax");
@@ -304,20 +287,18 @@ class FlujoCajaCartola {
                 }
 
                 // $flujoCajaCartola->gastos[] = $gasto;
+                $folios[] = $g["num_documento"];
             }
 
             foreach ($json["Honorarios"] as $h) {
-                if ($fecha_desde !== null) {
-                    if ($h["fecha_emision"] < $fecha_desde) {
-                        $sw = false;
-                        break;
+                try {   // este bloque evitará que haya un folio duplicado mostrándose
+                    if (array_search($h["numero_boleta"], $honoFolios) !== false) {
+                        continue;
                     }
-                }
-                if ($fecha_hasta !== null) {
-                    if ($h["fecha_emision"] > $fecha_hasta) {
-                        $sw = false;
-                        break;
-                    }
+                } catch (\yii\base\ErrorException $ex) {
+                    echo "<pre>";
+                    print_r($ex);
+                    break;
                 }
 
                 $honorario = new HonorarioChipax();
@@ -331,8 +312,11 @@ class FlujoCajaCartola {
                 $honorario->usuario_id = $h["usuario_id"];
 
                 try {
-                    if ($honorario->save()) {
-                        foreach ($h["Prorratas"] as $pro) {
+                    foreach ($h["Prorratas"] as $pro) {
+                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
+                            continue;
+                        }
+                        if ($honorario->save()) {
                             if ($pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
                                 $prorrata = new ProrrataChipax();
                                 $prorrata->cuenta_id = $pro["cuenta_id"];
@@ -351,11 +335,11 @@ class FlujoCajaCartola {
                                     echo join(", ", $prorrata->getFirstErrors());
                                 }
                             }
+                        } else {
+                            // echo "Hubo en error al insertar Honorario.";
+                            //echo join(",", $honorario->getFirstErrors());
+                            continue;
                         }
-                    } else {
-                        // echo "Hubo en error al insertar Honorario.";
-                        //echo join(",", $honorario->getFirstErrors());
-                        continue;
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en HonorarioChipax");
@@ -363,20 +347,18 @@ class FlujoCajaCartola {
                 }
 
                 //$flujoCajaCartola->honorarios[] = $honorario;
+                $honoFolios[] = $h["numero_boleta"];
             }
 
             foreach ($json["Remuneracions"] as $r) {
-                if ($fecha_desde !== null) {
-                    if ($json["fecha"] < $fecha_desde) {
-                        $sw = false;
-                        break;
+                try {   // este bloque evitará que haya un folio duplicado mostrándose
+                    if (array_search($r["id"], $remuFolios) !== false) {
+                        continue;
                     }
-                }
-                if ($fecha_hasta !== null) {
-                    if ($json["fecha"] > $fecha_hasta) {
-                        $sw = false;
-                        break;
-                    }
+                } catch (\yii\base\ErrorException $ex) {
+                    echo "<pre>";
+                    print_r($ex);
+                    break;
                 }
 
                 $remuneracion = new RemuneracionChipax();
@@ -395,8 +377,11 @@ class FlujoCajaCartola {
                 $remuneracion->email_empleado = $r["Empleado"]["email"];
 
                 try {
-                    if ($remuneracion->save()) {
-                        foreach ($r["Prorratas"] as $pro) {
+                    foreach ($r["Prorratas"] as $pro) {
+                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
+                            continue;
+                        }
+                        if ($remuneracion->save()) {
                             if ($pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
                                 $prorrata = new ProrrataChipax();
                                 $prorrata->cuenta_id = $pro["cuenta_id"];
@@ -415,11 +400,11 @@ class FlujoCajaCartola {
                                     echo join(", ", $prorrata->getFirstErrors());
                                 }
                             }
+                        } else {
+                            //echo "Hubo en error al insertar Remuneración.";
+                            //echo join(",", $remuneracion->getFirstErrors());
+                            continue;
                         }
-                    } else {
-                        //echo "Hubo en error al insertar Remuneración.";
-                        //echo join(",", $remuneracion->getFirstErrors());
-                        continue;
                     }
                 } catch (Exception $ex) {
                     Yii::error("Error al insertar en RemuneracionChipax");
@@ -427,14 +412,15 @@ class FlujoCajaCartola {
                 }
 
                 //$flujoCajaCartola->remuneracions[] = $remuneracion;
+                $remuFolios[] = $r["id"];
             }
 
             $sw = false;    // para que vuelva a buscar solo si la linea de negocio es departamento de maquinaria
             //array_push($data, $flujoCajaCartola);
-            $data[] = $flujoCajaCartola;
+            //$data[] = $flujoCajaCartola;
         }
 
-        return $data;
+        return true;
     }
 
     private function getLineasNegocio() {

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Exception;
 use Yii;
 use yii\httpclient\Client;
 
@@ -10,8 +11,6 @@ class ChipaxApiService {
     public function sincronizarChipaxData() {
         $client = new Client(["baseUrl" => "https://api.chipax.com/flujo-caja/cartolas"]);
 
-        /*         $fecha_desde = null !== $start_date ? $start_date : date("Y-m-d", strtotime(date("Y-m-d") . " - 1 month"));
-        $fecha_hasta = null !== $end_date ? $end_date : date("Y-m-d"); */
         $fecha_desde = date("Y-m-d", strtotime("2018-01-01"));
         $fecha_hasta = date("Y-m-d");
         $request = $client->createRequest()
@@ -22,19 +21,27 @@ class ChipaxApiService {
             //->setData(["startDate" => date('Y-m-d\TH:i:s')])
             ->send();
 
-        if ($request->getData()["pages"] > 1) {
-            for ($i = 1; $i <= $request->getData()["pages"]; $i++) {
-                $request = $client->createRequest()
-                    ->setHeaders(['content-type' => 'application/json'])
-                    ->addHeaders(['Authorization' => 'JWT ' . $this->getToken()["token"]])
-                    ->setData([
-                        "startDate" => $fecha_desde . 'T00:00:00.000Z', "endDate" => $fecha_hasta . 'T23:59:59.000Z',
-                        "page" => $i
-                    ])->send();
-                $flujo[] = FlujoCajaCartola::convert2Model($request->getData()["docs"], $fecha_desde, $fecha_hasta);
+        Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 0")->execute();
+        Yii::$app->db->createCommand()->truncateTable("prorrata_chipax")->execute();
+        Yii::$app->db->createCommand()->truncateTable("compra_chipax")->execute();
+        Yii::$app->db->createCommand()->truncateTable("gasto_chipax")->execute();
+        Yii::$app->db->createCommand()->truncateTable("honorario_chipax")->execute();
+        Yii::$app->db->createCommand()->truncateTable("remuneracion_chipax")->execute();
+        Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 1")->execute();
+
+        for ($i = 1; $i <= $request->getData()["pages"]; $i++) {
+            $request = $client->createRequest()
+                ->setHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['Authorization' => 'JWT ' . $this->getToken()["token"]])
+                ->setData([
+                    "startDate" => $fecha_desde . 'T00:00:00.000Z', "endDate" => $fecha_hasta . 'T23:59:59.000Z',
+                    "page" => $i
+                ])->send();
+            try {
+                FlujoCajaCartola::convert2Model($request->getData()["docs"]);
+            } catch (Exception $ex) {
+                echo $ex->getMessage();
             }
-        } else {
-            $flujo[] = FlujoCajaCartola::convert2Model($request->getData()["docs"], $fecha_desde, $fecha_hasta);
         }
     }
 
