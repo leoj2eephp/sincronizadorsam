@@ -197,8 +197,8 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($c["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                            continue;
+                        if ($pro["linea_negocio_id"] != 5671) {
+                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
                         }
                         if ($compras->save()) {
                             $prorrata = new ProrrataChipax();
@@ -255,8 +255,8 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($g["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                            continue;
+                        if ($pro["linea_negocio_id"] != 5671) {
+                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
                         }
                         if ($gasto->save()) {
                             $prorrata = new ProrrataChipax();
@@ -313,8 +313,8 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($h["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                            continue;
+                        if ($pro["linea_negocio_id"] != 5671) {
+                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
                         }
                         if ($honorario->save()) {
                             if ($pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
@@ -378,8 +378,8 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($r["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671 || !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                            continue;
+                        if ($pro["linea_negocio_id"] != 5671) {
+                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
                         }
                         if ($remuneracion->save()) {
                             if ($pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
