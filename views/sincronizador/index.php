@@ -531,7 +531,7 @@ $(document).ready(function() {
                 rindeGastos.nro_informe = $(input).children()[8].value;
                 rindeGastos.descripcion = $(input).children()[9].value;
                 rindeGastos.monto = $(input).children()[10].value;
-                rindeGastos.moneda = $(input).children()[11].value;
+                rindeGastos.moneda = "CLP";
         
                 excelData.push(rindeGastos);
             });
