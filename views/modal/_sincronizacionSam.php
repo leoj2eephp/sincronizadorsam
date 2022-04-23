@@ -37,18 +37,27 @@ use yii\helpers\ArrayHelper;
             ]);
             ?>
             <?php
-            if (array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX)) :
-                echo $form->field($model, 'tipo_combustible_id')->widget(\kartik\select2\Select2::class, [
-                    'data' => ArrayHelper::map($model->tipo_combustibles, "id", "nombre"),
-                    'options' => ['placeholder' => 'Tipo de Combustible', "id" => "tipoCombustible"],
-                    'theme' => 'default',
-                    //'size' => 'sm',
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                    ],
-                ]);
+            if (array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX)) : ?>
+                <div class="row">
+                    <div class="col col-sm-6">
+                        <?= $form->field($model, 'tipo_combustible_id')->widget(\kartik\select2\Select2::class, [
+                            'data' => ArrayHelper::map($model->tipo_combustibles, "id", "nombre"),
+                            'options' => ['placeholder' => 'Tipo de Combustible', "id" => "tipoCombustible"],
+                            'theme' => 'default',
+                            //'size' => 'sm',
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                            ],
+                        ]) ?>
+                    </div>
+                    <div class="col col-sm-6">
+                        <?= $form->field($model, "carguio")->textInput(["type" => "number"]) ?>
+                    </div>
+                </div>
+            <?php
             else :
                 echo $form->field($model, "tipo_combustible_id")->hiddenInput()->label(false);
+                echo $form->field($model, "carguio")->hiddenInput()->label(false);
             endif;
             ?>
             <?php /*

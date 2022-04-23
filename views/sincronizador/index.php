@@ -34,7 +34,8 @@ $rindeGastosParaExcel = array();
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="offset-2"></div>
+                    <div class="col-md-4">
                         <h5 class="card-title">Fecha Desde</h5>
                         <p class="card-text">
                             <?php
@@ -51,7 +52,7 @@ $rindeGastosParaExcel = array();
                             ?>
                         </p>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <h5 class="card-title">Fecha Hasta</h5>
                         <p class="card-text">
                             <?php
@@ -68,6 +69,8 @@ $rindeGastosParaExcel = array();
                             ?>
                         </p>
                     </div>
+                    <div class="offset-2"></div>
+                    <div class="offset-2"></div>
                     <div class="col-md-2">
                         <h5>Solo sincronizados</h5>
                         <div class="custom-control custom-switch">
@@ -86,7 +89,7 @@ $rindeGastosParaExcel = array();
                             </label>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <!-- <div class="col-md-3">
                         <h5>Solo RindeGastos</h5>
                         <div class="custom-control custom-switch">
                             <label class="switch">
@@ -94,8 +97,8 @@ $rindeGastosParaExcel = array();
                                 <span class="slider round"></span>
                             </label>
                         </div>
-                    </div>
-                    <div class="col-md-5">
+                    </div> -->
+                    <div class="col-md-4">
                         <?= Html::submitButton("Buscar <i class='fa fa-search'></i>", ["class" => "btn btn-primary"]) ?>
                         <?=
                         Html::button('Subir DTEs <i class="fa fa-file-upload"></i>', [
@@ -104,10 +107,10 @@ $rindeGastosParaExcel = array();
                             'value' => \yii\helpers\Url::to(["/modal/upload-dte"]), 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                         ])
                         ?>
-                        <?=
-                        Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success", "id" => "syncExcel"])
+                        <?php
+                        //Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success", "id" => "syncExcel"])
                         ?>
-                        <div class="col-md-5 float-right">
+                        <!-- <div class="col-md-5 float-right">
                             <h5>Seleccionar Todos Rinde Gastos</h5>
                             <div class="custom-control custom-switch">
                                 <label class="switch">
@@ -115,9 +118,10 @@ $rindeGastosParaExcel = array();
                                     <span class="slider round"></span>
                                 </label>
                             </div>
-                        </div>
+                        </div> -->
                         <!--<button type="submit" class="btn btn-primary">Buscar <i class="fa fa-search"></i></button>-->
                     </div>
+                    <div class="offset-2"></div>
                 </div>
             </div>
             <?php ActiveForm::end() ?>
@@ -388,11 +392,12 @@ $rindeGastosParaExcel = array();
                                         ?>
                                     </td>
                                 </tr>
-                            <?php
+                    <?php
                                 $indice++;
                             endforeach;
                         endforeach;
                     }
+                    /*
                     if (count($model->remuneracions) > 0) {
                         foreach ($model->remuneracions as $remuneraciones) :
                             //$rindeSincronizado = app\models\RindeGastos::getExpenseByNumDoc($rindeGastos, trim($remuneraciones->numero_boleta));
@@ -411,11 +416,7 @@ $rindeGastosParaExcel = array();
                                         <?= Helper::formatToLocalDate($remuneraciones->periodo) ?></td>
                                     <td><?= "" ?></td>
                                     <td><?= isset($p) ? number_format($p->monto, 0, ",", ".") : "?" ?></td>
-                                    <td><?php
-                                        /* isset($p->cuenta_id) ?
-                                                    \app\models\CategoriasChipax::getCategoriaById($p->cuenta_id)->nombre . " - " .
-                                                    \app\models\LineaNegocio::getLineaNegocioById($p->linea_negocio_id)->nombre : "" */
-                                        ?></td>
+                                    <td></td>
                                     <td>Remuneración</td>
                                     <td><?= $remuneraciones->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--<td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
@@ -440,59 +441,7 @@ $rindeGastosParaExcel = array();
                             endforeach;
                         endforeach;
                     }
-                    ?>
-
-                    <!-- GASTOS DE RINDEGASTOS TRAÍDOS DIRECTAMENTE DE SAM -->
-                    <?php
-                    foreach ($rindeGastos as $rinde) :
-                        $informe = InformeGasto::findOne($rinde->report_id);
-                        $nro_informe = isset($informe) ? $informe->numero : "";
-                    ?>
-                        <tr>
-                            <td style="text-overflow: ellipsis; width: 250px;"><?= $rinde->supplier ?></td>
-                            <td><?= $rinde->gastoCompleta[0]->rut_proveedor ?></td>
-                            <td><?= $nro_informe ?></td>
-                            <td style="min-width: 84px !important;" data-sort="<?= Helper::formatToLocalDate($rinde->issue_date) ?>">
-                                <?= Helper::formatToLocalDate($rinde->issue_date) ?></td>
-                            <td><?= $rinde->gastoCompleta[0]->nro_documento ?></td>
-                            <td><?= isset($rinde) ? number_format($rinde->net, 0, ",", ".") : "?" ?></td>
-                            <td><?= isset($rinde->note) ? Helper::removeSlashes($rinde->note) : "" ?></td>
-                            <td>RindeGastos</td>
-                            <td>rinde</td>
-                            <td>
-                                <input type="hidden" name="ForExcel[Rindegastos][fecha]" value="<?= $rinde->issue_date ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][centro_costo]" value="<?= $rinde->gastoCompleta[0]->centro_costo_faena ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][cuenta]" value="<?= $rinde->category ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][linea_negocio]" value="<?= $rinde->expense_policy_id ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][responsable]" value="<?= $rinde->gastoCompleta[0]->nombre_quien_rinde ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][tipo_documento]" value="<?= $rinde->gastoCompleta[0]->tipo_documento ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][proveedor]" value="<?= $rinde->supplier ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][num_documento]" value="<?= $rinde->gastoCompleta[0]->nro_documento ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][nro_informe]" value="<?= $nro_informe ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][descripcion]" value="<?= $rinde->note ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][monto]" value="<?= $rinde->total ?>" />
-                                <input type="hidden" name="ForExcel[Rindegastos][moneda]" value="<?= 1000 ?>" />
-                                <?php
-                                /* if ($posible_duplicado) {
-                                    echo Html::a("<i class='fa fa-exclamation-triangle text-light'></i>", ["#"], ["type" => "button"]);
-                                } else { */
-                                //echo Html::checkbox("cargaMasiva", false, ["class" => "", "id" => "cargaMasiva"]);
-                                //echo '<input type="checkbox" value="">';
-                                $rindeGastosParaExcel = $rindeGastos;
-                                echo '<div class="custom-control custom-switch" style="padding: 0px !important;">
-                                                <label class="switch-sm">
-                                                    <input type="checkbox" class="cargaMasiva">
-                                                    <span class="slider-sm round"></span>
-                                                </label>
-                                                <label style="font-weight: normal">Sincronizar Excel</label>
-                                            </div>';
-                                //echo Html::a("<i class='fa fa-sync'></i>", ["#"], ["type" => "button"]);
-                                // }
-                                ?>
-                            </td>
-                        </tr>
-                    <?php
-                    endforeach;
+                    */
                     ?>
                 </tbody>
             </table>

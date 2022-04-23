@@ -36,6 +36,10 @@ use Yii;
  * @property NocombustibleRindegasto[] $nocombustibleRindegastos
  * @property RemuneracionRindegasto[] $remuneracionRindegastos
  * @property TipoCombustible $tipoCombustible
+ * @property CompraChipax $compraChipax
+ * @property GastoChipax $gastoChipax
+ * @property HonorarioChipax $honorarioChipax
+ * @property RemuneracionChipax $remuneracionChipax
  */
 class GastoCompleta extends \yii\db\ActiveRecord {
     /**
@@ -97,6 +101,42 @@ class GastoCompleta extends \yii\db\ActiveRecord {
      */
     public function getGasto() {
         return $this->hasOne(Gasto::class, ['id' => 'gasto_id']);
+    }
+
+    /**
+     * Gets query for [[CompraChipax]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCompraChipax() {
+        return $this->hasOne(CompraChipax::class, ['folio' => 'nro_documento']);
+    }
+
+    /**
+     * Gets query for [[GastoChipax]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGastoChipax() {
+        return $this->hasOne(GastoChipax::class, ['num_documento' => 'nro_documento']);
+    }
+
+    /**
+     * Gets query for [[HonorarioChipax]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getHonorarioChipax() {
+        return $this->hasOne(HonorarioChipax::class, ['numero_boleta' => 'nro_documento']);
+    }
+
+    /**
+     * Gets query for [[RemuneracionChipax]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRemuneracionChipax() {
+        return $this->hasOne(RemuneracionChipax::class, ['folio' => 'remuneracion_chipax_id']);
     }
 
     public static function isSincronizedWithChipax($folio_chipax, $fecha) {

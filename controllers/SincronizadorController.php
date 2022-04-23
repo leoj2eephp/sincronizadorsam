@@ -95,21 +95,50 @@ class SincronizadorController extends Controller {
             }
         }
 
-        $rindeGastos = Gasto::find()->joinWith("gastoCompleta")->where(
-            "issue_date > :desde AND issue_date <= :hasta",
-            [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
-        )->all();
-
         return $this->render("index", [
             "fecha_desde" => $fecha_desde,
             "fecha_hasta" => $fecha_hasta,
             "model" => $model,
-            "rindeGastos" => $rindeGastos,
+            //"rindeGastos" => $rindeGastos,
             "combustibles" => []
         ]);
     }
 
-    public function actionSincronizar() {
+    public function actionRindeGastos() {
+        $fecha_desde = date("Y-m-01");
+        $fecha_hasta = date("Y-m-d");
+
+        if (Yii::$app->request->isPost) {
+            $fecha_desde = Helper::formatToDBDate(null !== (\Yii::$app->request->post("fecha_desde")) ? \Yii::$app->request->post("fecha_desde") : "");
+            $fecha_hasta = Helper::formatToDBDate(null !== (\Yii::$app->request->post("fecha_hasta")) ? \Yii::$app->request->post("fecha_hasta") : "");
+        }
+
+        $rindeGastos = Gasto::find()
+            ->joinWith([
+                "gastoCompleta", "gastoCompleta.compraChipax", "gastoCompleta.gastoChipax",
+                "gastoCompleta.honorarioChipax", //"gastoCompleta.remuneracionChipax"
+            ])
+            ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa.nro_documento", [])
+            ->where(
+                "issue_date > :desde AND issue_date <= :hasta",
+                [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
+            )
+            ->andFilterWhere(['not like', 'tipo_documento', "factura"])
+            ->andFilterWhere(['not like', 'tipo_documento', "Honorarios"])
+            ->andFilterWhere(['not like', 'tipo_documento', "Nota de credito"])
+            ->andFilterWhere(['not like', 'tipo_documento', "Remunera"])
+            // QUITAR TAMBIÉN Declaración de Importación 
+            ->andFilterWhere(['not like', 'tipo_documento', "Declaraci"])
+            ->all();
+
+        return $this->render("rinde-gastos", [
+            "fecha_desde" => $fecha_desde,
+            "fecha_hasta" => $fecha_hasta,
+            "model" => $rindeGastos
+        ]);
+    }
+
+    private function actionSincronizar() {
         set_time_limit(0);
         $chipaxApiService = new ChipaxApiService();
         $lineasNegocio = $chipaxApiService->getLineasNegocio();

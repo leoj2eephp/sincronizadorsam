@@ -25,21 +25,18 @@ use Yii;
  * @property int|null $nro_gastos_rechazados
  * @property string|null $nota
  */
-class InformeGasto extends \yii\db\ActiveRecord
-{
+class InformeGasto extends \yii\db\ActiveRecord {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'informe_gasto';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['id'], 'required'],
             [['id', 'numero', 'politica_id', 'estado', 'total', 'total_aprobado', 'nro_gastos', 'nro_gastos_aprobados', 'nro_gastos_rechazados'], 'integer'],
@@ -55,8 +52,7 @@ class InformeGasto extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'titulo' => 'Titulo',

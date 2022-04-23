@@ -10,8 +10,8 @@ use yii\base\Model;
  */
 class PoliticaGastosForm extends Model {
 
-    const SERVER = "www.otzi.cl";
-    //const SERVER = "localhost";
+    //const SERVER = "www.otzi.cl";
+    const SERVER = "localhost";
     //const SERVER = "cristhianmoya.com";
 
     public $id;
@@ -37,6 +37,7 @@ class PoliticaGastosForm extends Model {
     public $faena = array();
     public $faena_seleccionada;
     public $nota;   // equivale a la descripción de Chipax
+    public $carguio;
     public $categoria;
     public $categoria_id;
     public $linea_negocio;
@@ -55,7 +56,7 @@ class PoliticaGastosForm extends Model {
             [[
                 "vehiculos_seleccionados", "valores_vehiculos", "unidad_seleccionada", "tipo_documento_seleccionado", "tipo_combustibles",
                 "rendidor_seleccionado", "faena_seleccionada", "cantidad", "nro_documento", "fecha", "neto", "folio",
-                "tipo_combustible_id", "categoria_id", "linea_negocio_id"
+                "tipo_combustible_id", "categoria_id", "linea_negocio_id", "carguio"
             ], "safe"],
         ];
     }
@@ -71,6 +72,7 @@ class PoliticaGastosForm extends Model {
             'rendidor_seleccionado' => 'Nombre de quien Rinde',
             'faena_seleccionada' => 'Centro de Costo / Faena',
             'tipo_combustible_id' => "Tipo de Combustible",
+            'carguio' => "Carguío",
         ];
     }
 
@@ -79,8 +81,8 @@ class PoliticaGastosForm extends Model {
         //$this->detalle = "TESTING API!!";
         $jsonData = json_encode($this);
 
-        //$url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/add?hash=" . $this->getSamHash();
-        $url = "http://" . self::SERVER . "/SAM/index.php/chipax/add?hash=" . $this->getSamHash();
+        $url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/add?hash=" . $this->getSamHash();
+        //$url = "http://" . self::SERVER . "/SAM/index.php/chipax/add?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
@@ -127,6 +129,7 @@ class PoliticaGastosForm extends Model {
         $form->faena = (new \yii\db\Query())
             ->select(['id', 'nombre'])
             ->from('faena')
+            ->where('vigente = "SÍ"')
             ->all();
         $form->tipo_combustibles = (new \yii\db\Query())
             ->select(['id', 'nombre'])
@@ -145,7 +148,7 @@ class PoliticaGastosForm extends Model {
         //$this->detalle = "TESTING API!!";
         $objCategoria = ['categoria' => $categoria];
         $jsonData = json_encode($objCategoria);
-        $url = "http://" . self::SERVER . "/SAM/index.php/chipax/getFaenas?hash=" . $this->getSamHash();
+        $url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/getFaenas?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
@@ -172,7 +175,7 @@ class PoliticaGastosForm extends Model {
 
     public function getTiposCombustibles() {
         $ch = curl_init();
-        $url = "http://" . self::SERVER . "/SAM/index.php/chipax/getTiposCombustibles?hash=" . $this->getSamHash();
+        $url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/getTiposCombustibles?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         //curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
