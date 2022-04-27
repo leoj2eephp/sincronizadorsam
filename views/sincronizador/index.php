@@ -392,15 +392,13 @@ $rindeGastosParaExcel = array();
                                         ?>
                                     </td>
                                 </tr>
-                    <?php
+                            <?php
                                 $indice++;
                             endforeach;
                         endforeach;
                     }
-                    /*
                     if (count($model->remuneracions) > 0) {
                         foreach ($model->remuneracions as $remuneraciones) :
-                            //$rindeSincronizado = app\models\RindeGastos::getExpenseByNumDoc($rindeGastos, trim($remuneraciones->numero_boleta));
                             $mostrado = array();
                             foreach ($remuneraciones->prorrataChipax as $p) :
                                 $color = "bg-info-light";
@@ -441,7 +439,6 @@ $rindeGastosParaExcel = array();
                             endforeach;
                         endforeach;
                     }
-                    */
                     ?>
                 </tbody>
             </table>
