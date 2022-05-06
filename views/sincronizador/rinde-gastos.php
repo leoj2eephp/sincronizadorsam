@@ -25,7 +25,7 @@ $rindeGastosParaExcel = array();
             <?php
             $form = ActiveForm::begin([
                 'id' => 'chipax-form',
-                'action' => ['sincronizador/index']
+                'action' => ['sincronizador/rinde-gastos']
             ])
             ?>
             <div class="card-header bg-cyan">
@@ -75,12 +75,12 @@ $rindeGastosParaExcel = array();
                     <div class="offset-2"></div>
                     <div class="col-md-8">
                         <?= Html::submitButton("Buscar <i class='fa fa-search'></i>", ["class" => "btn btn-primary"]) ?>
-                        <?=
+                        <?php   /*
                         Html::button('Subir DTEs <i class="fa fa-file-upload"></i>', [
                             'class' => 'showModalButton btn btn-success pull-center',
                             'title' => "Subir archivo XML del SII",
                             'value' => \yii\helpers\Url::to(["/modal/upload-dte"]), 'data-toggle' => 'modal', 'data-target' => '#modalvote'
-                        ])
+                        ])  */
                         ?>
                         <?=
                         Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success", "id" => "syncExcel"])

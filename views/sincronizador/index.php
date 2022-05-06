@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use app\components\Helper;
+use app\models\FlujoCajaCartola;
 use app\models\GastoCompleta;
 use app\models\InformeGasto;
 use kartik\date\DatePicker;
@@ -214,7 +215,10 @@ $rindeGastosParaExcel = array();
                                     <td><?= $compra->folio ?></td>
                                     <td><?= isset($p) ? number_format($p->monto, 0, ",", ".") : "?" ?></td>
                                     <td><?= isset($model->descripcion) ? $model->descripcion . ' (' . $compra->razon_social . ')' : "" ?></td>
-                                    <td>Compra</td>
+                                    <td>
+                                        <?= (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
+                                            "Compra" : "Remuneración" ?>
+                                    </td>
                                     <td><?= $compra->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--<td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
                                     <td><?php
@@ -225,12 +229,12 @@ $rindeGastosParaExcel = array();
                                                 'class' => 'showModalButton btn btn-sm btn-primary',
                                                 'title' => "Sincronizar con SAM", "id" => "sync_" . $indice,
                                                 'value' => Url::to([
-                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "compra", "i" => $indice
+                                                    "/modal/sync-sam", "id" => $p->id, "i" => $indice,
+                                                    "tipo" => (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
+                                                        "compra" : "remuneracion"
                                                 ]),
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);
-                                            //                                                        \yii\helpers\Html::a('<i class="fa fa-sync"></i>', ["modal/sync-sam"],
-                                            //                                                                ['title' => 'Sincronizar con SAM', 'data-pjax' => '0', "class" => "showModalButton"]) : ''
                                         }
                                         ?>
                                     </td>
@@ -297,7 +301,10 @@ $rindeGastosParaExcel = array();
                                     <td><?= $gastos->num_documento ?></td>
                                     <td><?= isset($p) ? number_format($p->monto, 0, ",", ".") : "?" ?></td>
                                     <td><?= isset($gastos->descripcion) ? $gastos->descripcion : "" ?></td>
-                                    <td>Gasto</td>
+                                    <td>
+                                        <?= (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
+                                            "Gasto" : "Remuneración" ?>
+                                    </td>
                                     <td><?= $gastos->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--                                            <td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
                                     <td><?php
@@ -308,7 +315,9 @@ $rindeGastosParaExcel = array();
                                                 'class' => 'showModalButton btn btn-sm btn-primary',
                                                 'title' => "Sincronizar con SAM", 'id' => 'sync_' . $indice,
                                                 'value' => Url::to([
-                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "gasto", "i" => $indice
+                                                    "/modal/sync-sam", "id" => $p->id, "i" => $indice,
+                                                    "tipo" => (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
+                                                        "gasto" : "remuneracion"
                                                 ]),
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);

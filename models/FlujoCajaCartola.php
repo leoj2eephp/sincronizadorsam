@@ -47,6 +47,26 @@ class FlujoCajaCartola {
         86680 => 'CG.- 02 Petróleo',
     ];
 
+    const CATEGORIAS_REMUNERACIONES_CHIPAX = [
+        75818 => '13 Remuneraciónes del Personal',
+        95432 => '13.2 Remuneraciones Personal externo',
+        77468 => 'Cop. 13.1 Remuneraciones del Personal Indirecto',
+        95433 => 'Cop. 13.2 Remuneraciones Personal externo',
+        //77478 => '14 Honorarios Profesionales',
+        //'14.1 Honorarios Profesionales Abogados',
+        //'14.2 Honorarios Profesionales Notarios, CBR',
+        //95286 => '14.3 Honorarios Técnicos, Profesionales, Otros',
+        //77477 => 'Cop. 14 Honorarios Profesionales',
+        //'Cop. 14.1 Profesionales Abogados',
+        //94856 => 'Cop. 14.2 Honorarios Técnicos, Profesionales, Otro',
+        //'Cop. 14.3 Honorarios Profesionales Notarios, CBR',
+        //75827 => 'CG.- 13 Remuneraciones del Personal',
+        //75833 => 'CG.-Honorarios Profesionales',
+        //'CG.- 14 Honorarios Profesionales Abogados',
+        //94860 => 'CG.- 14.2_Honorarios Técnicos, Profesionales Otros',
+        //'CG.- 14.3 Honorarios Profesionales Notarios, CBR',
+    ];
+
     public static function convert2Model($jsonArreglo) {
         //$data = array();
         $sw = false;
@@ -57,114 +77,6 @@ class FlujoCajaCartola {
         $remuFolios = array();
 
         foreach ($jsonArreglo as $json) {
-            /*
-            foreach ($json["Compras"] as $c) {
-                $fecha_emision = \app\components\Helper::formatToDBDate($c["fecha_emision"]);
-                if ($fecha_desde !== null) {
-                    if ($fecha_emision < $fecha_desde) {
-                        $sw = false;
-                        break;
-                    }
-                }
-                if ($fecha_hasta !== null) {
-                    if ($fecha_emision > $fecha_hasta) {
-                        $sw = false;
-                        break;
-                    }
-                }
-
-                foreach ($c["Prorratas"] as $p) {
-                    if ($p["linea_negocio_id"] == 5671 || array_key_exists($p["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                        $sw = true;
-                        break;
-                    }
-                }
-
-                if ($sw)
-                    break;
-            }
-
-            if (!$sw) {
-                foreach ($json["Gastos"] as $g) {
-                    $fecha_emision = \app\components\Helper::formatToDBDate($g["fecha"]);
-                    if ($fecha_desde !== null) {
-                        if ($fecha_emision < $fecha_desde) {
-                            break;
-                        }
-                    }
-                    if ($fecha_hasta !== null) {
-                        if ($fecha_emision > $fecha_hasta) {
-                            break;
-                        }
-                    }
-
-                    foreach ($g["Prorratas"] as $p) {
-                        if ($p["linea_negocio_id"] == 5671 || array_key_exists($p["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                            $sw = true;
-                            break;
-                        }
-                    }
-
-                    if ($sw)
-                        break;
-                }
-            }
-
-            if (!$sw) {
-                foreach ($json["Honorarios"] as $h) {
-                    $fecha_emision = \app\components\Helper::formatToDBDate($h["fecha_emision"]);
-                    if ($fecha_desde !== null) {
-                        if ($fecha_emision < $fecha_desde) {
-                            break;
-                        }
-                    }
-                    if ($fecha_hasta !== null) {
-                        if ($fecha_emision > $fecha_hasta) {
-                            break;
-                        }
-                    }
-
-                    foreach ($h["Prorratas"] as $p) {
-                        if ($p["linea_negocio_id"] == 5671) {
-                            $sw = true;
-                            break;
-                        }
-                    }
-
-                    if ($sw)
-                        break;
-                }
-            }
-
-            if (!$sw) {
-                foreach ($json["Remuneracions"] as $r) {
-                    $fecha_emision = \app\components\Helper::formatToDBDate($json["fecha"]);
-                    if ($fecha_desde !== null) {
-                        if ($fecha_emision < $fecha_desde) {
-                            break;
-                        }
-                    }
-                    if ($fecha_hasta !== null) {
-                        if ($fecha_emision > $fecha_hasta) {
-                            break;
-                        }
-                    }
-
-                    foreach ($r["Prorratas"] as $p) {
-                        if ($p["linea_negocio_id"] == 5671 || array_key_exists($p["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
-                            $sw = true;
-                            break;
-                        }
-                    }
-
-                    if ($sw)
-                        break;
-                }
-            }
-            */
-            // if (!$sw)
-            //     continue;
-
             $flujoCajaCartola = new FlujoCajaCartola();
             $flujoCajaCartola->abono = $json["abono"];
             $flujoCajaCartola->cargo = $json["cargo"];

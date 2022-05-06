@@ -72,6 +72,8 @@ class ModalController extends Controller {
         $model->neto = $prorrata->monto;
         $model->tipo_combustible_id = 0;
 
+        if ($tipo == "remuneracion") $remu = true;
+
         if (null !== $compra) {
             $model->nombre_proveedor = $compra->razon_social;
             $model->rut_proveedor = $compra->rut_emisor;
