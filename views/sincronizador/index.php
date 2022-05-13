@@ -386,6 +386,7 @@ $rindeGastosParaExcel = array();
                                     <td><?= $honorarios->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--<td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
                                     <td><?php
+                                        // TODO: aplicar mismo cambio realizado en compras y gastos, relacionado con las cuentas_id de remuneraciones
                                         if ($honorarios->sincronizado) {
                                             echo "";
                                         } else {

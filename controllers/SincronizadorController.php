@@ -129,6 +129,7 @@ class SincronizadorController extends Controller {
             ->andFilterWhere(['not like', 'tipo_documento', "Remunera"])
             // QUITAR TAMBIÉN Declaración de Importación 
             ->andFilterWhere(['not like', 'tipo_documento', "Declaraci"])
+            ->andWhere("remuneracion_chipax.id IS NULL AND compra_chipax.id IS NULL AND gasto_chipax.id IS NULL AND honorario_chipax.id IS NULL")
             ->all();
 
         return $this->render("rinde-gastos", [

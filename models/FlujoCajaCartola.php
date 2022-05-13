@@ -67,6 +67,11 @@ class FlujoCajaCartola {
         //'CG.- 14.3 Honorarios Profesionales Notarios, CBR',
     ];
 
+    const CATEGORIAS_COMBUSTIBLES_RINDEGASTOS = [
+        44639 => "Combustibles",
+        54937 => "011-Petorca Cordillera Combustible"
+    ];
+
     public static function convert2Model($jsonArreglo) {
         //$data = array();
         $sw = false;

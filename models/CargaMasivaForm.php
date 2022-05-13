@@ -35,10 +35,17 @@ class CargaMasivaForm extends \yii\base\Model {
             } else {
                 $hoja->getCellByColumnAndRow(3, $i, true)->setValue($fila->cuenta);
             }
-            $rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
-            $params['Id'] = $fila->linea_negocio;
-            $politica = json_decode($rindeApi->getExpensePolicy($params));
-            $hoja->getCellByColumnAndRow(4, $i, true)->setValue($politica->Id != 0 ? $politica->Name : "");
+
+            if (array_key_exists($fila->linea_negocio, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_RINDEGASTOS)) {
+                $polit = "Centro de Costo/Faena";
+            } else {
+                $rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
+                $params['Id'] = $fila->linea_negocio;
+                $politica = json_decode($rindeApi->getExpensePolicy($params));
+
+                $polit = $politica->Id != 0 ? $politica->Name : "";
+            }
+            $hoja->getCellByColumnAndRow(4, $i, true)->setValue($polit);
             $hoja->getCellByColumnAndRow(5, $i, true)->setValue(isset($fila->responsable) ? $fila->responsable : "");
             $hoja->getCellByColumnAndRow(6, $i, true)->setValue(isset($fila->tipo_documento) ? $fila->tipo_documento : "");
             $hoja->getCellByColumnAndRow(7, $i, true)->setValue($fila->proveedor . ". Rendición Folio: " . $nro_informe);
