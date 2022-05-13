@@ -393,9 +393,15 @@ $rindeGastosParaExcel = array();
                                             echo Html::button('<i class="fa fa-sync"></i>', [
                                                 'class' => 'showModalButton btn btn-sm btn-primary', 'title' => "Sincronizar con SAM",
                                                 'id' => 'sync_' . $indice,
+
                                                 'value' => Url::to([
-                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "honorario", "i" => $indice
+                                                    "/modal/sync-sam", "id" => $p->id, "i" => $indice,
+                                                    "tipo" => (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
+                                                        "compra" : "remuneracion"
                                                 ]),
+                                                /* 'value' => Url::to([
+                                                    "/modal/sync-sam", "id" => $p->id, "tipo" => "honorario", "i" => $indice
+                                                ]), */
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);
                                         }
