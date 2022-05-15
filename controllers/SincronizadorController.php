@@ -115,9 +115,10 @@ class SincronizadorController extends Controller {
 
         $rindeGastos = Gasto::find()
             ->joinWith([
-                "gastoCompleta", "gastoCompleta.compraChipax", "gastoCompleta.gastoChipax",
+                "gastoCompleta", "gastoCompleta.compraChipax", //"gastoCompleta.gastoChipax",
                 "gastoCompleta.honorarioChipax", //"gastoCompleta.remuneracionChipax"
             ])
+            ->leftJoin("gasto_chipax", "gasto_completa.nro_documento = gasto_chipax.num_documento AND gasto_chipax.monto = gasto.net")
             ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa.nro_documento", [])
             ->where(
                 "issue_date > :desde AND issue_date <= :hasta",

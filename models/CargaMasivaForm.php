@@ -37,7 +37,7 @@ class CargaMasivaForm extends \yii\base\Model {
             }
 
             if (array_key_exists($fila->linea_negocio, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_RINDEGASTOS)) {
-                $polit = "Centro de Costo/Faena";
+                $polit = "Gastos Generales Taller";
             } else {
                 $rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
                 $params['Id'] = $fila->linea_negocio;
