@@ -35,6 +35,25 @@ class SincronizadorController extends Controller {
     }
 
     public function actionIndex($hash = null) {
+        $session = Yii::$app->session;
+        if ($hash == null) {
+            if ($session->has('hash')) {
+                $hash = $session->get('hash');
+            }
+        } else {
+            if ($session->has('hash')) {
+                $session->remove('hash');
+            }
+        }
+        $local_hash = Helper::chipaxSecret(0);
+        $intentos = 1;
+        while ($local_hash != $hash && $intentos <= 30) {
+            $local_hash = Helper::chipaxSecret($intentos);
+            $intentos++;
+        }
+        if ($hash != $local_hash) {
+            die("Hash incorrecto");
+        }
         $fecha_desde = date("Y-m-01");
         $fecha_hasta = date("Y-m-d");
 
@@ -106,7 +125,27 @@ class SincronizadorController extends Controller {
         ]);
     }
 
-    public function actionRindeGastos() {
+    public function actionRindeGastos($hash = null) {
+        $session = Yii::$app->session;
+        if ($hash == null) {
+            if ($session->has('hash')) {
+                $hash = $session->get('hash');
+            }
+        } else {
+            if ($session->has('hash')) {
+                $session->remove('hash');
+            }
+        }
+        $local_hash = Helper::chipaxSecret(0);
+        $intentos = 1;
+        while ($local_hash != $hash && $intentos <= 30) {
+            $local_hash = Helper::chipaxSecret($intentos);
+            $intentos++;
+        }
+        if ($hash != $local_hash) {
+            die("Hash incorrecto");
+        }
+        
         $fecha_desde = date("Y-m-01");
         $fecha_hasta = date("Y-m-d");
 
