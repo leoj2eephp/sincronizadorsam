@@ -35,7 +35,7 @@ class SincronizadorController extends Controller {
     }
 
     public function actionIndex($hash = null) {
-        $session = Yii::$app->session;
+        /* $session = Yii::$app->session;
         if ($hash == null) {
             if ($session->has('hash')) {
                 $hash = $session->get('hash');
@@ -53,7 +53,7 @@ class SincronizadorController extends Controller {
         }
         if ($hash != $local_hash) {
             die("Hash incorrecto");
-        }
+        } */
         $fecha_desde = date("Y-m-01");
         $fecha_hasta = date("Y-m-d");
 
@@ -126,7 +126,7 @@ class SincronizadorController extends Controller {
     }
 
     public function actionRindeGastos($hash = null) {
-        $session = Yii::$app->session;
+        /* $session = Yii::$app->session;
         if ($hash == null) {
             if ($session->has('hash')) {
                 $hash = $session->get('hash');
@@ -144,7 +144,7 @@ class SincronizadorController extends Controller {
         }
         if ($hash != $local_hash) {
             die("Hash incorrecto");
-        }
+        } */
         
         $fecha_desde = date("Y-m-01");
         $fecha_hasta = date("Y-m-d");
