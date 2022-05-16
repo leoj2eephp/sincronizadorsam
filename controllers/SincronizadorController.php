@@ -8,6 +8,7 @@ use app\models\CompraChipax;
 use app\models\FlujoCajaCartola;
 use app\models\Gasto;
 use app\models\GastoChipax;
+use app\models\GastoCompleta;
 use app\models\HonorarioChipax;
 use app\models\LineaNegocioChipax;
 use app\models\RemuneracionChipax;
@@ -88,7 +89,8 @@ class SincronizadorController extends Controller {
         )->all();
 
         foreach ($model->remuneracions as $remu) {
-            if (count($remu->gastoCompleta) > 0) {
+            $gasto = GastoCompleta::find()->where("nro_documento LIKE :id", [":id" => $remu->id])->one();
+            if (isset($gasto)) {
                 $remu->sincronizado = 1;
             } else {
                 $remu->sincronizado = 0;
