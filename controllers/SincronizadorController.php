@@ -145,7 +145,7 @@ class SincronizadorController extends Controller {
         if ($hash != $local_hash) {
             die("Hash incorrecto");
         } */
-        
+
         $fecha_desde = date("Y-m-01");
         $fecha_hasta = date("Y-m-d");
 
@@ -159,7 +159,8 @@ class SincronizadorController extends Controller {
                 "gastoCompleta", "gastoCompleta.compraChipax", //"gastoCompleta.gastoChipax",
                 "gastoCompleta.honorarioChipax", //"gastoCompleta.remuneracionChipax"
             ])
-            ->leftJoin("gasto_chipax", "gasto_completa.nro_documento = gasto_chipax.num_documento AND gasto_chipax.monto = gasto.net")
+            ->leftJoin("gasto_chipax", "gasto_completa.nro_documento = gasto_chipax.num_documento AND gasto_chipax.monto = gasto.net
+                        AND gasto_chipax.fecha = gasto.issue_date")
             ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa.nro_documento", [])
             ->where(
                 "issue_date > :desde AND issue_date <= :hasta",
