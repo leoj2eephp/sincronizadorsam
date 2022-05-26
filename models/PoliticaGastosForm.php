@@ -82,7 +82,7 @@ class PoliticaGastosForm extends Model {
         $jsonData = json_encode($this);
 
         //$url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/add?hash=" . $this->getSamHash();
-        $url = "http://" . self::SERVER . "/SAM/index.php/chipax/add?hash=" . $this->getSamHash();
+        $url = "https://" . self::SERVER . "/SAM/index.php/chipax/add?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
@@ -148,7 +148,7 @@ class PoliticaGastosForm extends Model {
         //$this->detalle = "TESTING API!!";
         $objCategoria = ['categoria' => $categoria];
         $jsonData = json_encode($objCategoria);
-        $url = "http://" . self::SERVER . "/SAM/index.php/chipax/getFaenas?hash=" . $this->getSamHash();
+        $url = "https://" . self::SERVER . "/SAM/index.php/chipax/getFaenas?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
@@ -175,7 +175,7 @@ class PoliticaGastosForm extends Model {
 
     public function getTiposCombustibles() {
         $ch = curl_init();
-        $url = "http://" . self::SERVER . "/SAM/index.php/chipax/getTiposCombustibles?hash=" . $this->getSamHash();
+        $url = "https://" . self::SERVER . "/SAM/index.php/chipax/getTiposCombustibles?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         //curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
