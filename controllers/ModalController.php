@@ -3,10 +3,12 @@
 namespace app\controllers;
 
 use app\models\CategoriaChipax;
+use app\models\Chofer;
 use app\models\CompraChipax;
 use app\models\GastoChipax;
 use app\models\HonorarioChipax;
 use app\models\LineaNegocioChipax;
+use app\models\Operador;
 use app\models\PoliticaGastosForm;
 use app\models\ProrrataChipax;
 use app\models\RemuneracionChipax;
@@ -51,6 +53,8 @@ class ModalController extends Controller {
         // Está obteniendo la información que está en sesión (para cargarla una sola vez), sobre los gastos
         $model = PoliticaGastosForm::fillData();
         $categoria = CategoriaChipax::findOne($prorrata->cuenta_id);
+        $operadores = Operador::findAll(["vigente" => "SÍ"]);
+        $choferes = Chofer::findAll(["vigente" => "SÍ"]);
         // Llamar a la API de SAM para obtener los centros de costos
         /* $faenas = $model->getCentrosCostosFaenas($categoria->nombre);
         $faenas_decoded = json_decode($faenas);
@@ -99,6 +103,7 @@ class ModalController extends Controller {
         } else if (null !== $remuneracion) {
             $model->nro_documento = $remuneracion["id"];
             $model->nombre_proveedor = $remuneracion["nombre_empleado"] . " " . $remuneracion["apellido_empleado"];
+            $model->rut_proveedor = $remuneracion["rut_empleado"];
             $model->fecha = $remuneracion["periodo"];
             $model->categoria = $categoria->nombre;
             $model->linea_negocio = $prorrata->linea_negocio;
@@ -118,7 +123,9 @@ class ModalController extends Controller {
         }
         return $this->renderAjax($vista, [
             "model" => $model,
-            "indice" => $_GET["i"]
+            "indice" => $_GET["i"],
+            "operadores" => $operadores,
+            "choferes" => $choferes
         ]);
     }
 
@@ -184,5 +191,9 @@ class ModalController extends Controller {
         return $this->renderAjax('_uploadDTE', [
             "model" => $model
         ]);
+    }
+
+    public function actionGetOperByMachine() {
+        $tipo = $_POST[""];
     }
 }

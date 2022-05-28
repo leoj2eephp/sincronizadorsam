@@ -10,8 +10,8 @@ use yii\base\Model;
  */
 class PoliticaGastosForm extends Model {
 
-    const SERVER = "www.otzi.cl";
-    //const SERVER = "localhost";
+    //const SERVER = "www.otzi.cl";
+    const SERVER = "localhost";
     //const SERVER = "cristhianmoya.com";
 
     public $id;
@@ -45,6 +45,7 @@ class PoliticaGastosForm extends Model {
     public $detalle;
     public $neto;
     public $html_factura;
+    public $operador_id;
 
     /**
      * @return array the validation rules.
@@ -56,7 +57,7 @@ class PoliticaGastosForm extends Model {
             [[
                 "vehiculos_seleccionados", "valores_vehiculos", "unidad_seleccionada", "tipo_documento_seleccionado", "tipo_combustibles",
                 "rendidor_seleccionado", "faena_seleccionada", "cantidad", "nro_documento", "fecha", "neto", "folio",
-                "tipo_combustible_id", "categoria_id", "linea_negocio_id", "carguio"
+                "tipo_combustible_id", "categoria_id", "linea_negocio_id", "carguio", "operador_id"
             ], "safe"],
         ];
     }
@@ -82,7 +83,7 @@ class PoliticaGastosForm extends Model {
         $jsonData = json_encode($this);
 
         //$url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/add?hash=" . $this->getSamHash();
-        $url = "https://" . self::SERVER . "/SAM/index.php/chipax/add?hash=" . $this->getSamHash();
+        $url = "http://" . self::SERVER . "/otzi/index.php/chipax/add?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
@@ -111,7 +112,7 @@ class PoliticaGastosForm extends Model {
     public static function fillData() {
         $form = new PoliticaGastosForm();
         $form->vehiculos = (new \yii\db\Query())
-            ->select(['id', 'vehiculo'])
+            ->select(['id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
             ->from('vehiculo_rindegasto')
             ->all();
         $form->unidades = (new \yii\db\Query())

@@ -22,12 +22,20 @@
           ],
           ])->label(false); */
         ?>
-        <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style" style="background-color: white;">
+        <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style" style="background-color: white;" id="vehis">
             <?php
             foreach ($model->vehiculos as $vehi) {
-                echo "<option value='" . $vehi["vehiculo"] . "'>" . $vehi["vehiculo"] . "</option>";
+                $tipo = null;
+                if (isset($vehi["camionarrendado_id"]) || isset($vehi["camionpropio_id"])) {
+                    $tipo = "camion";
+                } else if (isset($vehi["equipopropio_id"]) || isset($vehi["equipoarrendado_id"])) {
+                    $tipo = "equipo";
+                }
+                echo "<option value='" . $vehi["vehiculo"] . "' tipo='" . $tipo . "'>" . $vehi["vehiculo"] . "</option>";
             }
             ?>
+        </select>
+        <select name="PoliticaGastosForm[operador_id]" class="vehiculo select-style" style="background-color: white;" id="operador">
         </select>
     </div>
     <div class="col col-sm-6">
@@ -49,3 +57,58 @@
         <input type="number" class="form-control valor" name="PoliticaGastosForm[valores_vehiculos][]" placeholder="Valor" value="<?= $model->neto ?>" />
     </div>
 </div>
+<?php
+
+foreach ($operadores as $o) {
+    $ops[] = $o->toArray();
+}
+foreach ($choferes as $c) {
+    $chfs[] = $c->toArray();
+}
+
+$opes = json_encode($ops);
+$chofs = json_encode($chfs);
+
+$script = <<< JS
+
+    $(document).ready(function() {
+        const listaOperadores = $opes;
+        const listaChoferes = $chofs;
+
+        $("#vehis").on("change", function() {
+            let tipoVehiculo = vehis.options[this.selectedIndex];
+            $("#operador").empty();
+            if ($(tipoVehiculo).attr("tipo") == "camion") {
+                operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
+                listaOperadores.forEach((ope, index) => {
+                    let option = "<option value='" + ope.id + "' rut='" + ope.rut + "'>"
+                                    + ope.nombre + " - " + ope.rut + "</option>";
+                    operador.innerHTML += option;
+                });
+            } else if ($(tipoVehiculo).attr("tipo") == "equipo") {
+                operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
+                listaChoferes.forEach((ope, index) => {
+                    let option = "<option value='" + ope.id + "' rut='" + ope.rut + "'>"
+                                    + ope.nombre + " - " + ope.rut + "</option>";
+                    operador.innerHTML += option;
+                });
+            } else {
+                operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
+            }
+        });
+        
+        $("#operador").on("change", function() {
+            let opeSelected = this.options[this.selectedIndex];
+            if ($("#politicagastosform-rut_proveedor").val().toUpperCase() != $(opeSelected).attr("rut").toUpperCase()) {
+                $("#alertaDiferencia").removeClass("d-none");
+            } else {
+                $("#alertaDiferencia").addClass("d-none");
+            }
+        });
+
+        $("#vehis").change();
+    });
+   
+JS;
+$this->registerJs($script);
+?>

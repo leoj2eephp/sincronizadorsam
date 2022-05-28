@@ -54,7 +54,10 @@ use yii\widgets\ActiveForm;
         </div>
         <div class="col col-sm-6" id="form-column">
             <?php
-            echo $this->render("_menuVehiculos", ["model" => $model]);
+            echo $this->render("_menuVehiculos", [
+                "model" => $model,
+                "operadores" => $operadores, "choferes" => $choferes
+            ]);
             ?>
         </div>
     </div>
@@ -64,6 +67,10 @@ use yii\widgets\ActiveForm;
         ?>
         <?= Html::button('Sincronizar', ['class' => 'btn btn-primary pull-right', 'name' => 'action', 'value' => 'sync', 'id' => 'sync']) ?>
         <span id="spanSubtotal" class="pl-8" style="font-weight: bold;">SUMA SUBTOTALES: $ <?= number_format($model->neto, 0, ",", ".") ?></span>
+        <span id="alertaDiferencia" class="text-warning text-bold pl-2 d-none">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            El Operador parece no ser igual al Proveedor
+        </span>
         <span id="spanTotal" class="pl-8 float-right" style="font-weight: bold;">MONTO TOTAL: $ <?= number_format($model->neto, 0, ",", ".") ?></span>
         <input type="hidden" id="total" value="<?= $model->neto ?>" />
         <label id="errorMsg" style="color: red;"></label>
