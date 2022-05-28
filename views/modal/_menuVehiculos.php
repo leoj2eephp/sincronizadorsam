@@ -78,14 +78,14 @@ $script = <<< JS
         $("#vehis").on("change", function() {
             let tipoVehiculo = vehis.options[this.selectedIndex];
             $("#operador").empty();
-            if ($(tipoVehiculo).attr("tipo") == "camion") {
+            if ($(tipoVehiculo).attr("tipo") == "equipo") {
                 operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
                 listaOperadores.forEach((ope, index) => {
                     let option = "<option value='" + ope.id + "' rut='" + ope.rut + "'>"
                                     + ope.nombre + " - " + ope.rut + "</option>";
                     operador.innerHTML += option;
                 });
-            } else if ($(tipoVehiculo).attr("tipo") == "equipo") {
+            } else if ($(tipoVehiculo).attr("tipo") == "camion") {
                 operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
                 listaChoferes.forEach((ope, index) => {
                     let option = "<option value='" + ope.id + "' rut='" + ope.rut + "'>"
