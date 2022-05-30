@@ -83,7 +83,7 @@ class PoliticaGastosForm extends Model {
         $jsonData = json_encode($this);
 
         //$url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/add?hash=" . $this->getSamHash();
-        $url = "http://" . self::SERVER . "/SAM/index.php/chipax/add?hash=" . $this->getSamHash();
+        $url = "https://" . self::SERVER . "/SAM/index.php/chipax/add?hash=" . $this->getSamHash();
         curl_setopt($ch, CURLOPT_URL, $url);
         // Attach encoded JSON string to the POST fields
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
