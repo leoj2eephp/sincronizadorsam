@@ -11,6 +11,49 @@ class RindeGastosApiService {
     function __construct($token) {
         $this->AccToken = $token;
     }
+    
+    //list of expenses
+    function getExpenses($params) {
+
+        /* INSTRUCTIONS 
+         * ResultsPerPage: Integer (mandatory)
+         * Page: Integer (mandatory)
+         * Since: Date Y-m-d
+         * Until: Date Y-m-d
+         * Currency: String (3) 
+         * Status: Integer (1: Approved; 2: Rejected; 0: In Process; Blank: All) 
+         * Category: String (100)
+         * ReportId: Integer
+         * ExpensePolicyId: Integer
+         * UserId: Integer
+         * OrderBy: Integer (1: Expense date; 2: Expense creation date; Blank: Expense date)
+         * Order: String (ASC or DESC)
+          END INSTRUCTIONS */
+
+        //cUrl init: call to service
+        $ch = curl_init();
+        $url = "https://api.rindegastos.com/v1/getExpenses?" . http_build_query($params);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $headers = array();
+        $headers[] = "Authorization: Bearer " . $this->AccToken;
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        //return transaction 
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            //Catch cUrl Error
+            $result = 'Error:' . curl_error($ch);
+        }
+
+        //Close cUrl
+        curl_close($ch);
+
+        return $result;
+    }
 
     //Single expense
     function getExpense($params) {
