@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use Exception;
 use Yii;
 
 /**
