@@ -77,7 +77,7 @@ class GastoRindegastos extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getGastoCompletaRindegastos() {
-        return $this->hasMany(GastoCompletaRindegastos::class, ['gasto_rinde_gastos_id' => 'id']);
+        return $this->hasMany(GastoCompletaRindegastos::class, ['gasto_rindegastos_id' => 'id']);
     }
 
     public static function sincronizarGastos($json) {
@@ -145,11 +145,14 @@ class GastoRindegastos extends \yii\db\ActiveRecord {
                 if (!$gastoCompletaRG->save()) {
                     echo "ERROR al sincronizar GastoCompleta: " . join(", ", $gastoCompletaRG->getFirstErrors());
                     $transaction->rollBack();
+                    return;
                 }
             } else {
                 echo "ERROR al sincronizar: " . join(", ", $gastoRindeGastos->getFirstErrors());
                 $transaction->rollBack();
+                return;
             }
         }
+        $transaction->commit();
     }
 }

@@ -2,10 +2,8 @@
 
 use yii\helpers\Html;
 use app\components\Helper;
-use app\models\GastoCompleta;
 use app\models\InformeGasto;
 use kartik\date\DatePicker;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -114,7 +112,7 @@ $rindeGastosParaExcel = array();
                         <th>N° Doc</th>
                         <th>Neto</th>
                         <th style="max-width: 250px !important;">Descripción</th>
-                        <th>Tipo Movimiento</th>
+                        <th>Faena</th>
                         <th>Algo</th>
                         <th class="sorting_disabled">Acciones</th>
                     </tr>
@@ -129,24 +127,24 @@ $rindeGastosParaExcel = array();
                     ?>
                             <tr>
                                 <td style="text-overflow: ellipsis; width: 250px;"><?= $rinde->supplier ?></td>
-                                <td><?= $rinde->gastoCompleta[0]->rut_proveedor ?></td>
+                                <td><?= $rinde->gastoCompletaRindegastos[0]->rut_proveedor ?></td>
                                 <td><?= $nro_informe ?></td>
                                 <td style="min-width: 84px !important;" data-sort="<?= Helper::formatToLocalDate($rinde->issue_date) ?>">
                                     <?= Helper::formatToLocalDate($rinde->issue_date) ?></td>
-                                <td><?= $rinde->gastoCompleta[0]->nro_documento ?></td>
+                                <td><?= $rinde->gastoCompletaRindegastos[0]->nro_documento ?></td>
                                 <td><?= isset($rinde) ? number_format($rinde->net, 0, ",", ".") : "?" ?></td>
                                 <td><?= isset($rinde->note) ? Helper::removeSlashes($rinde->note) : "" ?></td>
-                                <td>RindeGastos</td>
+                                <td><?= $rinde->gastoCompletaRindegastos[0]->centro_costo_faena ?></td>
                                 <td>rinde</td>
                                 <td>
                                     <input type="hidden" name="ForExcel[Rindegastos][fecha]" value="<?= $rinde->issue_date ?>" />
-                                    <input type="hidden" name="ForExcel[Rindegastos][centro_costo]" value="<?= $rinde->gastoCompleta[0]->centro_costo_faena ?>" />
+                                    <input type="hidden" name="ForExcel[Rindegastos][centro_costo]" value="<?= $rinde->gastoCompletaRindegastos[0]->centro_costo_faena ?>" />
                                     <input type="hidden" name="ForExcel[Rindegastos][cuenta]" value="<?= $rinde->category ?>" />
                                     <input type="hidden" name="ForExcel[Rindegastos][linea_negocio]" value="<?= $rinde->expense_policy_id ?>" />
-                                    <input type="hidden" name="ForExcel[Rindegastos][responsable]" value="<?= $rinde->gastoCompleta[0]->nombre_quien_rinde ?>" />
-                                    <input type="hidden" name="ForExcel[Rindegastos][tipo_documento]" value="<?= $rinde->gastoCompleta[0]->tipo_documento ?>" />
+                                    <input type="hidden" name="ForExcel[Rindegastos][responsable]" value="<?= $rinde->gastoCompletaRindegastos[0]->nombre_quien_rinde ?>" />
+                                    <input type="hidden" name="ForExcel[Rindegastos][tipo_documento]" value="<?= $rinde->gastoCompletaRindegastos[0]->tipo_documento ?>" />
                                     <input type="hidden" name="ForExcel[Rindegastos][proveedor]" value="<?= $rinde->supplier ?>" />
-                                    <input type="hidden" name="ForExcel[Rindegastos][num_documento]" value="<?= $rinde->gastoCompleta[0]->nro_documento ?>" />
+                                    <input type="hidden" name="ForExcel[Rindegastos][num_documento]" value="<?= $rinde->gastoCompletaRindegastos[0]->nro_documento ?>" />
                                     <input type="hidden" name="ForExcel[Rindegastos][nro_informe]" value="<?= $nro_informe ?>" />
                                     <input type="hidden" name="ForExcel[Rindegastos][descripcion]" value="<?= $rinde->note ?>" />
                                     <input type="hidden" name="ForExcel[Rindegastos][monto]" value="<?= $rinde->total ?>" />

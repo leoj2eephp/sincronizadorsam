@@ -9,6 +9,7 @@ use app\models\FlujoCajaCartola;
 use app\models\Gasto;
 use app\models\GastoChipax;
 use app\models\GastoCompleta;
+use app\models\GastoRindegastos;
 use app\models\HonorarioChipax;
 use app\models\LineaNegocioChipax;
 use app\models\RemuneracionChipax;
@@ -154,14 +155,18 @@ class SincronizadorController extends Controller {
             $fecha_hasta = Helper::formatToDBDate(null !== (\Yii::$app->request->post("fecha_hasta")) ? \Yii::$app->request->post("fecha_hasta") : "");
         }
 
-        $rindeGastos = Gasto::find()
+        /* $rindeGastos = Gasto::find()
             ->joinWith([
                 "gastoCompleta", "gastoCompleta.compraChipax", //"gastoCompleta.gastoChipax",
                 "gastoCompleta.honorarioChipax", //"gastoCompleta.remuneracionChipax"
-            ])
-            ->leftJoin("gasto_chipax", "gasto_completa.nro_documento = gasto_chipax.num_documento AND gasto_chipax.monto = gasto.net
-                        AND gasto_chipax.fecha = gasto.issue_date")
-            ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa.nro_documento", [])
+            ]) */
+        $rindeGastos = GastoRindegastos::find()->joinWith(["gastoCompletaRindegastos"])
+            //->innerJoin("gasto_completa_rindegastos", "gasto_completa_rindegastos.gasto_rindegastos_id = gasto_rindegastos.id")
+            ->leftJoin("compra_chipax", "compra_chipax.folio = gasto_completa_rindegastos.nro_documento")
+            ->leftJoin("gasto_chipax", "gasto_completa_rindegastos.nro_documento = gasto_chipax.num_documento AND gasto_chipax.monto = gasto_rindegastos.net
+                        AND gasto_chipax.fecha = gasto_rindegastos.issue_date")
+            ->leftJoin("honorario_chipax", "honorario_chipax.numero_boleta = gasto_completa_rindegastos.nro_documento")
+            ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa_rindegastos.nro_documento", [])
             ->where(
                 "issue_date > :desde AND issue_date <= :hasta",
                 [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
