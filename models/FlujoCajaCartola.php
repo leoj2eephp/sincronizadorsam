@@ -96,6 +96,9 @@ class FlujoCajaCartola {
                     if (array_search($c["folio"], $folios) !== false) {
                         continue;
                     }
+                    if ($c["tipo"] == 52) {
+                        continue;
+                    }
                 } catch (\yii\base\ErrorException $ex) {
                     echo "<pre>";
                     print_r($ex);

@@ -6,7 +6,6 @@ use app\components\Helper;
 use app\models\ChipaxApiService;
 use app\models\CompraChipax;
 use app\models\FlujoCajaCartola;
-use app\models\Gasto;
 use app\models\GastoChipax;
 use app\models\GastoCompleta;
 use app\models\GastoRindegastos;

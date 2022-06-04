@@ -27,6 +27,7 @@ class ModalController extends Controller {
     public function actionSyncSam() {
         $id = $_GET["id"];
         $tipo = $_GET["tipo"];
+        $remu = isset($_GET["es_remu"]) ? $_GET["es_remu"] : false; // indica si la visualización será tipo remuneración o no
         $prorrata = ProrrataChipax::find()->where("id = :id", [":id" => $id])->one();
         $compra = null;
         $gasto = null;
@@ -49,7 +50,6 @@ class ModalController extends Controller {
                 $tipo = "";
                 break;
         }
-        $remu = false;  // indica si la visualización será tipo remuneración o no
         // Está obteniendo la información que está en sesión (para cargarla una sola vez), sobre los gastos
         $model = PoliticaGastosForm::fillData();
         $categoria = CategoriaChipax::findOne($prorrata->cuenta_id);
@@ -76,7 +76,7 @@ class ModalController extends Controller {
         $model->neto = $prorrata->monto;
         $model->tipo_combustible_id = 0;
 
-        if ($tipo == "remuneracion") $remu = true;
+        //if ($tipo == "remuneracion") $remu = true;
 
         if (null !== $compra) {
             $model->nombre_proveedor = $compra->razon_social;

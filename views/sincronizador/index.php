@@ -3,8 +3,6 @@
 use yii\helpers\Html;
 use app\components\Helper;
 use app\models\FlujoCajaCartola;
-use app\models\GastoCompleta;
-use app\models\InformeGasto;
 use kartik\date\DatePicker;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -230,8 +228,8 @@ $rindeGastosParaExcel = array();
                                                 'title' => "Sincronizar con SAM", "id" => "sync_" . $indice,
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "i" => $indice,
-                                                    "tipo" => (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
-                                                        "compra" : "remuneracion"
+                                                    "tipo" => "compra",
+                                                    "es_remu" => (array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX))
                                                 ]),
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);
@@ -316,8 +314,8 @@ $rindeGastosParaExcel = array();
                                                 'title' => "Sincronizar con SAM", 'id' => 'sync_' . $indice,
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "i" => $indice,
-                                                    "tipo" => (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
-                                                        "gasto" : "remuneracion"
+                                                    "tipo" => "gasto",
+                                                    "es_remu" => (array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX))
                                                 ]),
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);
@@ -396,8 +394,8 @@ $rindeGastosParaExcel = array();
 
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "i" => $indice,
-                                                    "tipo" => (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
-                                                        "compra" : "remuneracion"
+                                                    "tipo" =>"compra",
+                                                    "es_remu" => (array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX))
                                                 ]),
                                                 /* 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "tipo" => "honorario", "i" => $indice
