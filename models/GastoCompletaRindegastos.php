@@ -49,7 +49,7 @@ class GastoCompletaRindegastos extends \yii\db\ActiveRecord {
             [['gasto_rindegastos_id', 'total_calculado'], 'integer'],
             [['retenido', 'cantidad', 'centro_costo_faena', 'departamento', 'faena', 'impuesto_especifico', 'iva', 'km_carguio', 'monto_neto', 'nombre_quien_rinde', 'nro_documento', 'periodo_planilla', 'rut_proveedor', 'supervisor_combustible', 'tipo_documento', 'unidad', 'vehiculo_equipo', 'vehiculo_oficina_central'], 'string'],
             [['litros_combustible'], 'number'],
-            [['gasto_rinde_gastos_id'], 'exist', 'skipOnError' => true, 'targetClass' => GastoRindegastos::class, 'targetAttribute' => ['gasto_rinde_gastos_id' => 'id']],
+            [['gasto_rindegastos_id'], 'exist', 'skipOnError' => true, 'targetClass' => GastoRindegastos::class, 'targetAttribute' => ['gasto_rindegastos_id' => 'id']],
         ];
     }
 
