@@ -100,7 +100,7 @@ class GastoRindegastos extends \yii\db\ActiveRecord {
 
             if ($gastoRindeGastos->save()) {
                 $gastoCompletaRG = new GastoCompletaRindegastos();
-                $gastoCompletaRG->gasto_rinde_gastos_id = $gastoRindeGastos->id;
+                $gastoCompletaRG->gasto_rindegastos_id = $gastoRindeGastos->id;
                 $gastoCompletaRG->retenido = "" . $gasto->Retention;
                 $gastoCompletaRG->iva = "" . $gasto->Tax;
                 $gastoCompletaRG->total_calculado = $gasto->Total;
