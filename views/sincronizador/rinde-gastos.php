@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use app\components\Helper;
-use app\models\InformeGasto;
+use app\models\InformeGastoRindegastos;
 use kartik\date\DatePicker;
 use yii\widgets\ActiveForm;
 
@@ -122,8 +122,8 @@ $rindeGastosParaExcel = array();
                     $indice = 0;
                     if (count($model) > 0) :
                         foreach ($model as $rinde) :
-                            $informe = InformeGasto::findOne($rinde->report_id);
-                            $nro_informe = isset($informe) ? $informe->numero : "";
+                            $informe = InformeGastoRindegastos::findOne($rinde->report_id);
+                            $nro_informe = isset($informe) ? $informe->numero : $rinde->report_id;
                     ?>
                             <tr>
                                 <td style="text-overflow: ellipsis; width: 250px;"><?= $rinde->supplier ?></td>
