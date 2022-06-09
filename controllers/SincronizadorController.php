@@ -161,10 +161,15 @@ class SincronizadorController extends Controller {
             ]) */
         $rindeGastos = GastoRindegastos::find()->joinWith(["gastoCompletaRindegastos"])
             //->innerJoin("gasto_completa_rindegastos", "gasto_completa_rindegastos.gasto_rindegastos_id = gasto_rindegastos.id")
-            ->leftJoin("compra_chipax", "compra_chipax.folio = gasto_completa_rindegastos.nro_documento")
-            ->leftJoin("gasto_chipax", "gasto_completa_rindegastos.nro_documento = gasto_chipax.num_documento AND gasto_chipax.monto = gasto_rindegastos.net
+            ->leftJoin("compra_chipax", "compra_chipax.folio = gasto_completa_rindegastos.nro_documento
+                            AND compra_chipax.monto_total = gasto_rindegastos.net
+							AND compra_chipax.fecha_emision = gasto_rindegastos.issue_date")
+            ->leftJoin("gasto_chipax", "gasto_completa_rindegastos.nro_documento = gasto_chipax.num_documento
+                        AND gasto_chipax.monto = gasto_rindegastos.net
                         AND gasto_chipax.fecha = gasto_rindegastos.issue_date")
-            ->leftJoin("honorario_chipax", "honorario_chipax.numero_boleta = gasto_completa_rindegastos.nro_documento")
+            ->leftJoin("honorario_chipax", "honorario_chipax.numero_boleta = gasto_completa_rindegastos.nro_documento
+                        AND honorario_chipax.monto_liquido = gasto_rindegastos.net
+                        AND honorario_chipax.fecha_emision = gasto_rindegastos.issue_date")
             ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa_rindegastos.nro_documento", [])
             ->where(
                 "issue_date > :desde AND issue_date <= :hasta",
