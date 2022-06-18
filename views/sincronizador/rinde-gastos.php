@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use app\components\Helper;
+use app\models\ComentariosSincronizador;
 use app\models\InformeGastoRindegastos;
 use kartik\date\DatePicker;
 use yii\widgets\ActiveForm;
@@ -113,6 +114,7 @@ $rindeGastosParaExcel = array();
                         <th>Neto</th>
                         <th style="max-width: 250px !important;">Descripción</th>
                         <th>Faena</th>
+                        <th>Comentarios</th>
                         <th>Algo</th>
                         <th class="sorting_disabled">Acciones</th>
                     </tr>
@@ -135,6 +137,26 @@ $rindeGastosParaExcel = array();
                                 <td><?= isset($rinde) ? number_format($rinde->net, 0, ",", ".") : "?" ?></td>
                                 <td><?= isset($rinde->note) ? Helper::removeSlashes($rinde->note) : "" ?></td>
                                 <td><?= $rinde->gastoCompletaRindegastos[0]->centro_costo_faena ?></td>
+                                <td>
+                                    <?php
+                                    $comentario = ComentariosSincronizador::find()->where(
+                                        "monto = :m AND fecha = :f AND nro_documento = :n",
+                                        [
+                                            ":m" => $rinde->net, ":f" => $rinde->issue_date,
+                                            ":n" => isset($rinde->gastoCompletaRindegastos[0]) ? $rinde->gastoCompletaRindegastos[0]->nro_documento : ""
+                                        ]
+                                    )->one();
+                                    if (isset($comentario)) :
+                                    ?>
+                                        <textarea class="form-control comentario" idComentario="<?= $comentario->id ?>" rows="3"><?= $comentario->comentario ?></textarea>
+                                    <?php
+                                    else :
+                                    ?>
+                                        <input type="text" class="form-control comentario" monto="<?= $rinde->net ?>" fecha="<?= $rinde->issue_date ?>" nroDoc="<?= isset($rinde->gastoCompletaRindegastos[0]) ? $rinde->gastoCompletaRindegastos[0]->nro_documento : "" ?>" />
+                                    <?php
+                                    endif;
+                                    ?>
+                                </td>
                                 <td>rinde</td>
                                 <td>
                                     <input type="hidden" name="ForExcel[Rindegastos][fecha]" value="<?= $rinde->issue_date ?>" />
@@ -223,7 +245,7 @@ $(document).ready(function() {
         });
     });
         
-    let tabla = $('table').dataTable({  
+    const tabla = $('table').dataTable({  
         "columnDefs": [
 //            {   targets: 0, "searchable": true, width: "110px" },
 //            {   targets: 1, "searchable": true, width: "100px" },
@@ -234,7 +256,7 @@ $(document).ready(function() {
 //            {   targets: 6, "searchable": true, width: "150px" },
 //            {   targets: 7, "searchable": true, width: "150px" },
             {
-                "targets": [8],
+                "targets": [9],
                 //searchable: true,
                 "visible": false
             },
@@ -291,6 +313,31 @@ $(document).ready(function() {
         }
         $(".cargaMasiva").each(function(index, obj) {
             $(obj).prop("checked", estado);
+        });
+    });
+
+    $(document).on("blur", ".comentario", function() {
+        var comentario = {
+            id: $(this).attr("idComentario"),
+            nroDoc: $(this).attr("nroDoc"),
+            monto: $(this).attr("monto"),
+            fecha: $(this).attr("fecha"),
+            valor: $(this).val().trim()
+        }
+        $.post( "/sincronizadorsam/web/sincronizador/set-comentario", { comentario: JSON.stringify(comentario) })
+        .done(function( data ) {
+            Swal.fire(
+                'INFORMACIÓN GRABADA',
+                'Se guardó el comentario correctamente',
+                'success'
+            )
+        })
+        .fail(function() {
+            Swal.fire(
+                "ERROR AL MODIFICAR",
+                "Ocurrió un problema al intentar modificar este comentario",
+                "error"
+            );
         });
     });
         

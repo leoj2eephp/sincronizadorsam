@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\components\Helper;
 use app\models\ChipaxApiService;
+use app\models\ComentariosSincronizador;
 use app\models\CompraChipax;
 use app\models\FlujoCajaCartola;
 use app\models\GastoChipax;
@@ -214,5 +215,61 @@ class SincronizadorController extends Controller {
     public function actionDownloadExcel() {
         $full_path = \Yii::getAlias("@app") . DIRECTORY_SEPARATOR . \app\models\CargaMasivaForm::COMPLETE_FILE_PATH;
         \app\components\Helper::download_file($full_path);
+    }
+
+    public function actionSetComentario() {
+        $json = isset($_POST["comentario"]) ? $_POST["comentario"] : file_get_contents("php://input");
+        $c = json_decode($json);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        // Si viene el ID entonces solo actualizo
+        if (isset($c->id)) {
+            $id = $c->id;
+            $valor = $c->valor;
+
+            $comentario = ComentariosSincronizador::findOne($id);
+            if (isset($comentario)) {
+                $comentario->comentario = trim($valor);
+                return $comentario->save() ? "OK" : "NOT OK";
+            }
+        } else {
+            // Si no viene el ID pueden pasar 2 cosas
+            // Opción 1: Acaba de agregar un comentario y se da cuenta de que quiere modificarlo. No viene el ID, pero sí es una actualización
+            $comentario = ComentariosSincronizador::find()->where(
+                "monto = :m AND fecha = :f AND nro_documento = :n",
+                [":m" => $c->monto, ":f" => $c->fecha, ":n" => $c->nroDoc]
+            )->one();
+            if (isset($comentario)) {
+                $comentario->comentario = trim($c->valor);
+            } else {
+                // Opción 2: se trata de un nuevo registro
+                $comentario = new ComentariosSincronizador();
+                $comentario->nro_documento = $c->nroDoc;
+                $comentario->monto = $c->monto;
+                $comentario->fecha = $c->fecha;
+                $comentario->comentario = trim($c->valor);
+            }
+
+            return $comentario->save() ? "OK" : "NOT OK";
+        }
+
+        return "NOT OK";
+    }
+
+    public function actionNewComentario() {
+        $data = isset($_POST["comentario"]) ? $_POST["comentario"] : file_get_contents("php://input");
+        $c = json_decode($data);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        if (isset($data)) {
+            $comentario = new ComentariosSincronizador();
+            $comentario->nro_documento = $c->nroDoc;
+            $comentario->monto = $c->monto;
+            $comentario->fecha = $c->fecha;
+            $comentario->comentario = $c->valor;
+
+            return $comentario->save() ? "OK" : "NOT OK";
+        } else
+            return "NOT OK";
     }
 }
