@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use app\components\Helper;
+use app\models\ComentariosSincronizador;
 use app\models\FlujoCajaCartola;
 use kartik\date\DatePicker;
 use yii\helpers\Url;
@@ -145,6 +146,7 @@ $rindeGastosParaExcel = array();
                         <th>Neto</th>
                         <th style="max-width: 250px !important;">Descripción</th>
                         <th>Tipo Movimiento</th>
+                        <th>Comentario</th>
                         <th>Algo</th>
                         <th class="sorting_disabled">Acciones</th>
                     </tr>
@@ -216,6 +218,26 @@ $rindeGastosParaExcel = array();
                                     <td>
                                         <?= (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
                                             "Compra" : "Remuneración" ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $comentario = ComentariosSincronizador::find()->where(
+                                            "monto = :m AND fecha = :f AND nro_documento = :n",
+                                            [
+                                                ":m" => $compra->monto_total, ":f" => $compra->fecha_emision,
+                                                ":n" => isset($compra->gastoCompleta[0]) ? $compra->gastoCompleta[0]->nro_documento : ""
+                                            ]
+                                        )->one();
+                                        if (isset($comentario)) :
+                                        ?>
+                                            <textarea class="form-control comentario" idComentario="<?= $comentario->id ?>" rows="3"><?= $comentario->comentario ?></textarea>
+                                        <?php
+                                        else :
+                                        ?>
+                                            <input type="text" class="form-control comentario" monto="<?= $compra->monto_total ?>" fecha="<?= $compra->fecha_emision ?>" nroDoc="<?= isset($compra->gastoCompleta[0]) ? $compra->gastoCompleta[0]->nro_documento : "" ?>" />
+                                        <?php
+                                        endif;
+                                        ?>
                                     </td>
                                     <td><?= $compra->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--<td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
@@ -303,6 +325,26 @@ $rindeGastosParaExcel = array();
                                         <?= (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
                                             "Gasto" : "Remuneración" ?>
                                     </td>
+                                    <td>
+                                        <?php
+                                        $comentario = ComentariosSincronizador::find()->where(
+                                            "monto = :m AND fecha = :f AND nro_documento = :n",
+                                            [
+                                                ":m" => $gastos->monto, ":f" => $gastos->fecha,
+                                                ":n" => isset($gastos->gastoCompleta[0]) ? $gastos->gastoCompleta[0]->nro_documento : ""
+                                            ]
+                                        )->one();
+                                        if (isset($comentario)) :
+                                        ?>
+                                            <textarea class="form-control comentario" idComentario="<?= $comentario->id ?>" rows="3"><?= $comentario->comentario ?></textarea>
+                                        <?php
+                                        else :
+                                        ?>
+                                            <input type="text" class="form-control comentario" monto="<?= $gastos->monto ?>" fecha="<?= $gastos->fecha ?>" nroDoc="<?= isset($gastos->gastoCompleta[0]) ? $gastos->gastoCompleta[0]->nro_documento : "" ?>" />
+                                        <?php
+                                        endif;
+                                        ?>
+                                    </td>
                                     <td><?= $gastos->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--                                            <td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
                                     <td><?php
@@ -381,6 +423,26 @@ $rindeGastosParaExcel = array();
                                     <td><?= isset($p) ? number_format($p->monto, 0, ",", ".") : "?" ?></td>
                                     <td><?= isset($model->descripcion) ? $model->descripcion : "" ?></td>
                                     <td>Honorarios</td>
+                                    <td>
+                                        <?php
+                                        $comentario = ComentariosSincronizador::find()->where(
+                                            "monto = :m AND fecha = :f AND nro_documento = :n",
+                                            [
+                                                ":m" => $honorarios->monto_liquido, ":f" => $honorarios->fecha_emision,
+                                                ":n" => isset($honorarios->gastoCompleta[0]) ? $honorarios->gastoCompleta[0]->nro_documento : ""
+                                            ]
+                                        )->one();
+                                        if (isset($comentario)) :
+                                        ?>
+                                            <textarea class="form-control comentario" idComentario="<?= $comentario->id ?>" rows="3"><?= $comentario->comentario ?></textarea>
+                                        <?php
+                                        else :
+                                        ?>
+                                            <input type="text" class="form-control comentario" monto="<?= $honorarios->monto_liquido ?>" fecha="<?= $honorarios->fecha_emision ?>" nroDoc="<?= isset($honorarios->gastoCompleta[0]) ? $honorarios->gastoCompleta[0]->nro_documento : "" ?>" />
+                                        <?php
+                                        endif;
+                                        ?>
+                                    </td>
                                     <td><?= $honorarios->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--<td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
                                     <td><?php
@@ -394,7 +456,7 @@ $rindeGastosParaExcel = array();
 
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "i" => $indice,
-                                                    "tipo" =>"compra",
+                                                    "tipo" => "compra",
                                                     "es_remu" => (array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX))
                                                 ]),
                                                 /* 'value' => Url::to([
@@ -430,6 +492,26 @@ $rindeGastosParaExcel = array();
                                     <td><?= isset($p) ? number_format($p->monto, 0, ",", ".") : "?" ?></td>
                                     <td></td>
                                     <td>Remuneración</td>
+                                    <td>
+                                        <?php
+                                        $comentario = ComentariosSincronizador::find()->where(
+                                            "monto = :m AND fecha = :f AND nro_documento = :n",
+                                            [
+                                                ":m" => $remuneraciones->monto_liquido, ":f" => $remuneraciones->periodo,
+                                                ":n" => isset($remuneraciones->gastoCompleta[0]) ? $remuneraciones->gastoCompleta[0]->nro_documento : ""
+                                            ]
+                                        )->one();
+                                        if (isset($comentario)) :
+                                        ?>
+                                            <textarea class="form-control comentario" idComentario="<?= $comentario->id ?>" rows="3"><?= $comentario->comentario ?></textarea>
+                                        <?php
+                                        else :
+                                        ?>
+                                            <input type="text" class="form-control comentario" monto="<?= $remuneraciones->monto_liquido ?>" fecha="<?= $remuneraciones->periodo ?>" nroDoc="<?= isset($remuneraciones->gastoCompleta[0]) ? $remuneraciones->gastoCompleta[0]->nro_documento : "" ?>" />
+                                        <?php
+                                        endif;
+                                        ?>
+                                    </td>
                                     <td><?= $remuneraciones->sincronizado ? "sync" : "mogli" ?></td>
                                     <!--<td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
                                     <td><?php
@@ -512,7 +594,7 @@ $(document).ready(function() {
         });
     });
         
-    let tabla = $('table').dataTable({  
+    var tabla = $('table').dataTable({  
         "columnDefs": [
 //            {   targets: 0, "searchable": true, width: "110px" },
 //            {   targets: 1, "searchable": true, width: "100px" },
@@ -523,7 +605,7 @@ $(document).ready(function() {
 //            {   targets: 6, "searchable": true, width: "150px" },
 //            {   targets: 7, "searchable": true, width: "150px" },
             {
-                "targets": [8],
+                "targets": [9],
                 //searchable: true,
                 "visible": false
             },

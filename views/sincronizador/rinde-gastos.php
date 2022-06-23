@@ -315,32 +315,7 @@ $(document).ready(function() {
             $(obj).prop("checked", estado);
         });
     });
-
-    $(document).on("blur", ".comentario", function() {
-        var comentario = {
-            id: $(this).attr("idComentario"),
-            nroDoc: $(this).attr("nroDoc"),
-            monto: $(this).attr("monto"),
-            fecha: $(this).attr("fecha"),
-            valor: $(this).val().trim()
-        }
-        $.post( "/sincronizadorsam/web/sincronizador/set-comentario", { comentario: JSON.stringify(comentario) })
-        .done(function( data ) {
-            Swal.fire(
-                'INFORMACIÓN GRABADA',
-                'Se guardó el comentario correctamente',
-                'success'
-            )
-        })
-        .fail(function() {
-            Swal.fire(
-                "ERROR AL MODIFICAR",
-                "Ocurrió un problema al intentar modificar este comentario",
-                "error"
-            );
-        });
-    });
-        
+            
     // aplicando estilos al add
     $('[data-toggle="tooltip"]').tooltip();
 });

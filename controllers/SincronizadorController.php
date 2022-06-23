@@ -73,6 +73,10 @@ class SincronizadorController extends Controller {
             if (count($compra->gastoCompleta) > 0) {
                 $compra->sincronizado = 1;
             } else {
+                $gasto = GastoCompleta::find()->where(["like", "nro_documento", "%000" . $compra->id, false])->one();
+                if ((isset($gasto))) {
+                    $compra->sincronizado = 1;
+                }
                 $compra->sincronizado = 0;
             }
         }
