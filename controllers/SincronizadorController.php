@@ -73,11 +73,10 @@ class SincronizadorController extends Controller {
             if (count($compra->gastoCompleta) > 0) {
                 $compra->sincronizado = 1;
             } else {
-                $gasto = GastoCompleta::find()->where(["like", "nro_documento", "%000" . $compra->id, false])->one();
-                if ((isset($gasto))) {
-                    $compra->sincronizado = 1;
-                }
-                $compra->sincronizado = 0;
+                // Aquí valido cuando un folio fue ingresado con ceros adelante.. simplemente le digo que sí está sincronizado, pero
+                // en el index le agrego el objeto gastoCompleta, ya que desde aquí no puedo modificarlo
+                $gasto = GastoCompleta::find()->where(["like", "nro_documento", "%000" . $compra->folio, false])->one();
+                $compra->sincronizado = isset($gasto) ? 1 : 0;
             }
         }
 

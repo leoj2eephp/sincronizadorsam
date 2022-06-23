@@ -58,7 +58,7 @@ class GastoCompleta extends \yii\db\ActiveRecord {
             [['litros_combustible'], 'number'],
             [['gasto_id'], 'required'],
             [['gasto_id', 'total_calculado', 'tipoCombustible_id'], 'integer'],
-            [['gasto_id'], 'exist', 'skipOnError' => true, 'targetClass' => Gasto::className(), 'targetAttribute' => ['gasto_id' => 'id']],
+            [['gasto_id'], 'exist', 'skipOnError' => true, 'targetClass' => Gasto::class, 'targetAttribute' => ['gasto_id' => 'id']],
             //[['tipoCombustible_id'], 'exist', 'skipOnError' => true, 'targetClass' => TipoCombustible::className(), 'targetAttribute' => ['tipoCombustible_id' => 'id']],
         ];
     }

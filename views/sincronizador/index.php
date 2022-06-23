@@ -3,7 +3,9 @@
 use yii\helpers\Html;
 use app\components\Helper;
 use app\models\ComentariosSincronizador;
+use app\models\CompraChipax;
 use app\models\FlujoCajaCartola;
+use app\models\GastoCompleta;
 use kartik\date\DatePicker;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -168,11 +170,19 @@ $rindeGastosParaExcel = array();
                                 <tr <?php
                                     if ($compra->sincronizado) {
                                         $compra->sincronizado = true;
-                                        $rindeGastosSincronizados[] = $compra->gastoCompleta[0]->nro_documento;
+
+                                        $gastoCompletaCompra = count($compra->gastoCompleta) > 0 ? $compra->gastoCompleta[0] : null;
+                                        if (!isset($gastoCompletaCompra)) {
+                                            // Esto solo sucede para los folios con ceros adelante.. como ya los marqué como sincronizados
+                                            // ahora tengo que darles el objeto gastoCompleta..
+                                            $gastoCompletaCompra = GastoCompleta::find()->where(["like", "nro_documento", "%000" . $compra->folio, false])->one();
+                                        }
+
+                                        $rindeGastosSincronizados[] = $gastoCompletaCompra->nro_documento;
                                         $cantidad_sincronizados++;
                                         echo 'data-toggle="tooltip" data-html="true"
-                                                    title="' . "<div class='bg-info text-uppercase text-bold'>" . $compra->gastoCompleta[0]->gasto->supplier .
-                                            ' (' . $compra->gastoCompleta[0]->rut_proveedor . ')</div>';
+                                                    title="' . "<div class='bg-info text-uppercase text-bold'>" . $gastoCompletaCompra->gasto->supplier .
+                                            ' (' . $gastoCompletaCompra->rut_proveedor . ')</div>';
                                         $total_montos = 0;  // esto es solo para los casos en los que Chipax tiene desglosado un registro que es único en RindeGastos
                                         foreach ($compra->gastoCompleta as $rinde) :
                                             $total_montos += $rinde->gasto->net;
@@ -225,7 +235,7 @@ $rindeGastosParaExcel = array();
                                             "monto = :m AND fecha = :f AND nro_documento = :n",
                                             [
                                                 ":m" => $compra->monto_total, ":f" => $compra->fecha_emision,
-                                                ":n" => isset($compra->gastoCompleta[0]) ? $compra->gastoCompleta[0]->nro_documento : ""
+                                                ":n" => isset($gastoCompletaCompra) ? $gastoCompletaCompra->nro_documento : ""
                                             ]
                                         )->one();
                                         if (isset($comentario)) :
@@ -234,7 +244,7 @@ $rindeGastosParaExcel = array();
                                         <?php
                                         else :
                                         ?>
-                                            <input type="text" class="form-control comentario" monto="<?= $compra->monto_total ?>" fecha="<?= $compra->fecha_emision ?>" nroDoc="<?= isset($compra->gastoCompleta[0]) ? $compra->gastoCompleta[0]->nro_documento : "" ?>" />
+                                            <input type="text" class="form-control comentario" monto="<?= $compra->monto_total ?>" fecha="<?= $compra->fecha_emision ?>" nroDoc="<?= isset($gastoCompletaCompra) ? $gastoCompletaCompra->nro_documento : "" ?>" />
                                         <?php
                                         endif;
                                         ?>
