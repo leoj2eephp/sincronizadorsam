@@ -26,14 +26,6 @@ class CargaMasivaForm extends \yii\base\Model {
         $hoja = $spreadsheet->getActiveSheet();
 
         foreach ($datos as $indice => $fila) {
-
-            if (strpos($fila->centro_costo, 'Gastos Generales')) {
-
-                echo "HOLA!!!";
-                die;
-
-            }
-
             $i = $indice + 6;
             $nro_informe = isset($fila->nro_informe) ? $fila->nro_informe : "";
             $hoja->getCellByColumnAndRow(1, $i, true)->setValue($fila->fecha);
