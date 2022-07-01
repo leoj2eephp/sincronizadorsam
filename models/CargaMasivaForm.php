@@ -26,25 +26,49 @@ class CargaMasivaForm extends \yii\base\Model {
         $hoja = $spreadsheet->getActiveSheet();
 
         foreach ($datos as $indice => $fila) {
+
+            if (strpos($fila->centro_costo, 'Gastos Generales')) {
+
+                echo "HOLA!!!";
+                die;
+
+            }
+
             $i = $indice + 6;
             $nro_informe = isset($fila->nro_informe) ? $fila->nro_informe : "";
             $hoja->getCellByColumnAndRow(1, $i, true)->setValue($fila->fecha);
             $hoja->getCellByColumnAndRow(2, $i, true)->setValue(date("Y-m", strtotime($fila->fecha)));
-            if ($fila->centro_costo === "Gastos Generales Taller") {
+
+            if ($fila->centro_costo === "Gastos Generales Taller" || strpos($fila->centro_costo, 'Gastos Generales') !== false) {
                 $hoja->getCellByColumnAndRow(3, $i, true)->setValue("Cop. " . $fila->cuenta);
-            } else {
+            } else if ($fila->centro_costo === "Oficina Central Gerencia") {
+                $hoja->getCellByColumnAndRow(3, $i, true)->setValue("CG.- " . $fila->cuenta);
+            } else if ($fila->centro_costo === "Taller (Mantenciones y Repuestos)" || strpos($fila->centro_costo, 'Costo Directo') !== false) {
+                // Cuando es Taller (Manteciones) o si tiene la palabra "Costo Directo" dentro del centro de costos, lo dejo tal como viene
                 $hoja->getCellByColumnAndRow(3, $i, true)->setValue($fila->cuenta);
             }
 
-            if (array_key_exists($fila->linea_negocio, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_RINDEGASTOS)) {
-                $polit = "Gastos Generales Taller";
+            //if (array_key_exists($fila->linea_negocio, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_RINDEGASTOS)) {
+            // VER qué centro de costo está asociado...
+            //$polit = "Gastos Generales Taller";
+            $rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
+            $params['Id'] = $fila->linea_negocio;
+            $politica = json_decode($rindeApi->getExpensePolicy($params));
+            if ($fila->centro_costo === "Gastos Generales Taller" || $fila->centro_costo === "Taller (Mantenciones y Repuestos)") {
+                $polit = "Departamento Maquinaria";
+            } else if (strpos($fila->centro_costo, 'Costo Directo') !== false) {
+                // Si el nombre de la política termina con la palabra Costo Directo o Gastos Generales, le quito ese "apellido"
+                $posicion = strpos($fila->centro_costo, 'Costo Directo');
+                $polit = trim(substr($fila->centro_costo, 0, $posicion));
+            } else if (strpos($fila->centro_costo, 'Gastos Generales') !== false) {
+                $posicion = strpos($fila->centro_costo, 'Costo Directo');
+                $polit = trim(substr($fila->centro_costo, 0, $posicion));
+            } else if ($fila->centro_costo === "Oficina Central Gerencia") {
+                $polit = $fila->centro_costo;
             } else {
-                $rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
-                $params['Id'] = $fila->linea_negocio;
-                $politica = json_decode($rindeApi->getExpensePolicy($params));
-
-                $polit = $politica->Id != 0 ? $politica->Name : "";
+                $polit = $politica->Name;
             }
+
             $hoja->getCellByColumnAndRow(4, $i, true)->setValue($polit);
             $hoja->getCellByColumnAndRow(5, $i, true)->setValue(isset($fila->responsable) ? $fila->responsable : "");
             $hoja->getCellByColumnAndRow(6, $i, true)->setValue(isset($fila->tipo_documento) ? $fila->tipo_documento : "");
@@ -79,5 +103,16 @@ class CargaMasivaForm extends \yii\base\Model {
         } catch (Exception $ex) {
             return false;
         }
+    }
+
+    private function getLineaNegocioByCentroFaena($centro_faena) {
+        $linea_negocio = "";
+        if ($centro_faena == "Gastos Generales Taller" || $centro_faena == "Taller (Mantenciones y Repuestos)") {
+            $linea_negocio = "Departamento Maquinaria";
+        } else if ($centro_faena == "Oficina Central Gerencia") {
+            $linea_negocio = "Oficina Central Gerencia";
+        }
+
+        return $linea_negocio;
     }
 }
