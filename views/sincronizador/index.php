@@ -660,9 +660,9 @@ $(document).ready(function() {
                 $("#chkChipax").click();
             if ($("#chkRinde").is(":checked"))
                 $("#chkRinde").click();
-            tabla.DataTable().columns(8).search("sync").draw();
+            tabla.DataTable().columns(9).search("sync").draw();
         } else {
-            tabla.DataTable().columns(8).search("").draw();
+            tabla.DataTable().columns(9).search("").draw();
         }
     });
     $("#chkChipax").click(function(){
@@ -671,9 +671,9 @@ $(document).ready(function() {
                 $("#chkSincronizados").click();
         if ($("#chkRinde").is(":checked"))
                 $("#chkRinde").click();
-            tabla.DataTable().columns(8).search("mogli").draw();
+            tabla.DataTable().columns(9).search("mogli").draw();
         } else {
-            tabla.DataTable().columns(8).search("").draw();
+            tabla.DataTable().columns(9).search("").draw();
         }
     });
     $("#chkRinde").click(function(){
@@ -682,9 +682,9 @@ $(document).ready(function() {
                 $("#chkSincronizados").click();
             if ($("#chkChipax").is(":checked"))
                 $("#chkChipax").click();
-            tabla.DataTable().columns(8).search("rinde").draw();
+            tabla.DataTable().columns(9).search("rinde").draw();
         } else {
-            tabla.DataTable().columns(8).search("").draw();
+            tabla.DataTable().columns(9).search("").draw();
         }
     });
     $("#chkRindeGastosAll").click(function(){
