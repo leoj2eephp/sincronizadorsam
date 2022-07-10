@@ -22,6 +22,7 @@ use Yii;
 class HonorarioChipax extends \yii\db\ActiveRecord {
 
     public $sincronizado;
+    public $spProrrataChipax;
 
     /**
      * {@inheritdoc}
@@ -37,7 +38,7 @@ class HonorarioChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'fecha_emision', 'moneda_id', 'monto_liquido', 'numero_boleta', 'nombre_emisor', 'rut_emisor'], 'required'],
             [['id', 'moneda_id', 'monto_liquido', 'numero_boleta', 'usuario_id'], 'integer'],
-            [['fecha_emision', 'sincronizado'], 'safe'],
+            [['fecha_emision', 'sincronizado', 'spProrrataChipax'], 'safe'],
             [['nombre_emisor'], 'string', 'max' => 45],
             [['rut_emisor'], 'string', 'max' => 12],
             [['id'], 'unique'],
@@ -77,4 +78,36 @@ class HonorarioChipax extends \yii\db\ActiveRecord {
     public function getGastoCompleta() {
         return $this->hasMany(GastoCompleta::class, ['nro_documento' => 'numero_boleta']);
     }
+
+    public static function convertSPResultToArrayModel($spResult) {
+        $honorarios = [];
+        
+        foreach ($spResult as $fila) {
+            $honorario = new HonorarioChipax();
+            $honorario->id = $fila["gastoId"];
+            $honorario->fecha_emision = $fila["fecha_emision"];
+            $honorario->moneda_id = $fila["moneda_id"];
+            $honorario->monto_liquido = $fila["monto_liquido"];
+            $honorario->numero_boleta = $fila["numero_boleta"];
+            $honorario->nombre_emisor = $fila["nombre_emisor"];
+            $honorario->rut_emisor = $fila["rut_emisor"];
+            $honorario->usuario_id = $fila["usuario_id"];
+            
+            $pro = new ProrrataChipax();
+            $pro->id = $fila["prorrataId"];
+            $pro->cuenta_id = $fila["cuenta_id"];
+            $pro->filtro_id = $fila["filtro_id"];
+            $pro->linea_negocio = $fila["linea_negocio"];
+            $pro->modelo = $fila["modelo"];
+            $pro->monto = $fila["monto"];
+            $pro->periodo = $fila["periodo"];
+            $pro->gasto_chipax_id = $fila["gasto_chipax_id"];
+            
+            $honorario->spProrrataChipax[] = $pro;
+            $honorarios[] = $honorario;
+        }
+        
+        return $honorarios;
+    }
+    
 }

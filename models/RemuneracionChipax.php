@@ -26,6 +26,7 @@ use Yii;
 class RemuneracionChipax extends \yii\db\ActiveRecord {
 
     public $sincronizado;
+    public $spProrrataChipax;
 
     /**
      * {@inheritdoc}
@@ -41,7 +42,7 @@ class RemuneracionChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'empresa_id', 'periodo', 'empleado_id', 'monto_liquido', 'moneda_id', 'nombre_empleado', 'apellido_empleado', 'rut_empleado'], 'required'],
             [['id', 'empresa_id', 'usuario_id', 'empleado_id', 'monto_liquido', 'moneda_id'], 'integer'],
-            [['periodo', "sincronizado"], 'safe'],
+            [['periodo', "sincronizado", "spProrrataChipax"], 'safe'],
             [['liquidacion'], 'string', 'max' => 150],
             [['nombre_empleado', 'apellido_empleado', 'email_empleado'], 'string', 'max' => 45],
             [['rut_empleado'], 'string', 'max' => 12],
@@ -86,4 +87,40 @@ class RemuneracionChipax extends \yii\db\ActiveRecord {
     public function getGastoCompleta() {
         return $this->hasMany(GastoCompleta::class, ['nro_documento' => 'folio']);
     }
+
+    public static function convertSPResultToArrayModel($spResult) {
+        $honorarios = [];
+        
+        foreach ($spResult as $fila) {
+            $honorario = new RemuneracionChipax();
+            $honorario->id = $fila["remuId"];
+            $honorario->empresa_id = $fila["empresa_id"];
+            $honorario->usuario_id = $fila["usuario_id"];
+            $honorario->periodo = $fila["periodo"];
+            $honorario->empleado_id = $fila["empleado_id"];
+            $honorario->monto_liquido = $fila["monto_liquido"];
+            $honorario->moneda_id = $fila["moneda_id"];
+            $honorario->liquidacion = $fila["liquidacion"];
+            $honorario->nombre_empleado = $fila["nombre_empleado"];
+            $honorario->apellido_empleado = $fila["apellido_empleado"];
+            $honorario->rut_empleado = $fila["rut_empleado"];
+            $honorario->email_empleado = $fila["email_empleado"];
+            
+            $pro = new ProrrataChipax();
+            $pro->id = $fila["prorrataId"];
+            $pro->cuenta_id = $fila["cuenta_id"];
+            $pro->filtro_id = $fila["filtro_id"];
+            $pro->linea_negocio = $fila["linea_negocio"];
+            $pro->modelo = $fila["modelo"];
+            $pro->monto = $fila["monto"];
+            $pro->periodo = $fila["periodo"];
+            $pro->gasto_chipax_id = $fila["gasto_chipax_id"];
+            
+            $honorario->spProrrataChipax[] = $pro;
+            $honorarios[] = $honorario;
+        }
+        
+        return $honorarios;
+    }
+
 }

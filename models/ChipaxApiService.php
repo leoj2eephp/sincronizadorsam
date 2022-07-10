@@ -38,7 +38,8 @@ class ChipaxApiService {
                     "page" => $i
                 ])->send();
             try {
-                FlujoCajaCartola::convert2Model($request->getData()["docs"]);
+                //FlujoCajaCartola::convert2Model($request->getData()["docs"]);
+                FlujoCajaCartola::convertAll2Model($request->getData()["docs"]);
             } catch (Exception $ex) {
                 echo $ex->getMessage();
             }

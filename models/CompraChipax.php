@@ -22,6 +22,7 @@ use Yii;
 class CompraChipax extends \yii\db\ActiveRecord {
 
     public $sincronizado;
+    public $spProrrataChipax = [];
 
     /**
      * {@inheritdoc}
@@ -37,7 +38,7 @@ class CompraChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'fecha_emision', 'folio', 'moneda_id', 'monto_total', 'rut_emisor'], 'required'],
             [['id', 'folio', 'moneda_id', 'monto_total', 'tipo'], 'integer'],
-            [['fecha_emision', "sincronizado"], 'safe'],
+            [['fecha_emision', "sincronizado", "spProrrataChipax"], 'safe'],
             [['razon_social'], 'string', 'max' => 100],
             [['rut_emisor'], 'string', 'max' => 12],
             [['id'], 'unique'],
@@ -76,5 +77,36 @@ class CompraChipax extends \yii\db\ActiveRecord {
      */
     public function getGastoCompleta() {
         return $this->hasMany(GastoCompleta::class, ['nro_documento' => 'folio']);
+    }
+
+    public static function convertSPResultToArrayModel($spResult) {
+        $compras = [];
+        
+        foreach ($spResult as $fila) {
+            $comprita = new CompraChipax();
+            $comprita->id = $fila["chipaxId"];
+            $comprita->fecha_emision = $fila["fecha_emision"];
+            $comprita->folio = $fila["folio"];
+            $comprita->moneda_id = $fila["moneda_id"];
+            $comprita->monto_total = $fila["monto_total"];
+            $comprita->razon_social = $fila["razon_social"];
+            $comprita->rut_emisor = $fila["rut_emisor"];
+            $comprita->tipo = $fila["tipo"];
+            
+            $pro = new ProrrataChipax();
+            $pro->id = $fila["prorrataId"];
+            $pro->cuenta_id = $fila["cuenta_id"];
+            $pro->filtro_id = $fila["filtro_id"];
+            $pro->linea_negocio = $fila["linea_negocio"];
+            $pro->modelo = $fila["modelo"];
+            $pro->monto = $fila["monto"];
+            $pro->periodo = $fila["periodo"];
+            $pro->compra_chipax_id = $fila["compra_chipax_id"];
+            
+            $comprita->spProrrataChipax[] = $pro;
+            $compras[] = $comprita;
+        }
+        
+        return $compras;
     }
 }

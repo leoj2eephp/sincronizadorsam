@@ -63,28 +63,48 @@ class SincronizadorController extends Controller {
             $fecha_hasta = Helper::formatToDBDate(null !== (\Yii::$app->request->post("fecha_hasta")) ? \Yii::$app->request->post("fecha_hasta") : "");
         }
 
-        $model = new FlujoCajaCartola();
-        $model->compras = CompraChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
-            "fecha_emision >= :desde AND fecha_emision <= :hasta",
-            [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
-        )->all();
+        $paramsFecha = [":desde" => $fecha_desde, ":hasta" => $fecha_hasta];
+        $combustiblesCondition = "prorrata_chipax.linea_negocio = 'Departamento Maquinaria' OR
+        prorrata_chipax.cuenta_id IN (" . join(", ", array_keys(FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX)) . ")";
 
+        $model = new FlujoCajaCartola();
+        /* $model->compras = CompraChipax::find()->joinWith(["gastoCompleta"])
+            ->innerJoin("prorrata_chipax", "prorrata_chipax.compra_chipax_id = compra_chipax.id")
+            ->where(
+                "fecha_emision >= :desde AND fecha_emision <= :hasta",
+                $paramsFecha
+            )
+            ->andWhere($combustiblesCondition)
+            ->all(); */
+        $result = Yii::$app->db->createCommand("CALL compras_maquinarias_combustibles(:from_date, :to_date)")
+            ->bindValue(':from_date', $fecha_desde)
+            ->bindValue(':to_date', $fecha_hasta)
+            ->queryAll();
+        $model->compras = CompraChipax::convertSPResultToArrayModel($result);
         foreach ($model->compras as $compra) {
             if (count($compra->gastoCompleta) > 0) {
                 $compra->sincronizado = 1;
             } else {
                 // Aquí valido cuando un folio fue ingresado con ceros adelante.. simplemente le digo que sí está sincronizado, pero
                 // en el index le agrego el objeto gastoCompleta, ya que desde aquí no puedo modificarlo
-                $gasto = GastoCompleta::find()->where(["like", "nro_documento", "%000" . $compra->folio, false])->one();
-                $compra->sincronizado = isset($gasto) ? 1 : 0;
+                // $gasto = GastoCompleta::find()->where(["like", "nro_documento", "%000" . $compra->folio, false])->one();
+                // $compra->sincronizado = isset($gasto) ? 1 : 0;
+                $compra->sincronizado = 0;
             }
         }
 
-        $model->gastos = GastoChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
+        /* $model->gastos = GastoChipax::find()->joinWith(["prorrataChipax", "gastoCompleta"])->where(
             "fecha >= :desde AND fecha <= :hasta",
-            [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
-        )->all();
+            $paramsFecha
+        )
+            ->andWhere($combustiblesCondition)
+            ->all(); */
 
+        $result = Yii::$app->db->createCommand("CALL gastos_maquinarias_combustibles(:from_date, :to_date)")
+            ->bindValue(':from_date', $fecha_desde)
+            ->bindValue(':to_date', $fecha_hasta)
+            ->queryAll();
+        $model->gastos = GastoChipax::convertSPResultToArrayModel($result);
         foreach ($model->gastos as $gasto) {
             if (count($gasto->gastoCompleta) > 0) {
                 $gasto->sincronizado = 1;
@@ -93,11 +113,18 @@ class SincronizadorController extends Controller {
             }
         }
 
-        $model->honorarios = HonorarioChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
+        /* $model->honorarios = HonorarioChipax::find()->joinWith(["prorrataChipax", "gastoCompleta"])->where(
             "fecha_emision >= :desde AND fecha_emision <= :hasta",
-            [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
-        )->all();
+            $paramsFecha
+        )
+            ->andWhere($combustiblesCondition)
+            ->all(); */
 
+        $result = Yii::$app->db->createCommand("CALL honorarios_maquinarias_combustibles(:from_date, :to_date)")
+            ->bindValue(':from_date', $fecha_desde)
+            ->bindValue(':to_date', $fecha_hasta)
+            ->queryAll();
+        $model->honorarios = HonorarioChipax::convertSPResultToArrayModel($result);
         foreach ($model->honorarios as $honorario) {
             if (count($honorario->gastoCompleta) > 0) {
                 $honorario->sincronizado = 1;
@@ -106,14 +133,21 @@ class SincronizadorController extends Controller {
             }
         }
 
-        $model->remuneracions = RemuneracionChipax::find()->with(["prorrataChipax", "gastoCompleta"])->where(
-            "periodo >= :desde AND periodo <= :hasta",
-            [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
-        )->all();
+        /* $model->remuneracions = RemuneracionChipax::find()->joinWith(["prorrataChipax"])->where(
+            "remuneracion_chipax.periodo >= :desde AND remuneracion_chipax.periodo <= :hasta",
+            $paramsFecha
+        )
+            ->andWhere($combustiblesCondition)
+            ->all(); */
 
+        $result = Yii::$app->db->createCommand("CALL remuneracion_maquinarias_combustibles(:from_date, :to_date)")
+            ->bindValue(':from_date', $fecha_desde)
+            ->bindValue(':to_date', $fecha_hasta)
+            ->queryAll();
+        $model->remuneracions = RemuneracionChipax::convertSPResultToArrayModel($result);
         foreach ($model->remuneracions as $remu) {
-            $gasto = GastoCompleta::find()->where("nro_documento LIKE :id", [":id" => $remu->id])->one();
-            if (isset($gasto)) {
+            //$gasto = GastoCompleta::find()->where("nro_documento LIKE :id", [":id" => $remu->id])->one();
+            if (count($remu->gastoCompleta) > 0) {
                 $remu->sincronizado = 1;
             } else {
                 $remu->sincronizado = 0;

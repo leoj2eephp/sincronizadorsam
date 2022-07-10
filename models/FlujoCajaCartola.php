@@ -72,6 +72,9 @@ class FlujoCajaCartola {
         54937 => "011-Petorca Cordillera Combustible"
     ];
 
+    /**
+     * @deprecated
+     */
     public static function convert2Model($jsonArreglo) {
         //$data = array();
         $sw = false;
@@ -343,6 +346,244 @@ class FlujoCajaCartola {
         return true;
     }
 
-    private function getLineasNegocio() {
+    /**
+     * Nuevo método para insertar TODOS los datos desde Chipax. Ya no se filtra por Línea de Negocio Maquinarias ni cuenta Combustible.
+     * Ahora se deben hacer esos filtros al momento de llenar la tabla del sincronizador
+     * 
+     * @param array $jsonArreglo json respuesta de la llamada a la API de Chipax
+     * @return boolean que indica si la operación fue exitosa
+     */
+    public static function convertAll2Model($jsonArreglo) {
+        $flujoCajaCartola = null;
+        $folios = array();   // para verificar si existe algún folio repetido
+        $gastosFolios = array();
+        $honoFolios = array();
+        $remuFolios = array();
+
+        foreach ($jsonArreglo as $json) {
+            $flujoCajaCartola = new FlujoCajaCartola();
+            $flujoCajaCartola->abono = $json["abono"];
+            $flujoCajaCartola->cargo = $json["cargo"];
+            $flujoCajaCartola->descripcion = $json["descripcion"];
+            $flujoCajaCartola->fecha = $json["fecha"];
+            $flujoCajaCartola->id = $json["id"];
+            $flujoCajaCartola->cuenta_corriente_id = $json["cuenta_corriente_id"];
+            $flujoCajaCartola->tipo_cartola_id = $json["tipo_cartola_id"];
+
+            foreach ($json["Compras"] as $c) {
+                try {   // este bloque evitará que haya un folio duplicado mostrándose
+                    if (array_search($c["folio"], $folios) !== false) {
+                        continue;
+                    }
+                    if ($c["tipo"] == 52) {
+                        continue;
+                    }
+                } catch (\yii\base\ErrorException $ex) {
+                    echo "<pre>";
+                    print_r($ex);
+                    break;
+                }
+
+                $compras = new CompraChipax();
+                $compras->fecha_emision = $c["fecha_emision"];
+                $compras->folio = $c["folio"];
+                $compras->id = $c["id"];
+                $compras->moneda_id = $c["moneda_id"];
+                $compras->monto_total = $c["monto_total"];
+                $compras->razon_social = $c["razon_social"];
+                $compras->rut_emisor = $c["rut_emisor"];
+                $compras->tipo = $c["tipo"];
+
+                try {
+                    foreach ($c["Prorratas"] as $pro) {
+                        if ($compras->save()) {
+                            $prorrata = new ProrrataChipax();
+                            $prorrata->cuenta_id = $pro["cuenta_id"];
+                            $prorrata->filtro_id = $pro["filtro_id"];
+                            $prorrata->id = $pro["id"];
+                            $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
+                            $prorrata->linea_negocio = $linea_negocio->nombre;
+                            $prorrata->compra_chipax_id = $pro["foreign_key"];
+                            $prorrata->modelo = $pro["modelo"];
+                            $prorrata->monto = $pro["monto"];
+                            $prorrata->periodo = $pro["periodo"];
+                            if (!$prorrata->save()) {
+                                echo "Hubo un error al insertar las prorratas";
+                                echo join(", ", $prorrata->getFirstErrors());
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+                } catch (Exception $ex) {
+                    Yii::error("Error al insertar en CompraChipax");
+                    Yii::error($ex->getMessage());
+                }
+
+                $folios[] = $c["folio"];
+            }
+
+            foreach ($json["Gastos"] as $g) {
+                try {   // este bloque evitará que haya un folio duplicado mostrándose
+                    if (array_search($g["num_documento"], $gastosFolios) !== false) {
+                        continue;
+                    }
+                } catch (\yii\base\ErrorException $ex) {
+                    echo "<pre>";
+                    print_r($ex);
+                    break;
+                }
+
+                $gasto = new GastoChipax();
+                $gasto->descripcion = $g["descripcion"];
+                $gasto->fecha = $g["fecha"];
+                $gasto->id = $g["id"];
+                $gasto->moneda_id = $g["moneda_id"];
+                $gasto->monto = $g["monto"];
+                $gasto->num_documento = $g["num_documento"];
+                $gasto->proveedor = $g["proveedor"];
+                $gasto->responsable = $g["responsable"];
+                $gasto->tipo_cambio = $g["tipo_cambio"];
+                $gasto->usuario_id = $g["usuario_id"];
+
+                try {
+                    foreach ($g["Prorratas"] as $pro) {
+                        if ($gasto->save()) {
+                            $prorrata = new ProrrataChipax();
+                            $prorrata->cuenta_id = $pro["cuenta_id"];
+                            $prorrata->filtro_id = $pro["filtro_id"];
+                            $prorrata->gasto_chipax_id = $pro["foreign_key"];
+                            $prorrata->id = $pro["id"];
+                            $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
+                            $prorrata->linea_negocio = $linea_negocio->nombre;
+                            $prorrata->modelo = $pro["modelo"];
+                            $prorrata->monto = $pro["monto"];
+                            $prorrata->periodo = $pro["periodo"];
+
+                            if (!$prorrata->save()) {
+                                echo "Hubo un error al insertar las prorratas";
+                                echo join(", ", $prorrata->getFirstErrors());
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+                } catch (Exception $ex) {
+                    Yii::error("Error al insertar en GastoChipax");
+                    Yii::error($ex->getMessage());
+                }
+
+                $folios[] = $g["num_documento"];
+            }
+
+            foreach ($json["Honorarios"] as $h) {
+                try {   // este bloque evitará que haya un folio duplicado mostrándose
+                    if (array_search($h["numero_boleta"], $honoFolios) !== false) {
+                        continue;
+                    }
+                } catch (\yii\base\ErrorException $ex) {
+                    echo "<pre>";
+                    print_r($ex);
+                    break;
+                }
+
+                $honorario = new HonorarioChipax();
+                $honorario->fecha_emision = $h["fecha_emision"];
+                $honorario->id = $h["id"];
+                $honorario->moneda_id = $h["moneda_id"];
+                $honorario->monto_liquido = $h["monto_liquido"];
+                $honorario->numero_boleta = $h["numero_boleta"];
+                $honorario->nombre_emisor = $h["nombre_emisor"];
+                $honorario->rut_emisor = $h["rut_emisor"];
+                $honorario->usuario_id = $h["usuario_id"];
+
+                try {
+                    foreach ($h["Prorratas"] as $pro) {
+                        if ($honorario->save()) {
+                            $prorrata = new ProrrataChipax();
+                            $prorrata->cuenta_id = $pro["cuenta_id"];
+                            $prorrata->filtro_id = $pro["filtro_id"];
+                            $prorrata->honorario_chipax_id = $pro["foreign_key"];
+                            $prorrata->id = $pro["id"];
+                            $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
+                            $prorrata->linea_negocio = $linea_negocio->nombre;
+                            $prorrata->modelo = $pro["modelo"];
+                            $prorrata->monto = $pro["monto"];
+                            $prorrata->periodo = $pro["periodo"];
+
+                            if (!$prorrata->save()) {
+                                echo "Hubo un error al insertar las prorratas";
+                                echo join(", ", $prorrata->getFirstErrors());
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+                } catch (Exception $ex) {
+                    Yii::error("Error al insertar en HonorarioChipax");
+                    Yii::error($ex->getMessage());
+                }
+
+                $honoFolios[] = $h["numero_boleta"];
+            }
+
+            foreach ($json["Remuneracions"] as $r) {
+                try {   // este bloque evitará que haya un folio duplicado mostrándose
+                    if (array_search($r["id"], $remuFolios) !== false) {
+                        continue;
+                    }
+                } catch (\yii\base\ErrorException $ex) {
+                    echo "<pre>";
+                    print_r($ex);
+                    break;
+                }
+
+                $remuneracion = new RemuneracionChipax();
+                $remuneracion->id = $r["id"];
+                $remuneracion->empresa_id = $r["empresa_id"];
+                $remuneracion->usuario_id = $r["usuario_id"];
+                $remuneracion->periodo = $r["periodo"];
+                $remuneracion->empleado_id = $r["empleado_id"];
+                $remuneracion->monto_liquido = $r["monto_liquido"];
+                $remuneracion->moneda_id = $r["moneda_id"];
+                $remuneracion->liquidacion = $r["liquidacion"];
+
+                $remuneracion->nombre_empleado = $r["Empleado"]["nombre"];
+                $remuneracion->apellido_empleado = $r["Empleado"]["apellido"];
+                $remuneracion->rut_empleado = $r["Empleado"]["rut"];
+                $remuneracion->email_empleado = $r["Empleado"]["email"];
+
+                try {
+                    foreach ($r["Prorratas"] as $pro) {
+                        if ($remuneracion->save()) {
+                            $prorrata = new ProrrataChipax();
+                            $prorrata->cuenta_id = $pro["cuenta_id"];
+                            $prorrata->filtro_id = $pro["filtro_id"];
+                            $prorrata->remuneracion_chipax_id = $pro["foreign_key"];
+                            $prorrata->id = $pro["id"];
+                            $linea_negocio = LineaNegocioChipax::findOne($pro["linea_negocio_id"]);
+                            $prorrata->linea_negocio = $linea_negocio->nombre;
+                            $prorrata->modelo = $pro["modelo"];
+                            $prorrata->monto = $pro["monto"];
+                            $prorrata->periodo = $pro["periodo"];
+
+                            if (!$prorrata->save()) {
+                                echo "Hubo un error al insertar las prorratas";
+                                echo join(", ", $prorrata->getFirstErrors());
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+                } catch (Exception $ex) {
+                    Yii::error("Error al insertar en RemuneracionChipax");
+                    Yii::error($ex->getMessage());
+                }
+
+                $remuFolios[] = $r["id"];
+            }
+        }
+
+        return true;
     }
 }

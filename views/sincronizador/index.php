@@ -163,7 +163,7 @@ $rindeGastosParaExcel = array();
                                         $rindeSincronizado = app\models\RindeGastos::getCombustibleExpenseByNumDoc($combustibles, trim($compra->folio));
                                     } */
                             $mostrado = array();
-                            foreach ($compra->prorrataChipax as $p) :
+                            foreach ($compra->spProrrataChipax as $p) :
                                 $cantidad_registros++;
                                 $color = "bg-info-light";
                     ?>
@@ -175,7 +175,11 @@ $rindeGastosParaExcel = array();
                                         if (!isset($gastoCompletaCompra)) {
                                             // Esto solo sucede para los folios con ceros adelante.. como ya los marqué como sincronizados
                                             // ahora tengo que darles el objeto gastoCompleta..
-                                            $gastoCompletaCompra = GastoCompleta::find()->where(["like", "nro_documento", "%000" . $compra->folio, false])->one();
+                                            /* $gastoCompletaCompra = GastoCompleta::find()
+                                                ->innerJoin("prorrata_chipax", "prorrata_chipax.compra_chipax_id = :compraId", [":compraId" => $compra->id])
+                                                ->where(["like", "nro_documento", "%000" . $compra->folio, false])
+                                                ->andWhere($combustiblesCondition)
+                                                ->one(); */
                                         }
 
                                         $rindeGastosSincronizados[] = $gastoCompletaCompra->nro_documento;
@@ -283,7 +287,7 @@ $rindeGastosParaExcel = array();
                                         $rindeSincronizado = app\models\RindeGastos::getCombustibleExpenseByNumDoc($combustibles, trim($gastos->num_documento));
                                     } */
                             $gastoMostrado = array();
-                            foreach ($gastos->prorrataChipax as $p) :
+                            foreach ($gastos->spProrrataChipax as $p) :
                                 $cantidad_registros++;
                                 $color = "bg-info-light";
                         ?>
@@ -384,7 +388,7 @@ $rindeGastosParaExcel = array();
                         foreach ($model->honorarios as $honorarios) :
                             //$rindeSincronizado = GastoCompleta::isSincronizedWithChipax($honorarios->numero_boleta, $honorarios->fecha_emision);
                             $mostrado = array();
-                            foreach ($honorarios->prorrataChipax as $p) :
+                            foreach ($honorarios->spProrrataChipax as $p) :
                                 $color = "bg-info-light";
                                 $cantidad_registros++;
                             ?>
@@ -486,7 +490,7 @@ $rindeGastosParaExcel = array();
                     if (count($model->remuneracions) > 0) {
                         foreach ($model->remuneracions as $remuneraciones) :
                             $mostrado = array();
-                            foreach ($remuneraciones->prorrataChipax as $p) :
+                            foreach ($remuneraciones->spProrrataChipax as $p) :
                                 $color = "bg-info-light";
                                 $cantidad_registros++;
                             ?>

@@ -24,6 +24,7 @@ use Yii;
 class GastoChipax extends \yii\db\ActiveRecord {
 
     public $sincronizado;
+    public $spProrrataChipax = [];
 
     /**
      * {@inheritdoc}
@@ -39,7 +40,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'descripcion', 'fecha', 'moneda_id', 'monto', 'proveedor'], 'required'],
             [['id', 'moneda_id', 'monto', 'usuario_id'], 'integer'],
-            [['fecha', 'sincronizado'], 'safe'],
+            [['fecha', 'sincronizado'. 'spProrrataChipax'], 'safe'],
             [['proveedor', 'responsable'], 'string', 'max' => 100],
             [['descripcion'], 'string', 'max' => 200],
             [['num_documento', 'tipo_cambio'], 'string', 'max' => 45],
@@ -82,4 +83,38 @@ class GastoChipax extends \yii\db\ActiveRecord {
     public function getGastoCompleta() {
         return $this->hasMany(GastoCompleta::class, ['nro_documento' => 'num_documento']);
     }
+
+    public static function convertSPResultToArrayModel($spResult) {
+        $gastos = [];
+        
+        foreach ($spResult as $fila) {
+            $gastito = new GastoChipax();
+            $gastito->id = $fila["gastoId"];
+            $gastito->descripcion = $fila["descripcion"];
+            $gastito->fecha = $fila["fecha"];
+            $gastito->moneda_id = $fila["moneda_id"];
+            $gastito->monto = $fila["monto"];
+            $gastito->num_documento = $fila["num_documento"];
+            $gastito->proveedor = $fila["proveedor"];
+            $gastito->responsable = $fila["responsable"];
+            $gastito->tipo_cambio = $fila["tipo_cambio"];
+            $gastito->usuario_id = $fila["usuario_id"];
+            
+            $pro = new ProrrataChipax();
+            $pro->id = $fila["prorrataId"];
+            $pro->cuenta_id = $fila["cuenta_id"];
+            $pro->filtro_id = $fila["filtro_id"];
+            $pro->linea_negocio = $fila["linea_negocio"];
+            $pro->modelo = $fila["modelo"];
+            $pro->monto = $fila["monto"];
+            $pro->periodo = $fila["periodo"];
+            $pro->gasto_chipax_id = $fila["gasto_chipax_id"];
+            
+            $gastito->spProrrataChipax[] = $pro;
+            $gastos[] = $gastito;
+        }
+        
+        return $gastos;
+    }
+    
 }
