@@ -395,8 +395,8 @@ class FlujoCajaCartola {
                 $compras->tipo = $c["tipo"];
 
                 try {
-                    foreach ($c["Prorratas"] as $pro) {
-                        if ($compras->save()) {
+                    if ($compras->save()) {
+                        foreach ($c["Prorratas"] as $pro) {
                             $prorrata = new ProrrataChipax();
                             $prorrata->cuenta_id = $pro["cuenta_id"];
                             $prorrata->filtro_id = $pro["filtro_id"];
@@ -411,8 +411,6 @@ class FlujoCajaCartola {
                                 echo "Hubo un error al insertar las prorratas";
                                 echo join(", ", $prorrata->getFirstErrors());
                             }
-                        } else {
-                            continue;
                         }
                     }
                 } catch (Exception $ex) {
@@ -447,8 +445,8 @@ class FlujoCajaCartola {
                 $gasto->usuario_id = $g["usuario_id"];
 
                 try {
-                    foreach ($g["Prorratas"] as $pro) {
-                        if ($gasto->save()) {
+                    if ($gasto->save()) {
+                        foreach ($g["Prorratas"] as $pro) {
                             $prorrata = new ProrrataChipax();
                             $prorrata->cuenta_id = $pro["cuenta_id"];
                             $prorrata->filtro_id = $pro["filtro_id"];
@@ -464,8 +462,6 @@ class FlujoCajaCartola {
                                 echo "Hubo un error al insertar las prorratas";
                                 echo join(", ", $prorrata->getFirstErrors());
                             }
-                        } else {
-                            continue;
                         }
                     }
                 } catch (Exception $ex) {
@@ -498,8 +494,8 @@ class FlujoCajaCartola {
                 $honorario->usuario_id = $h["usuario_id"];
 
                 try {
-                    foreach ($h["Prorratas"] as $pro) {
-                        if ($honorario->save()) {
+                    if ($honorario->save()) {
+                        foreach ($h["Prorratas"] as $pro) {
                             $prorrata = new ProrrataChipax();
                             $prorrata->cuenta_id = $pro["cuenta_id"];
                             $prorrata->filtro_id = $pro["filtro_id"];
@@ -515,8 +511,6 @@ class FlujoCajaCartola {
                                 echo "Hubo un error al insertar las prorratas";
                                 echo join(", ", $prorrata->getFirstErrors());
                             }
-                        } else {
-                            continue;
                         }
                     }
                 } catch (Exception $ex) {
@@ -554,8 +548,8 @@ class FlujoCajaCartola {
                 $remuneracion->email_empleado = $r["Empleado"]["email"];
 
                 try {
-                    foreach ($r["Prorratas"] as $pro) {
-                        if ($remuneracion->save()) {
+                    if ($remuneracion->save()) {
+                        foreach ($r["Prorratas"] as $pro) {
                             $prorrata = new ProrrataChipax();
                             $prorrata->cuenta_id = $pro["cuenta_id"];
                             $prorrata->filtro_id = $pro["filtro_id"];
@@ -571,8 +565,6 @@ class FlujoCajaCartola {
                                 echo "Hubo un error al insertar las prorratas";
                                 echo join(", ", $prorrata->getFirstErrors());
                             }
-                        } else {
-                            continue;
                         }
                     }
                 } catch (Exception $ex) {
