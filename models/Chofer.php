@@ -46,22 +46,5 @@ class Chofer extends \yii\db\ActiveRecord {
             'vigente' => 'Vigente',
         ];
     }
-
-    /**
-     * Gets query for [[Rcamionarrendados]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRcamionarrendados() {
-        return $this->hasMany(Rcamionarrendado::className(), ['chofer_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Rcamionpropios]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRcamionpropios() {
-        return $this->hasMany(Rcamionpropio::className(), ['chofer_id' => 'id']);
-    }
+    
 }

@@ -264,7 +264,113 @@ class Helper {
         return $model;
     }
 
-    public static function getTiposCombustiblesSam() {
+    public static function convertUnidad($unidad) {
+        $unidad = trim($unidad);
+        if ($unidad == "Balde") {
+            return "B";
+        }
+        if ($unidad == "día") {
+            return "D";
+        }
+        if ($unidad == "galon") {
+            return "G";
+        }
+        if ($unidad == "Kilos") {
+            return "K";
+        }
+        if ($unidad == "Litros") {
+            return "L";
+        }
+        if ($unidad == "Metro cúbico") {
+            return "M3";
+        }
+        if ($unidad == "Metros") {
+            return "M";
+        }
+        if ($unidad == "Unidades") {
+            return "U";
+        }
+        return "";
+    }
+
+    public static function traducirTipoDocumento($tipoDocumento) {
+        $dev = "";
+        $tipoDocumento = trim(strtolower($tipoDocumento));
+        switch ($tipoDocumento) {
+            case 'boleta':
+                $dev = "B";
+                break;
+            case 'boleta':
+                $dev = "B";
+                break;
+            case 'boleta de honorarios':
+                $dev = "BH";
+                break;
+            case 'boleta de honorarios propia':
+                $dev = "BHP";
+                break;
+            case 'boleta de honorarios terceros':
+                $dev = "BHT";
+                break;
+            case 'boleta de prestación de servicios de terceros':
+                $dev = "BPS";
+                break;
+            case 'boleta honorarios terceros':
+                $dev = "BHT";
+                break;
+            case 'contrato de compra-venta':
+                $dev = "CCV";
+                break;
+            case 'factura afecta':
+                $dev = "FA";
+                break;
+            case 'factura combustible':
+                $dev = "FC";
+                break;
+            case 'factura excenta':
+                $dev = "FE";
+                break;
+            case 'factura exenta':
+                $dev = "FE";
+                break;
+            case 'factura no afecta':
+                $dev = "F";
+                break;
+            case 'interes planilla previsional':
+                $dev = "IPP";
+                break;
+            case 'interés planilla previsional':
+                $dev = "IPP";
+                break;
+            case 'nota de credito':
+                $dev = "N";
+                break;
+            case 'nota de crédito':
+                $dev = "N";
+                break;
+            case 'planilla remuneración o previsional':
+                $dev = "PRP";
+                break;
+            case 'planilla remuneracion o previsional':
+                $dev = "PRP";
+                break;
+            case 'planilla remuneracion previsional':
+                $dev = "PRP";
+                break;
+            case 'planilla remuneración previsional':
+                $dev = "PRP";
+                break;
+            case 'planilla remuneración o previsionalñ':
+                $dev = "PRP";
+                break;
+            case 'vale':
+                $dev = "V";
+                break;
+            default:
+                $dev = " ";
+                break;
+        }
+        return $dev;
     }
 
     public static function chipaxSecret($retraso) {

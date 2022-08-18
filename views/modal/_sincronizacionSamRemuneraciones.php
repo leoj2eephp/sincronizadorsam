@@ -7,6 +7,7 @@ use yii\widgets\ActiveForm;
     <?php
     $form = ActiveForm::begin([
         "id" => "sam-modal",
+        "action" => "sync-sam-remuneraciones"
     ]);
     ?>
 
@@ -65,7 +66,7 @@ use yii\widgets\ActiveForm;
     <div class="box-footer col-sm-12">
         <?php //Html::submitButton('Reagendar Hora', ['class' => 'btn btn-success pull-left', 'name' => 'action', 'value' => 'reagendar'])         
         ?>
-        <?= Html::button('Sincronizar', ['class' => 'btn btn-primary pull-right', 'name' => 'action', 'value' => 'sync', 'id' => 'sync']) ?>
+        <?= Html::button('Sincronizar', ['class' => 'btn btn-primary pull-right', 'name' => 'action', 'value' => 'sync', 'id' => 'sync-remuneracion']) ?>
         <span id="spanSubtotal" class="pl-8" style="font-weight: bold;">SUMA SUBTOTALES: $ <?= number_format($model->neto, 0, ",", ".") ?></span>
         <span id="alertaDiferencia" class="text-warning text-bold pl-2 d-none">
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>

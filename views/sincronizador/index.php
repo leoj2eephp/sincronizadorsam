@@ -192,13 +192,8 @@ $rindeGastosParaExcel = array();
                                             $total_montos += $rinde->gasto->net;
                                         endforeach;
                                         foreach ($compra->gastoCompleta as $i => $rinde) :
-                                            if ($rinde->gasto->net == $p->monto || $rinde->gasto->total == $p->monto || $rinde->gasto->net == $total_montos) {
-                                                $color = "bg-info-light";
-                                                $css_totales = "text-info font-weight-bold";
-                                            } else {
-                                                $color = "bg-warning";
-                                                $css_totales = "text-danger font-weight-bold";
-                                            }
+                                            $color = "bg-info-light";
+                                            $css_totales = "text-info font-weight-bold";
                                             if (!isset($mostrado[$i])) {    // esto para los casos en que haya más de un gasto asociado a un mismo folio..
                                                 echo '<div><b>Fecha: </b>' . Helper::formatToLocalDate($rinde->gasto->issue_date) . '</div>
                                                 <div class=' . "'" . $css_totales . "'" . '><b>Neto: </b>' . number_format($rinde->gasto->net, 0, ",", ".") . '</div>
@@ -297,14 +292,8 @@ $rindeGastosParaExcel = array();
                                         $rindeGastosSincronizados[] = $gastos->gastoCompleta[0]->nro_documento;
                                         $cantidad_sincronizados++;
                                         foreach ($gastos->gastoCompleta as $i => $rinde) :
-                                            if ($rinde->gasto->net == $p->monto || $rinde->gasto->total == $p->monto) {
-                                                $color = "bg-info-light";
-                                                $css_totales = "text-info font-weight-bold";
-                                            } else {
-                                                $color = "bg-warning";
-                                                $css_totales = "text-danger font-weight-bold";
-                                            }
-
+                                            $color = "bg-info-light";
+                                            $css_totales = "text-info font-weight-bold";
                                             if (!isset($gastoMostrado[$i])) {    // esto para los casos en que haya más de un gasto asociado a un mismo folio..
                                                 echo 'data-toggle="tooltip" data-html="true"
                                                     title="' . "<div class='bg-info text-uppercase text-bold'>" . $rinde->gasto->supplier . ' (' . $rinde->rut_proveedor . ')</div>
@@ -399,13 +388,8 @@ $rindeGastosParaExcel = array();
                                         $cantidad_sincronizados++;
                                         // Filtrar aquí si ha habido algún cambio
                                         foreach ($honorarios->gastoCompleta as $i => $rinde) :
-                                            if ($rinde->gasto->net == $p->monto || $rinde->gasto->total == $p->monto) {
-                                                $color = "bg-info-light";
-                                                $css_totales = "text-info font-weight-bold";
-                                            } else {
-                                                $color = "bg-warning";
-                                                $css_totales = "text-danger font-weight-bold";
-                                            }
+                                            $color = "bg-info-light";
+                                            $css_totales = "text-info font-weight-bold";
                                             if (!isset($mostrado[$i])) {    // esto para los casos en que haya más de un gasto asociado a un mismo folio..
                                                 echo 'data-toggle="tooltip" data-html="true"
                                                     title="' . "<div class='bg-info text-uppercase text-bold'>" . $rinde->gasto->supplier . ' (' . $rinde->gasto->issue_date . ')</div>
@@ -470,7 +454,7 @@ $rindeGastosParaExcel = array();
 
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "i" => $indice,
-                                                    "tipo" => "compra",
+                                                    "tipo" => "honorario",
                                                     "es_remu" => (array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX))
                                                 ]),
                                                 /* 'value' => Url::to([

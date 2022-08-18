@@ -47,6 +47,25 @@ $(function () {
         } else {
             $("#errorMsg").html("Los montos de los vehículos deben coincidir con el valor del gasto.");
         }
+    })
+    $(document).on("click", "#sync-remuneracion", function () {
+        if (validaTotal()) {
+            var indice = $("#indiceTabla").val();
+            $.ajax({
+                url: "/sincronizadorsam/web/modal/sync-sam-remuneraciones",
+                type: "post",
+                data: $("#sam-modal").serialize(),
+                dataType: "html",
+                success: function (data) {
+                    $("#modalContent").html(data);
+                    if (data.indexOf("ok") != -1) {
+                        $("#sync_" + indice).css("display", "none");
+                    }
+                }
+            });
+        } else {
+            $("#errorMsg").html("Los montos de los vehículos deben coincidir con el valor del gasto.");
+        }
     });
 
     $(document).on("submit", "#uploadDTE", function (e) {

@@ -407,3 +407,8 @@ input:checked + .slider-sm:before {
     padding-left: 2px;
     color: #444;
 }
+
+#tabla>tbody>tr.odd:hover, #tabla>tbody>tr.even:hover {
+    cursor: pointer;
+    background-color: rgba(43, 181, 245, 0.493);
+}

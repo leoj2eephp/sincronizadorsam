@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\components\Helper;
+use Exception;
 use Yii;
 use yii\base\Model;
 
@@ -107,6 +109,133 @@ class PoliticaGastosForm extends Model {
         curl_close($ch);
 
         return $result;
+    }
+
+    public function saveRemuneraciones() {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            foreach ($this->vehiculos_seleccionados as $vehiculo) {
+                $rs = Yii::$app->db->createCommand('select max(id) as id from gasto')->queryOne();
+                $maxid = 0;
+                $maxid = $rs["id"];
+                $nextid = 1000000000;
+                if ((int)$maxid >= 1000000000) {
+                    $nextid = $maxid + 1;
+                }
+
+                $gasto = new Gasto();
+                $gasto->id = $nextid;
+                $gasto->status = 1;
+                $gasto->tax = 0;
+                $gasto->other_taxes = 0;
+                $gasto->category_group = "";
+                $gasto->category_code = "";
+                $gasto->report_id = null;
+                $gasto->expense_policy_id = null;
+                $gasto->chipax = 1;
+
+                $gastoImagen = new GastoImagen();
+                $gastoImagen->gasto_id = $gasto->id;
+
+                $gastoCompleta = new GastoCompleta();
+                $gastoCompleta->gasto_id = $gasto->id;
+                $gastoCompleta->vehiculo_equipo = $vehiculo->nombre;
+                $gasto->net = $vehiculo->valor;
+                $gasto->total = $vehiculo->valor;
+                $gastoCompleta->monto_neto = $vehiculo->valor;
+                $gastoCompleta->total_calculado = $vehiculo->valor;
+
+                $gasto->issue_date = $this->fecha;
+                $gasto->supplier = $this->nombre_proveedor;
+                $gasto->category = $this->categoria;
+                $gasto->note = $this->nota;
+                $gastoCompleta->cantidad = $this->cantidad;
+
+                $faena = $this->faena_seleccionada != "" ? Faena::find($this->faena_seleccionada) : null;
+                if (isset($faena)) {
+                    $gastoCompleta->centro_costo_faena = $faena->nombre;
+                } else {
+                    $gastoCompleta->centro_costo_faena = "-- NO ASIGNADA --";
+                }
+
+                $gastoCompleta->nombre_quien_rinde = $this->rendidor_seleccionado;
+                $gastoCompleta->nro_documento = $this->nro_documento;
+                $gastoCompleta->rut_proveedor = $this->rut_proveedor;
+                $gastoCompleta->tipo_documento = $this->tipo_documento_seleccionado;
+                $gastoCompleta->unidad = $this->unidad_seleccionada;
+                $gastoImagen->file_name = $this->html_factura;
+                $gastoCompleta->tipoCombustible_id = (int) $this->tipo_combustible_id;
+                
+                if (!$gasto->save()) {
+                    throw new Exception("No se pudo crear el gasto");
+                }
+                if (!$gastoCompleta->save()) {
+                    throw new Exception("No se pudo crear el gasto completo");
+                }
+                if (!$gastoImagen->save()) {
+                    throw new Exception("No se pudo crear la imagen del gasto");
+                }
+
+                // VERIFICAR TIPO DE VEHICULO..
+                $equipo_camion = "";
+                $v = VehiculoRindegasto::find()->where(["vehiculo" => $vehiculo->nombre])->one();
+                if (isset($v->camionarrendado_id)) {
+                    $equipo_camion = "CA";
+                } else if (isset($v->camionpropio_id)) {
+                    $equipo_camion = "CP";
+                } else if (isset($v->equipoarrendado_id)) {
+                    $equipo_camion = "EA";
+                } else if (isset($v->equipopropio_id)) {
+                    $equipo_camion = "EP";
+                }
+
+                $remuneracion = new RemuneracionesSam();
+                $remuneracion->tipo_equipo_camion = $equipo_camion;
+                $remuneracion->descripcion = "Sin descripción - Chipax";
+                $remuneracion->neto = $gastoCompleta->monto_neto;
+                $remuneracion->documento = substr($gastoCompleta->nro_documento, 0, 100);
+                $remuneracion->cantidad = (float) $gastoCompleta->cantidad;
+                $remuneracion->unidad = Helper::convertUnidad($gastoCompleta->unidad);
+                $remuneracion->fecha_rendicion = $gasto->issue_date;
+                $remuneracion->faena_id = $this->faena_seleccionada;
+                if (strlen($gastoCompleta->nombre_quien_rinde) > 100) {
+                    $remuneracion->nombre = substr($gastoCompleta->nombre_quien_rinde, 0, 100);
+                } else {
+                    $remuneracion->nombre = $gastoCompleta->nombre_quien_rinde;
+                }
+                $remuneracion->rut_rinde = " ";
+                $remuneracion->cuenta = $gasto->category_code . " - " . $gasto->category;
+                $remuneracion->nombre_proveedor = $gasto->supplier;
+                $remuneracion->rut_proveedor = $gastoCompleta->rut_proveedor;
+                $remuneracion->observaciones = "Registro de Chipax";
+                $remuneracion->tipo_documento = Helper::traducirTipoDocumento($gastoCompleta->tipo_documento);
+                $remuneracion->rindegastos = 0;
+                if ($equipo_camion == "EP") {
+                    $remuneracion->equipoPropio_id = $v->equipopropio_id;
+                    $remuneracion->operador_id = $this->operador_id;
+                } else if ($equipo_camion == "EA") {
+                    $remuneracion->equipoArrendado_id = $v->equipoarrendado_id;
+                    $remuneracion->operador_id = $this->operador_id;
+                } else if ($equipo_camion == "CP") {
+                    $remuneracion->camionPropio_id = $v->camionpropio_id;
+                    $remuneracion->chofer_id = $this->operador_id;
+                } else if ($equipo_camion == "CA") {
+                    $remuneracion->camionArrendado_id = $v->camionarrendado_id;
+                    $remuneracion->chofer_id = $this->operador_id;
+                }
+                $remuneracion->gasto_id = $gasto->id;
+
+                if (!$remuneracion->save()) {
+                    throw new Exception(join(", ", $remuneracion->getFirstErrors()));
+                }
+
+                $transaction->commit();
+                return "OK";
+            }
+        } catch (Exception $ex) {
+            $transaction->rollBack();
+            return $ex->getMessage();
+        }
     }
 
     public static function fillData() {

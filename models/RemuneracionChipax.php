@@ -85,7 +85,7 @@ class RemuneracionChipax extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getGastoCompleta() {
-        return $this->hasMany(GastoCompleta::class, ['nro_documento' => 'folio']);
+        return $this->hasMany(GastoCompleta::class, ['nro_documento' => 'id']);
     }
 
     public static function convertSPResultToArrayModel($spResult) {

@@ -7,16 +7,13 @@ use app\models\Chofer;
 use app\models\CompraChipax;
 use app\models\GastoChipax;
 use app\models\HonorarioChipax;
-use app\models\LineaNegocioChipax;
 use app\models\Operador;
 use app\models\PoliticaGastosForm;
 use app\models\ProrrataChipax;
 use app\models\RemuneracionChipax;
 use Exception;
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
 
 class ModalController extends Controller {
 
@@ -100,6 +97,8 @@ class ModalController extends Controller {
             $model->nombre_proveedor = $honorario["nombre_emisor"];
             $model->fecha = $honorario["fecha_emision"];
             $model->tipo_documento_seleccionado = "Otros";
+            $model->linea_negocio = $prorrata->linea_negocio;
+            $remu = true;
         } else if (null !== $remuneracion) {
             $model->nro_documento = $remuneracion["id"];
             $model->nombre_proveedor = $remuneracion["nombre_empleado"] . " " . $remuneracion["apellido_empleado"];
@@ -110,10 +109,6 @@ class ModalController extends Controller {
             $model->neto = $prorrata->monto;
             $remu = true;
         }
-
-        /* echo "<pre>";
-        print_r($model);
-        die; */
 
         Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
         if (!$remu) {
@@ -160,6 +155,38 @@ class ModalController extends Controller {
             } else {
                 return $this->renderAjax('_sincroError', [
                     "message" => $result,
+                ]);
+            }
+        } catch (Exception $ex) {
+            echo $ex->getMessage();
+            die;
+        }
+    }
+
+    public function actionSyncSamRemuneraciones() {
+        try {
+            $model = new \app\models\PoliticaGastosForm();
+            $model->load(Yii::$app->request->post());
+
+            $vehiculosValores = array();
+            foreach ($model->vehiculos_seleccionados as $i => $v) {
+                $vehiculo = new \app\models\VehiculoChipax();
+                $vehiculo->nombre = $v;
+                $vehiculo->valor = $model->valores_vehiculos[$i];
+
+                $vehiculosValores[] = $vehiculo;
+            }
+            $model->vehiculos_seleccionados = $vehiculosValores;
+            
+            $respuesta = $model->saveRemuneraciones();
+            Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
+            if ($respuesta == "OK") {
+                return $this->renderAjax('_sincroOK', [
+                    "message" => "OK",
+                ]);
+            } else {
+                return $this->renderAjax('_sincroError', [
+                    "message" => $respuesta,
                 ]);
             }
         } catch (Exception $ex) {
