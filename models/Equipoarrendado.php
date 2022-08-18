@@ -31,7 +31,7 @@ class Equipoarrendado extends \yii\db\ActiveRecord {
      * {@inheritdoc}
      */
     public static function tableName() {
-        return 'equipoarrendado';
+        return 'equipoArrendado';
     }
 
     /**

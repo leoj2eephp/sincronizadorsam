@@ -32,7 +32,7 @@ class Equipopropio extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'equipopropio';
+        return 'equipoPropio';
     }
 
     /**
