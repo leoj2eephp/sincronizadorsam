@@ -83,7 +83,33 @@ class SincronizadorController extends Controller {
         $model->compras = CompraChipax::convertSPResultToArrayModel($result);
         foreach ($model->compras as $compra) {
             if (count($compra->gastoCompleta) > 0) {
-                $compra->sincronizado = 1;
+                // BUSCO dentro de cada Prorrata asociada para encontrar asociaciones erróneas de datos sincronizados
+                foreach ($compra->spProrrataChipax as $p) {
+                    // BUSCO todas las coincidencias registradas en GastoCompleta (que podrían ser erróneas por el nro_documento)
+                    foreach ($compra->gastoCompleta as $gastoCompleta) {
+                        if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
+                            // COMPRA
+                            if (
+                                $gastoCompleta->monto_neto == $p->monto &&
+                                $compra->fecha_gasto == $compra->fecha_emision &&
+                                $gastoCompleta->nro_documento == $compra->folio
+                            ) {
+                                $compra->sincronizado = 1;
+                                break;
+                            }
+                        } else {
+                            // REMUNERACIÓN
+                            if (
+                                $gastoCompleta->total_calculado != $compra->monto_total ||
+                                $compra->fecha_gasto != $compra->fecha_emision ||
+                                $gastoCompleta->nro_documento != $compra->folio
+                            ) {
+                                $compra->sincronizado = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
             } else {
                 // Aquí valido cuando un folio fue ingresado con ceros adelante.. simplemente le digo que sí está sincronizado, pero
                 // en el index le agrego el objeto gastoCompleta, ya que desde aquí no puedo modificarlo
@@ -107,7 +133,33 @@ class SincronizadorController extends Controller {
         $model->gastos = GastoChipax::convertSPResultToArrayModel($result);
         foreach ($model->gastos as $gasto) {
             if (count($gasto->gastoCompleta) > 0) {
-                $gasto->sincronizado = 1;
+                // BUSCO dentro de cada Prorrata asociada para encontrar asociaciones erróneas de datos sincronizados
+                foreach ($gasto->spProrrataChipax as $p) {
+                    // BUSCO todas las coincidencias registradas en GastoCompleta (que podrían ser erróneas por el nro_documento)
+                    foreach ($gasto->gastoCompleta as $gastoCompleta) {
+                        if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
+                            // COMPRA
+                            if (
+                                $gastoCompleta->monto_neto == $p->monto &&
+                                $gasto->fecha_gasto == $gasto->fecha &&
+                                $gastoCompleta->nro_documento == $gasto->num_documento
+                            ) {
+                                $gasto->sincronizado = 1;
+                                break;
+                            }
+                        } else {
+                            // REMUNERACIÓN
+                            if (
+                                $gastoCompleta->total_calculado != $gasto->monto_total ||
+                                $gasto->fecha_gasto != $gasto->fecha ||
+                                $gastoCompleta->nro_documento != $gasto->num_documento
+                            ) {
+                                $compra->sincronizado = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
             } else {
                 $gasto->sincronizado = 0;
             }

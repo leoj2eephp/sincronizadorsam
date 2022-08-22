@@ -25,6 +25,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
 
     public $sincronizado;
     public $spProrrataChipax = [];
+    public $fecha_gasto;
 
     /**
      * {@inheritdoc}
@@ -40,7 +41,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'descripcion', 'fecha', 'moneda_id', 'monto', 'proveedor'], 'required'],
             [['id', 'moneda_id', 'monto', 'usuario_id'], 'integer'],
-            [['fecha', 'sincronizado'. 'spProrrataChipax'], 'safe'],
+            [['fecha', 'sincronizado', 'spProrrataChipax', 'fecha_gasto'], 'safe'],
             [['proveedor', 'responsable'], 'string', 'max' => 100],
             [['descripcion'], 'string', 'max' => 200],
             [['num_documento', 'tipo_cambio'], 'string', 'max' => 45],
@@ -86,7 +87,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
 
     public static function convertSPResultToArrayModel($spResult) {
         $gastos = [];
-        
+
         foreach ($spResult as $fila) {
             $gastito = new GastoChipax();
             $gastito->id = $fila["gastoId"];
@@ -99,7 +100,8 @@ class GastoChipax extends \yii\db\ActiveRecord {
             $gastito->responsable = $fila["responsable"];
             $gastito->tipo_cambio = $fila["tipo_cambio"];
             $gastito->usuario_id = $fila["usuario_id"];
-            
+            $gastito->fecha_gasto = $fila["fecha_gasto"];
+
             $pro = new ProrrataChipax();
             $pro->id = $fila["prorrataId"];
             $pro->cuenta_id = $fila["cuenta_id"];
@@ -109,12 +111,11 @@ class GastoChipax extends \yii\db\ActiveRecord {
             $pro->monto = $fila["monto"];
             $pro->periodo = $fila["periodo"];
             $pro->gasto_chipax_id = $fila["gasto_chipax_id"];
-            
+
             $gastito->spProrrataChipax[] = $pro;
             $gastos[] = $gastito;
         }
-        
+
         return $gastos;
     }
-    
 }

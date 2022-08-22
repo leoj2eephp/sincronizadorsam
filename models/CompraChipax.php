@@ -23,6 +23,7 @@ class CompraChipax extends \yii\db\ActiveRecord {
 
     public $sincronizado;
     public $spProrrataChipax = [];
+    public $fecha_gasto;
 
     /**
      * {@inheritdoc}
@@ -38,7 +39,7 @@ class CompraChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'fecha_emision', 'folio', 'moneda_id', 'monto_total', 'rut_emisor'], 'required'],
             [['id', 'folio', 'moneda_id', 'monto_total', 'tipo'], 'integer'],
-            [['fecha_emision', "sincronizado", "spProrrataChipax"], 'safe'],
+            [['fecha_emision', "sincronizado", "spProrrataChipax", "fecha_gasto"], 'safe'],
             [['razon_social'], 'string', 'max' => 100],
             [['rut_emisor'], 'string', 'max' => 12],
             [['id'], 'unique'],
@@ -92,6 +93,7 @@ class CompraChipax extends \yii\db\ActiveRecord {
             $comprita->razon_social = $fila["razon_social"];
             $comprita->rut_emisor = $fila["rut_emisor"];
             $comprita->tipo = $fila["tipo"];
+            $comprita->fecha_gasto = $fila["fecha_gasto"];
             
             $pro = new ProrrataChipax();
             $pro->id = $fila["prorrataId"];

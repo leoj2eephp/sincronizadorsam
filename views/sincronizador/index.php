@@ -169,8 +169,7 @@ $rindeGastosParaExcel = array();
                     ?>
                                 <tr <?php
                                     if ($compra->sincronizado) {
-                                        $compra->sincronizado = true;
-
+                                        //$compra->sincronizado = true;
                                         $gastoCompletaCompra = count($compra->gastoCompleta) > 0 ? $compra->gastoCompleta[0] : null;
                                         if (!isset($gastoCompletaCompra)) {
                                             // Esto solo sucede para los folios con ceros adelante.. como ya los marqué como sincronizados
@@ -192,6 +191,23 @@ $rindeGastosParaExcel = array();
                                             $total_montos += $rinde->gasto->net;
                                         endforeach;
                                         foreach ($compra->gastoCompleta as $i => $rinde) :
+                                            // VALIDACIÓN para casos donde viene asociado un GastoCompleta que no corresponde (cuando el nro_documento es igual pero no corresponde)
+                                            if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
+                                                // COMPRA
+                                                if (
+                                                    $rinde->monto_neto != $p->monto ||
+                                                    $compra->fecha_gasto != $compra->fecha_emision ||
+                                                    $rinde->nro_documento != $compra->folio
+                                                ) continue;
+                                            } else {
+                                                // REMUNERACIÓN
+                                                if (
+                                                    $rinde->total_calculado != $compra->monto_total ||
+                                                    $compra->fecha_gasto != $compra->fecha_emision ||
+                                                    $rinde->nro_documento != $compra->folio
+                                                ) continue;
+                                            }
+
                                             $color = "bg-info-light";
                                             $css_totales = "text-info font-weight-bold";
                                             if (!isset($mostrado[$i])) {    // esto para los casos en que haya más de un gasto asociado a un mismo folio..
@@ -292,6 +308,22 @@ $rindeGastosParaExcel = array();
                                         $rindeGastosSincronizados[] = $gastos->gastoCompleta[0]->nro_documento;
                                         $cantidad_sincronizados++;
                                         foreach ($gastos->gastoCompleta as $i => $rinde) :
+                                            // VALIDACIÓN para casos donde viene asociado un GastoCompleta que no corresponde (cuando el nro_documento es igual pero no corresponde)
+                                            if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
+                                                // COMPRA
+                                                if (
+                                                    $rinde->monto_neto != $p->monto ||
+                                                    $gastos->fecha_gasto != $gastos->fecha ||
+                                                    $rinde->nro_documento != $gastos->num_documento
+                                                ) continue;
+                                            } else {
+                                                // REMUNERACIÓN
+                                                if (
+                                                    $rinde->total_calculado != $gastos->monto_total ||
+                                                    $gastos->fecha_gasto != $gastos->fecha ||
+                                                    $rinde->nro_documento != $gastos->num_documento
+                                                ) continue;
+                                            }
                                             $color = "bg-info-light";
                                             $css_totales = "text-info font-weight-bold";
                                             if (!isset($gastoMostrado[$i])) {    // esto para los casos en que haya más de un gasto asociado a un mismo folio..
