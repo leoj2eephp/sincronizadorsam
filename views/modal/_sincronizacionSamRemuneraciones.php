@@ -86,6 +86,7 @@ $script = <<< JS
     $(document).ready(function() {
         let montoNeto = parseInt($("#total").val());
         
+        newAction = "";
         action = $("#sam-modal").attr("action");
         argumentsIndex = action.indexOf("?");
         if (argumentsIndex != -1) {

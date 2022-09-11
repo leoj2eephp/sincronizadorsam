@@ -165,7 +165,7 @@ class PoliticaGastosForm extends Model {
                 $gastoCompleta->unidad = $this->unidad_seleccionada;
                 $gastoImagen->file_name = $this->html_factura;
                 $gastoCompleta->tipoCombustible_id = (int) $this->tipo_combustible_id;
-                
+
                 if (!$gasto->save()) {
                     throw new Exception("No se pudo crear el gasto");
                 }
@@ -228,14 +228,14 @@ class PoliticaGastosForm extends Model {
                 if (!$remuneracion->save()) {
                     throw new Exception(join(", ", $remuneracion->getFirstErrors()));
                 }
-
-                $transaction->commit();
-                return "OK";
             }
         } catch (Exception $ex) {
             $transaction->rollBack();
             return $ex->getMessage();
         }
+        
+        $transaction->commit();
+        return "OK";
     }
 
     public static function fillData() {
