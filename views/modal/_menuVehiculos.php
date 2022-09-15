@@ -1,3 +1,9 @@
+<?php
+
+use kartik\select2\Select2Asset;
+
+Select2Asset::register($this);
+?>
 <div class="row pb-2">
     <div class="col col-sm-6">
         <h4>Vehículos Seleccionados</h4>

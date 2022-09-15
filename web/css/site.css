@@ -412,3 +412,13 @@ input:checked + .slider-sm:before {
     cursor: pointer;
     background-color: rgba(43, 181, 245, 0.493);
 }
+
+.select2-container--default .select2-results > .select2-results__options {
+    max-height: 400px !important;
+    min-height: 200px !important;
+    overflow-y: auto !important;
+}
+
+.bigdrop {
+    width: 500px !important;
+}

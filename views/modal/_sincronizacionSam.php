@@ -122,7 +122,7 @@ use yii\helpers\ArrayHelper;
                       ],
                       ])->label(false); */
                     ?>
-                    <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style bg-white">
+                    <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style bg-white" id="vehis">
                         <?php
                         foreach ($model->vehiculos as $vehi) {
                             echo "<option value='" . $vehi["vehiculo"] . "'>" . $vehi["vehiculo"] . "</option>";
@@ -177,6 +177,11 @@ use yii\helpers\ArrayHelper;
 $script = <<< JS
         
     $(document).ready(function() {
+        $("#vehis").select2({dropdownCssClass : 'bigdrop'});
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+        });
+
         let montoNeto = parseInt($("#total").val());
         
         action = $("#sam-modal").attr("action");

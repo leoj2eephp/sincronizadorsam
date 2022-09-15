@@ -233,20 +233,42 @@ class PoliticaGastosForm extends Model {
             $transaction->rollBack();
             return $ex->getMessage();
         }
-        
+
         $transaction->commit();
         return "OK";
     }
 
     public static function fillData() {
         $form = new PoliticaGastosForm();
-        $form->vehiculos = (new \yii\db\Query())
-            ->select(['id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+        $camionPropio = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
             ->from('vehiculo_rindegasto')
-            ->all();
+            ->join("INNER JOIN", "camionPropio", 'camionPropio.id = vehiculo_rindegasto.camionpropio_id AND camionPropio.vigente = "SÍ"');
+
+        $camionArrendado = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+            ->from('vehiculo_rindegasto')
+            ->join("INNER JOIN", "camionArrendado", 'camionArrendado.id = vehiculo_rindegasto.camionarrendado_id AND camionArrendado.vigente = "SÍ"');
+
+        $equipoPropio = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+            ->from('vehiculo_rindegasto')
+            ->join("INNER JOIN", "equipoPropio", 'equipoPropio.id = vehiculo_rindegasto.equipopropio_id AND equipoPropio.vigente = "SÍ"');
+
+        $equipoArrendado = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+            ->from('vehiculo_rindegasto')
+            ->join("INNER JOIN", "equipoArrendado", 'equipoArrendado.id = vehiculo_rindegasto.equipoarrendado_id AND equipoArrendado.vigente = "SÍ"');
+
+        $form->vehiculos = (new \yii\db\Query())
+                        ->select("*")
+                        ->from($camionPropio->union($camionArrendado)->union($equipoPropio)->union($equipoArrendado))
+                        ->orderBy("vehiculo")->all();
+
         $form->unidades = (new \yii\db\Query())
             ->select(['id', 'nombre'])
             ->from('unidad')
+            ->orderBy("nombre")
             ->all();
         /*         $form->tipoDocumento = (new \yii\db\Query())
             ->select(['id', 'vehiculo'])
@@ -255,16 +277,19 @@ class PoliticaGastosForm extends Model {
         $form->rendidor = (new \yii\db\Query())
             ->select(['id', 'nombre'])
             ->from('rendidor')
+            ->orderBy("nombre")
             ->all();
         $form->faena = (new \yii\db\Query())
             ->select(['id', 'nombre'])
             ->from('faena')
+            ->orderBy("nombre")
             ->where('vigente = "SÍ"')
             ->all();
         $form->tipo_combustibles = (new \yii\db\Query())
             ->select(['id', 'nombre'])
             ->from('tipoCombustible')
             ->where('vigente = "SÍ"')
+            ->orderBy("nombre")
             ->all();
 
         return $form;
