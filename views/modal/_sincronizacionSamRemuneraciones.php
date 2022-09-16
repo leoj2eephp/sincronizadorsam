@@ -85,8 +85,8 @@ use yii\widgets\ActiveForm;
 $script = <<< JS
         
     $(document).ready(function() {
-        $("#vehis").select2({dropdownCssClass : 'bigdrop'});
-        $("#operador").select2({dropdownCssClass : 'bigdrop'});
+        // $("#vehis").select2({dropdownCssClass : 'bigdrop'});
+        // $("#operador").select2({dropdownCssClass : 'bigdrop'});
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });

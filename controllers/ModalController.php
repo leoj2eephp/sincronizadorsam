@@ -50,8 +50,8 @@ class ModalController extends Controller {
         // Está obteniendo la información que está en sesión (para cargarla una sola vez), sobre los gastos
         $model = PoliticaGastosForm::fillData();
         $categoria = CategoriaChipax::findOne($prorrata->cuenta_id);
-        $operadores = Operador::findAll(["vigente" => "SÍ"]);
-        $choferes = Chofer::findAll(["vigente" => "SÍ"]);
+        $operadores = Operador::find()->where(["vigente" => "SÍ"])->orderBy("nombre")->all();
+        $choferes = Chofer::find()->where(["vigente" => "SÍ"])->orderBy("nombre")->all();
         // Llamar a la API de SAM para obtener los centros de costos
         /* $faenas = $model->getCentrosCostosFaenas($categoria->nombre);
         $faenas_decoded = json_decode($faenas);
