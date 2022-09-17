@@ -3,16 +3,15 @@
 namespace app\controllers;
 
 use app\components\Helper;
-use app\models\ChipaxApiService;
 use app\models\ComentariosSincronizador;
 use app\models\CompraChipax;
 use app\models\FlujoCajaCartola;
 use app\models\GastoChipax;
-use app\models\GastoCompleta;
 use app\models\GastoRindegastos;
 use app\models\HonorarioChipax;
-use app\models\LineaNegocioChipax;
 use app\models\RemuneracionChipax;
+use app\models\RindeGastosApiService;
+use app\models\User;
 use Yii;
 use yii\base\Controller;
 use yii\filters\VerbFilter;
@@ -281,13 +280,51 @@ class SincronizadorController extends Controller {
         ]);
     }
 
-    private function actionSincronizar() {
-        set_time_limit(0);
-        $chipaxApiService = new ChipaxApiService();
-        $lineasNegocio = $chipaxApiService->getLineasNegocio();
-        LineaNegocioChipax::sincronizarDatos($lineasNegocio);
-        $chipaxApiService->sincronizarCategorias();
-        $chipaxApiService->sincronizarChipaxData();
+    public function actionSincronizar() {
+        // if (Yii::$app->user->can("administrador")) {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
+        if (Yii::$app->request->isPost) {
+            /* set_time_limit(0);
+                $chipaxApiService = new ChipaxApiService();
+                $lineasNegocio = $chipaxApiService->getLineasNegocio();
+                LineaNegocioChipax::sincronizarDatos($lineasNegocio);
+                $chipaxApiService->sincronizarCategorias();
+                $result = $chipaxApiService->sincronizarChipaxData(); */
+            set_time_limit(0);
+            Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 0")->execute();
+            Yii::$app->db->createCommand()->truncateTable("gasto_rindegastos")->execute();
+            Yii::$app->db->createCommand()->truncateTable("gasto_completa_rindegastos")->execute();
+            Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 1")->execute();
+            $json = $this->getExpenses();
+            $header = $json->Records;
+            for ($i = 1; $i <= $header->Pages; $i++) {
+                if ($i == 1) {
+                    GastoRindegastos::sincronizarGastos($json);
+                } else {
+                    $otherjson = $this->getExpenses($i);
+                    GastoRindegastos::sincronizarGastos($otherjson);
+                }
+            }
+            return '<p ok="ok" class="text-center text-xl">
+                Sincronización completada!
+            </p>
+            <div class="d-flex justify-content-center">
+                <i class="fa fa-10x fa-check text-success"></i>
+            </div>';
+        } else {
+            // return $this->render("_sincronizando");
+        }
+        /* } else {
+            return Yii::$app->response->redirect(Yii::$app->request->referrer);
+        } */
+    }
+
+    private function getExpenses($page = 1) {
+        $rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
+        //$params["Since"] = "2020-01-01";
+        $params["Status"] = 1;
+        $params["Page"] = $page;
+        return json_decode($rindeApi->getExpenses($params));
     }
 
     public function actionSincronizarConChipax() {
