@@ -3,7 +3,12 @@
 namespace app\controllers;
 
 use app\components\Helper;
+use app\models\Chofer;
+use app\models\Operador;
+use app\models\PoliticaGastosForm;
 use app\models\RemuneracionesSam;
+use app\models\VehiculoRindegasto;
+use Exception;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -161,6 +166,38 @@ class RemuneracionesSamController extends Controller {
         ]);
 
         return $contenido;
+    }
+
+    public function actionManual() {
+        $model = new PoliticaGastosForm();
+        $camionPropio = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+            ->from('vehiculo_rindegasto')
+            ->join("INNER JOIN", "camionPropio", 'camionPropio.id = vehiculo_rindegasto.camionpropio_id AND camionPropio.vigente = "SÍ"');
+
+        $camionArrendado = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+            ->from('vehiculo_rindegasto')
+            ->join("INNER JOIN", "camionArrendado", 'camionArrendado.id = vehiculo_rindegasto.camionarrendado_id AND camionArrendado.vigente = "SÍ"');
+
+        $equipoPropio = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+            ->from('vehiculo_rindegasto')
+            ->join("INNER JOIN", "equipoPropio", 'equipoPropio.id = vehiculo_rindegasto.equipopropio_id AND equipoPropio.vigente = "SÍ"');
+
+        $equipoArrendado = (new \yii\db\Query())
+            ->select(['vehiculo_rindegasto.id', 'vehiculo', 'camionarrendado_id', 'camionpropio_id', 'equipopropio_id', 'equipoarrendado_id'])
+            ->from('vehiculo_rindegasto')
+            ->join("INNER JOIN", "equipoArrendado", 'equipoArrendado.id = vehiculo_rindegasto.equipoarrendado_id AND equipoArrendado.vigente = "SÍ"');
+
+        $model->vehiculos = (new \yii\db\Query())
+            ->select("*")
+            ->from($camionPropio->union($camionArrendado)->union($equipoPropio)->union($equipoArrendado))
+            ->orderBy("vehiculo")->all();
+        $operadores = Operador::find()->where(["vigente" => "SÍ"])->orderBy("nombre")->all();
+        $choferes = Chofer::find()->where(["vigente" => "SÍ"])->orderBy("nombre")->all();
+
+        return $this->renderAjax("remuneracionManual", ["model" => $model, "operadores" => $operadores, "choferes" => $choferes]);
     }
 
     /**

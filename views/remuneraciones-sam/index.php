@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use app\components\Helper;
 use kartik\date\DatePicker;
 use yii\widgets\ActiveForm;
@@ -73,13 +74,22 @@ $this->title = 'Remuneraciones SAM';
                             <option value="6" <?= $agrupado == "6" ? "selected" : "" ?>>Operador y Máquina</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-4 mt-4 pt-1">
                         <?= Html::submitButton("Buscar <i class='fa fa-search'></i>", ["class" => "btn btn-primary"]) ?>
                         <?=
                         Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success", "id" => "syncExcel"])
                         ?>
+                        <?=
+                        Html::button('Remuneración Manual <i class="fa fa-sync"></i>', [
+                            'class' => 'showModalButton btn btn-warning text-white', 'title' => "Agregar Remuneración Manualmente",
+                            'id' => 'sync-remu-manual',
+                            'value' => Url::to([
+                                "/remuneraciones-sam/manual", "tipo" => "remuneracion"
+                            ]),
+                            'data-toggle' => 'modal', 'data-target' => '#modalvote'
+                        ]);
+                        ?>
                     </div>
-                    <div class="offset-2"></div>
                 </div>
             </div>
             <?php $form->end(); ?>
@@ -209,8 +219,6 @@ $(document).ready(function() {
             "fecha_hasta": $("#fecha_hasta").val(),
             "data": rowData
         }
-
-        console.log(rowData);
 
         $.ajax({
             url: "/sincronizadorsam/web/remuneraciones-sam/detail",

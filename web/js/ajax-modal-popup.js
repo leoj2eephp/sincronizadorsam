@@ -68,6 +68,22 @@ $(function () {
         }
     });
 
+    $(document).on("click", "#sync-remu-manual", function () {
+        if (validaTotal()) {
+            $.ajax({
+                url: "/sincronizadorsam/web/modal/sync-sam-remuneraciones",
+                type: "post",
+                data: $("#sam-modal").serialize(),
+                dataType: "html",
+                success: function (data) {
+                    $("#modalContent").html(data);
+                }
+            });
+        } else {
+            $("#errorMsg").html("Los montos de los vehículos deben coincidir con el valor del gasto.");
+        }
+    });
+
     $(document).on("submit", "#uploadDTE", function (e) {
         e.preventDefault();
 
@@ -115,6 +131,45 @@ $(function () {
         });
     });
 
+    // funciones para agregar vehículos al momento de sincronizar remuneración
+    $(document).on("change", ".porcentaje", function() {
+        let porcentaje = $(this).val();
+        let montoNeto = parseInt($("#total").val());
+    
+        total = (montoNeto * porcentaje) / 100;
+        // Se cambia esta línea, porque se agregaron más estilos y elementos, lo que hacía inútil el uso de next()
+        //$(this).next(".valor").val(Math.round(total));
+        $(this).closest(".row").next(".valor").val(Math.round(total));
+    
+        refrescarPrimerPorcentaje();
+        calcularTotal();
+    });
+    
+    $(document).on("change", ".valor", function() {
+        let valor = $(this).val();
+        let montoNeto = parseInt($("#total").val());
+        
+        let porcentaje = (valor * 100) / montoNeto;
+        //$(this).prev(".porcentaje").val(Math.round(porcentaje));
+        $(this).closest(".row").find(".porcentaje").val(Math.round(porcentaje));
+    
+        refrescarPrimerPorcentaje();
+        calcularTotal();
+    });
+    
+    $(document).on("click", ".delete-vehiculo", function() {
+        $(this).closest("div.row.fila-vehiculos").remove();
+        if ($(".fila-vehiculos").length == 0) {
+            $(".primera-fila-vehiculos").find(".porcentaje").val(100);
+            $(".primera-fila-vehiculos").find(".valor").val(parseInt($("#total").val()));
+    
+            $($(".primera-fila-vehiculos")[0]).addClass("fila-vehiculos");
+            $($(".primera-fila-vehiculos")[0]).removeClass("primera-fila-vehiculos");
+        } else {
+            refrescarPrimerPorcentaje();
+        }
+    });
+
 });
 
 function validaTotal() {
@@ -126,4 +181,68 @@ function validaTotal() {
         $("#spanSubtotal").css("color", "black");
     }
     return ok;
+}
+
+function refreshSelect2Dataset() {
+    $(".vehiculo").each(function(index, obj) {
+        let dataKrajee = eval($(obj).data('krajee-select2'));
+        $(obj).attr("id", "id_" + index);
+
+        delete obj.dataset.select2Id;
+        obj.dataset.select2Id = "id_" + index;
+
+        //$(obj).select2(dataKrajee); Esta línea estaba provocando un error al clonar más de 1 vez
+    });
+}
+
+function refrescarPrimerValor() {
+    if ($(".primera-fila-vehiculos").length == 1) {
+        var subtotal = 0;
+        $(".fila-vehiculos").find(".valor").each(function(index, obj) {
+            subtotal += parseInt($(obj).val());
+        });
+
+        let montoNeto = parseInt($("#total").val());
+        $(".primera-fila-vehiculos").find(".valor").val(montoNeto - subtotal);
+    }
+}
+
+function refrescarPrimerPorcentaje() {
+    if ($(".primera-fila-vehiculos").length == 1) {
+        var subtotal = 0;
+        $(".fila-vehiculos").find(".porcentaje").each(function(index, obj) {
+            subtotal += parseInt($(obj).val());
+        });
+
+        $(".primera-fila-vehiculos").find(".porcentaje").val(100 - subtotal);
+        refrescarPrimerValor();
+    }
+}
+
+function refrescarSubtotales() {
+    let montoNeto = parseInt($("#total").val());
+    let cantidadVehiculos = $(".vehiculo").length;
+    let subNetos = Math.trunc(montoNeto / cantidadVehiculos);
+
+    $(".fila-vehiculos").find(".valor").val(subNetos);
+    let restanteDivision = parseInt(montoNeto - (subNetos * cantidadVehiculos));
+    $(".primera-fila-vehiculos").find(".valor").val(subNetos + restanteDivision);
+
+    let porcentajeDividido = Math.trunc(100 / cantidadVehiculos);
+    $(".fila-vehiculos").find(".porcentaje").val(porcentajeDividido);
+    let sumaPorcentajes = porcentajeDividido * (cantidadVehiculos - 1);
+    $(".primera-fila-vehiculos").find(".porcentaje").val(100 - sumaPorcentajes);
+
+    calcularTotal();
+}
+
+function calcularTotal() {
+    let total = 0;
+    $(".valor").each(function(index, obj) {
+        total += parseInt($(obj).val());
+    });
+
+    $("#spanTotal").html("TOTAL: $ " + total.toLocaleString('de-DE', { style: 'currency', currency: 'CLP' }));
+    $("#total").val(total);
+    validaTotal();
 }
