@@ -25,6 +25,9 @@ use Yii;
  * @property RemuneracionChipax $remuneracionChipax
  */
 class ProrrataChipax extends \yii\db\ActiveRecord {
+
+    public $monto_sumado;   // Para los casos en que desde chipax viene una factura dividida en 2 montos, pero RindeGastos lo tiene como 1 solo
+
     /**
      * {@inheritdoc}
      */
@@ -39,7 +42,7 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'linea_negocio', 'modelo', 'monto', 'periodo'], 'required'],
             [['id', 'cuenta_id', 'filtro_id', 'monto', 'compra_chipax_id', 'gasto_chipax_id', 'honorario_chipax_id', 'remuneracion_chipax_id'], 'integer'],
-            [['periodo'], 'safe'],
+            [['periodo', 'monto_sumado'], 'safe'],
             [['linea_negocio', 'modelo'], 'string', 'max' => 45],
             [['id'], 'unique'],
             [['compra_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => CompraChipax::className(), 'targetAttribute' => ['compra_chipax_id' => 'id']],

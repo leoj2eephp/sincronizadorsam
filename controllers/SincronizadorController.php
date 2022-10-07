@@ -88,8 +88,10 @@ class SincronizadorController extends Controller {
                     foreach ($compra->gastoCompleta as $gastoCompleta) {
                         if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
                             // COMPRA
+                            // Esto es para los casos en que en chipax viene el monto dividido en 2 registros..
+                            $montoProrrata = $p->monto_sumado > 0 ? $p->monto_sumado : $p->monto;
                             if (
-                                $gastoCompleta->monto_neto == $p->monto &&
+                                $gastoCompleta->monto_neto == $montoProrrata &&
                                 $compra->fecha_gasto == $compra->fecha_emision &&
                                 $gastoCompleta->nro_documento == $compra->folio
                             ) {

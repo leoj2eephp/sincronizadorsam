@@ -191,11 +191,12 @@ $rindeGastosParaExcel = array();
                                             $total_montos += $rinde->gasto->net;
                                         endforeach;
                                         foreach ($compra->gastoCompleta as $i => $rinde) :
+                                            $montoProrrata = $p->monto_sumado > 0 ? $p->monto_sumado : $p->monto;
                                             // VALIDACIÓN para casos donde viene asociado un GastoCompleta que no corresponde (cuando el nro_documento es igual pero no corresponde)
                                             if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
                                                 // COMPRA
                                                 if (
-                                                    $rinde->monto_neto != $p->monto ||
+                                                    $rinde->monto_neto != $montoProrrata ||
                                                     $compra->fecha_gasto != $compra->fecha_emision ||
                                                     $rinde->nro_documento != $compra->folio
                                                 ) continue;
@@ -205,10 +206,10 @@ $rindeGastosParaExcel = array();
                                                     $rinde->total_calculado != $compra->monto_total ||
                                                     $compra->fecha_gasto != $compra->fecha_emision ||
                                                     $rinde->nro_documento != $compra->folio
-                                                ) continue;
-                                            }
+                                               ) continue;
+                                             }
 
-                                            $color = "bg-info-light";
+                                            $color = $p->monto_sumado > 0 ? "bg-warning" : "bg-info-light";
                                             $css_totales = "text-info font-weight-bold";
                                             if (!isset($mostrado[$i])) {    // esto para los casos en que haya más de un gasto asociado a un mismo folio..
                                                 echo '<div><b>Fecha: </b>' . Helper::formatToLocalDate($rinde->gasto->issue_date) . '</div>
@@ -238,7 +239,10 @@ $rindeGastosParaExcel = array();
                                     <td style="min-width: 84px !important;" data-sort="<?= Helper::formatToLocalDate($compra->fecha_emision) ?>">
                                         <?= Helper::formatToLocalDate($compra->fecha_emision) ?></td>
                                     <td><?= $compra->folio ?></td>
-                                    <td><?= isset($p) ? number_format($p->monto, 0, ",", ".") : "?" ?></td>
+                                    <td><?php
+                                        if (isset($p)) {
+                                            echo $p->monto_sumado > 0 ? number_format($p->monto_sumado, 0, ",", ".") : number_format($p->monto, 0, ",", ".");
+                                        } ?></td>
                                     <td><?= isset($model->descripcion) ? $model->descripcion . ' (' . $compra->razon_social . ')' : "" ?></td>
                                     <td>
                                         <?= (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) ?
