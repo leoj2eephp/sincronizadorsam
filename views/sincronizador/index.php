@@ -522,7 +522,7 @@ $rindeGastosParaExcel = array();
                                     <td></td>
                                     <td style="min-width: 84px !important;" data-sort="<?= Helper::formatToLocalDate($remuneraciones->periodo) ?>">
                                         <?= Helper::formatToLocalDate($remuneraciones->periodo) ?></td>
-                                    <td><?= "" ?></td>
+                                    <td><?= $remuneraciones->id ?></td>
                                     <td><?= isset($p) ? number_format($p->monto, 0, ",", ".") : "?" ?></td>
                                     <td></td>
                                     <td>Remuneración</td>
