@@ -27,7 +27,7 @@ Select2Asset::register($this);
             <?php
             echo DatePicker::widget([
                 'name' => 'fecha',
-                'options' => ['placeholder' => 'Seleccione fecha remuneración', 'class' => 'form-control'],
+                'options' => ['placeholder' => 'Seleccione fecha remuneración', 'class' => 'form-control', 'id' => 'fecha_rendicion'],
                 'language' => 'es',
                 'pluginOptions' => [
                     'format' => 'dd-mm-yyyy',
@@ -64,7 +64,7 @@ Select2Asset::register($this);
 
         <div class="box-footer col-sm-12">
             <?= Html::button('Sincronizar', [
-                'class' => 'btn btn-primary pull-right', 'name' => 'action',
+                'class' => 'btn btn-primary pull-right sync-remuneracion-manual', 'name' => 'action',
                 'value' => 'sync', 'id' => 'sync-remuneracion'
             ]) ?>
         </div>
