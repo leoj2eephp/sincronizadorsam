@@ -20,13 +20,12 @@ Select2Asset::register($this);
         <?= $form->field($model, "rut_proveedor")->hiddenInput()->label(false) ?>
         <?= $form->field($model, "nro_documento")->hiddenInput()->label(false) ?>
         <?= $form->field($model, "nota")->hiddenInput()->label(false) ?>
-        <?= $form->field($model, "fecha")->hiddenInput()->label(false) ?>
         <?= $form->field($model, "tipo_combustible_id")->hiddenInput()->label(false) ?>
         <h5 class="card-title">Fecha Remuneración</h5>
         <p class="card-text">
             <?php
             echo DatePicker::widget([
-                'name' => 'fecha',
+                'name' => 'PoliticaGastosForm[fecha]',
                 'options' => ['placeholder' => 'Seleccione fecha remuneración', 'class' => 'form-control', 'id' => 'fecha_rendicion'],
                 'language' => 'es',
                 'pluginOptions' => [
