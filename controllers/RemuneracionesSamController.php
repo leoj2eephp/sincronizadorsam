@@ -56,15 +56,15 @@ class RemuneracionesSamController extends Controller {
         if ($agrupado == 1)
             $group_by = "equipoPropio.id, equipoArrendado.id, camionPropio.id, camionArrendado.id"; // Aquí tiene que ser por vehículo
         else if ($agrupado == 2)
-            $group_by = "nombre_proveedor";
+            $group_by = "operador_id, chofer_id";
         else if ($agrupado == 3)
             $group_by = "faena.nombre";
         else if ($agrupado == 4)
             $group_by = "faena.nombre, equipoPropio.id, equipoArrendado.id, camionPropio.id, camionArrendado.id";
         else if ($agrupado == 5)
-            $group_by = "faena.nombre, nombre_proveedor";
+            $group_by = "faena.nombre, operador_id, chofer_id";
         else if ($agrupado == 6)
-            $group_by = "nombre_proveedor, equipoPropio.id, equipoArrendado.id, camionPropio.id, camionArrendado.id";
+            $group_by = "operador_id, chofer_id, equipoPropio.id, equipoArrendado.id, camionPropio.id, camionArrendado.id";
 
         $paramsFecha = [":desde" => $fecha_desde, ":hasta" => $fecha_hasta];
         $remuneraciones = RemuneracionesSam::find()
