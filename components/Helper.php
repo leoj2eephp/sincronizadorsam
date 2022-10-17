@@ -226,6 +226,13 @@ class Helper {
         }
     }
 
+    public static function formatToLastDayInMonth($la_terrible_fecha) {
+        if (!empty($la_terrible_fecha)) {
+            $el_terrible_nuevo_formato = date("Y-m-t", strtotime($la_terrible_fecha));
+            return $el_terrible_nuevo_formato;
+        }
+    }
+
     public static function formatToFullElectronicTicket($la_terrible_fecha) {
         if (!empty($la_terrible_fecha)) {
             $el_terrible_nuevo_formato = date("Y-m-d\TH:i:s", strtotime($la_terrible_fecha));

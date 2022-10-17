@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\Helper;
 use app\models\CategoriaChipax;
 use app\models\Chofer;
 use app\models\CompraChipax;
@@ -168,6 +169,7 @@ class ModalController extends Controller {
         try {
             $model = new \app\models\PoliticaGastosForm();
             $model->load(Yii::$app->request->post());
+            $model->fecha = Helper::formatToLastDayInMonth($model->fecha);
 
             $vehiculosValores = array();
             foreach ($model->vehiculos_seleccionados as $i => $v) {
