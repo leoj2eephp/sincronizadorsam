@@ -33,6 +33,7 @@ class ModalController extends Controller {
         switch ($tipo) {
             case "compra":
                 $compra = CompraChipax::find()->where("id = :id", [":id" => $prorrata->compra_chipax_id])->one();
+                // $montoSumado = ProrrataChipax::find()->where(["id" => $prorrata->compra_chipax_id])->sum("monto");
                 break;
             case "gasto":
                 $gasto = GastoChipax::find()->where("id = :id", [":id" => $prorrata->gasto_chipax_id])->one();

@@ -191,7 +191,7 @@ class PoliticaGastosForm extends Model {
 
                 $remuneracion = new RemuneracionesSam();
                 $remuneracion->tipo_equipo_camion = $equipo_camion;
-                $remuneracion->descripcion = "Sin descripción - Chipax";
+                $remuneracion->descripcion = "Remuneración del Mes";
                 $remuneracion->neto = $gastoCompleta->monto_neto;
                 $remuneracion->documento = substr($gastoCompleta->nro_documento, 0, 100);
                 $remuneracion->cantidad = (float) $gastoCompleta->cantidad;

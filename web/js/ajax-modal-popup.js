@@ -139,11 +139,11 @@ $(function () {
       comentario: JSON.stringify(comentario),
     })
       .done(function (data) {
-        Swal.fire(
+        /* Swal.fire(
           "INFORMACIÓN GRABADA",
           "Se guardó el comentario correctamente",
           "success"
-        );
+        ); */
       })
       .fail(function () {
         Swal.fire(

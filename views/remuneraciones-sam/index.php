@@ -238,11 +238,11 @@ $(document).ready(function() {
             }
         })
         .fail(function() {
-            Swal.fire(
+            /* Swal.fire(
                 "Sin Datos!",
                 "No se encontraron más datos asociados a este registro",
                 "warning"
-            );
+            ); */
         });
     });
     
