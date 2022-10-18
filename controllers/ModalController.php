@@ -34,7 +34,7 @@ class ModalController extends Controller {
         switch ($tipo) {
             case "compra":
                 $compra = CompraChipax::find()->where("id = :id", [":id" => $prorrata->compra_chipax_id])->one();
-                // $montoSumado = ProrrataChipax::find()->where(["id" => $prorrata->compra_chipax_id])->sum("monto");
+                //$montoSumado = ProrrataChipax::find()->where(["id" => $prorrata->compra_chipax_id])->sum("monto");
                 break;
             case "gasto":
                 $gasto = GastoChipax::find()->where("id = :id", [":id" => $prorrata->gasto_chipax_id])->one();
@@ -78,6 +78,7 @@ class ModalController extends Controller {
         //if ($tipo == "remuneracion") $remu = true;
 
         if (null !== $compra) {
+            $model->neto = $_GET["monto_sumado"];
             $model->nombre_proveedor = $compra->razon_social;
             $model->rut_proveedor = $compra->rut_emisor;
             $model->nro_documento = $compra->folio;

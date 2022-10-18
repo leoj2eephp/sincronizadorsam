@@ -280,6 +280,7 @@ $rindeGastosParaExcel = array();
                                                 'value' => Url::to([
                                                     "/modal/sync-sam", "id" => $p->id, "i" => $indice,
                                                     "tipo" => "compra",
+                                                    "monto_sumado" => $p->monto_sumado > 0 ? $p->monto_sumado : $p->monto,
                                                     "es_remu" => (array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX))
                                                 ]),
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'

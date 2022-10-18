@@ -89,14 +89,24 @@ class SincronizadorController extends Controller {
                         if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
                             // COMPRA
                             // Esto es para los casos en que en chipax viene el monto dividido en 2 registros..
-                            $montoProrrata = $p->monto_sumado > 0 ? $p->monto_sumado : $p->monto;
-                            if (
-                                $gastoCompleta->monto_neto == $montoProrrata &&
-                                $compra->fecha_gasto == $compra->fecha_emision &&
-                                $gastoCompleta->nro_documento == $compra->folio
-                            ) {
-                                $compra->sincronizado = 1;
-                                break;
+                            //$montoProrrata = $p->monto_sumado > 0 ? $p->monto_sumado : $p->monto;
+                            if ($p->monto_sumado > 0) {
+                                if (
+                                    $gastoCompleta->monto_neto == $p->monto_sumado &&
+                                    $gastoCompleta->nro_documento == $compra->folio
+                                ) {
+                                    $compra->sincronizado = 1;
+                                    break;
+                                }
+                            } else {
+                                if (
+                                    $gastoCompleta->monto_neto == $p->monto &&
+                                    $compra->fecha_gasto == $compra->fecha_emision &&
+                                    $gastoCompleta->nro_documento == $compra->folio
+                                ) {
+                                    $compra->sincronizado = 1;
+                                    break;
+                                }
                             }
                         } else {
                             // REMUNERACIÓN
