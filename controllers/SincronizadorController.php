@@ -273,7 +273,7 @@ class SincronizadorController extends Controller {
                         AND honorario_chipax.fecha_emision = gasto_rindegastos.issue_date")
             ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa_rindegastos.nro_documento", [])
             ->where(
-                "issue_date > :desde AND issue_date <= :hasta",
+                "issue_date >= :desde AND issue_date <= :hasta",
                 [":desde" => $fecha_desde, ":hasta" => $fecha_hasta]
             )
             ->andFilterWhere(['not like', 'tipo_documento', "factura"])
