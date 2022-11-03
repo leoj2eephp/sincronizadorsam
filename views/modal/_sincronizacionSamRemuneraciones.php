@@ -115,11 +115,12 @@ $script = <<< JS
                 $($(".fila-vehiculos")[0]).removeClass("fila-vehiculos");
             }
         
-            $(".fila-vehiculos").find(".porcentaje").removeAttr("readonly");
-            $(".fila-vehiculos").find(".valor").removeAttr("readonly");
-            $(".fila-vehiculos").find(".porcentaje").val(0);
-            $(".fila-vehiculos").find(".valor").val(0);
-            $(".fila-vehiculos").find(".delete-vehiculo").css("display", "block");
+            let ultimaPosicion = $(".vehiculo").length - 2;
+            $($(".fila-vehiculos").find(".porcentaje")[ultimaPosicion]).removeAttr("readonly");
+            $($(".fila-vehiculos").find(".valor")[ultimaPosicion]).removeAttr("readonly");
+            $($(".fila-vehiculos").find(".porcentaje")[ultimaPosicion]).val(0);
+            $($(".fila-vehiculos").find(".valor")[ultimaPosicion]).val(0);
+            $($(".fila-vehiculos").find(".delete-vehiculo")[ultimaPosicion]).css("display", "block");
             refrescarSubtotales();
             refreshSelect2Dataset();
         });

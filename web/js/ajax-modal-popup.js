@@ -254,22 +254,46 @@ function refrescarPrimerPorcentaje() {
 function refrescarSubtotales() {
   let montoNeto = parseInt($("#total").val());
   let cantidadVehiculos = $(".vehiculo").length;
-  let subNetos = Math.trunc(montoNeto / cantidadVehiculos);
+  var totalPrimeraFila = $(".primera-fila-vehiculos").find(".valor").val();
+  if (cantidadVehiculos > 2) {
+    let nuevoValor = Math.trunc(parseInt(totalPrimeraFila) / 2);
+    $(".valor")[cantidadVehiculos - 1].value = nuevoValor;
+    // Para solucionar el problema del peso faltante cuando la división por 2 se hace sobre un número impar
+    nuevoValor = parseInt(totalPrimeraFila) % 2 == 0 ? nuevoValor : nuevoValor + 1;
+    $(".primera-fila-vehiculos").find(".valor").val(nuevoValor);
+  } else {
+    let subNetos = Math.trunc(montoNeto / cantidadVehiculos);
+    $(".fila-vehiculos").find(".valor").val(subNetos);
+    let restanteDivision = parseInt(montoNeto - subNetos * cantidadVehiculos);
+    $(".primera-fila-vehiculos")
+      .find(".valor")
+      .val(subNetos + restanteDivision);
+  }
 
-  $(".fila-vehiculos").find(".valor").val(subNetos);
-  let restanteDivision = parseInt(montoNeto - subNetos * cantidadVehiculos);
-  $(".primera-fila-vehiculos")
-    .find(".valor")
-    .val(subNetos + restanteDivision);
-
+  calcularPorcentajes(totalPrimeraFila, cantidadVehiculos, montoNeto);
+  /* 
   let porcentajeDividido = Math.trunc(100 / cantidadVehiculos);
   $(".fila-vehiculos").find(".porcentaje").val(porcentajeDividido);
   let sumaPorcentajes = porcentajeDividido * (cantidadVehiculos - 1);
   $(".primera-fila-vehiculos")
     .find(".porcentaje")
     .val(100 - sumaPorcentajes);
-
+  */
   calcularTotal();
+}
+
+function calcularPorcentajes(totalPrimeraFila, cantidadVehiculos, montoNeto) {
+  var nuevoPorcentaje = Math.trunc(
+    (Math.trunc(totalPrimeraFila / 2) * 100) / montoNeto
+  );
+  $(".primera-fila-vehiculos").find(".porcentaje").val(nuevoPorcentaje);
+  $($(".fila-vehiculos").find(".porcentaje")[cantidadVehiculos - 2]).val(
+    nuevoPorcentaje
+  );
+  /* $(".primera-fila-vehiculos").find(".valor").each(function (index, obj) {
+    porcentaje = (parseInt($(obj).val()) * 100) / montoNeto;
+    $(".fila-vehiculos").parent().find(".porcentaje").val(porcentaje);
+  }); */
 }
 
 function calcularTotal() {
