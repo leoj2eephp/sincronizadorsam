@@ -80,11 +80,7 @@ class RemuneracionesSamController extends Controller {
             ->where("fecha_rendicion >= :desde AND fecha_rendicion <= :hasta", $paramsFecha)
             ->groupBy("neto" . $group_by != "" ? (", " . $group_by) : "")
             ->all();
-        /*
-        echo "<pre>";
-        print_r($remuneraciones);
-        die;
-*/
+
         return $this->render('index', [
             "fecha_desde" => $fecha_desde,
             "fecha_hasta" => $fecha_hasta,
@@ -168,6 +164,31 @@ class RemuneracionesSamController extends Controller {
         return $contenido;
     }
 
+    public function actionActualizarRemuneracion($id) {
+    }
+
+    public function actionEliminarRemuneracion($id = null) {
+        if (Yii::$app->request->isPost) {
+            $model = RemuneracionesSam::findOne($_POST["RemuneracionesSam"]["id"]);
+            $result = $model->delete();
+            if (!is_bool($result)) {
+                return $this->renderAjax('/modal/_sincroOK', [
+                    "message" => "Eliminación exitosa!",
+                ]);
+            } else {
+                return $this->renderAjax('/modal/_sincroError', [
+                    "message" => join(",", $model->getFirstErrors()),
+                ]);
+            }
+        }
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
+        $model = RemuneracionesSam::findOne($id);
+        return $this->renderAjax('_eliminarRemuneracion', [
+            "model" => $model
+        ]);
+    }
+
     public function actionManual() {
         $model = new PoliticaGastosForm();
         $camionPropio = (new \yii\db\Query())
@@ -197,7 +218,10 @@ class RemuneracionesSamController extends Controller {
         $operadores = Operador::find()->where(["vigente" => "SÍ"])->orderBy("nombre")->all();
         $choferes = Chofer::find()->where(["vigente" => "SÍ"])->orderBy("nombre")->all();
 
-        return $this->renderAjax("remuneracionManual", ["model" => $model, "operadores" => $operadores, "choferes" => $choferes]);
+        return $this->renderAjax(
+            "remuneracionManual",
+            ["model" => $model, "operadores" => $operadores, "choferes" => $choferes]
+        );
     }
 
     /**

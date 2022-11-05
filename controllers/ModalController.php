@@ -34,7 +34,6 @@ class ModalController extends Controller {
         switch ($tipo) {
             case "compra":
                 $compra = CompraChipax::find()->where("id = :id", [":id" => $prorrata->compra_chipax_id])->one();
-                //$montoSumado = ProrrataChipax::find()->where(["id" => $prorrata->compra_chipax_id])->sum("monto");
                 break;
             case "gasto":
                 $gasto = GastoChipax::find()->where("id = :id", [":id" => $prorrata->gasto_chipax_id])->one();
@@ -162,7 +161,6 @@ class ModalController extends Controller {
             }
         } catch (Exception $ex) {
             echo $ex->getMessage();
-            die;
         }
     }
 
@@ -181,7 +179,7 @@ class ModalController extends Controller {
                 $vehiculosValores[] = $vehiculo;
             }
             $model->vehiculos_seleccionados = $vehiculosValores;
-            
+
             $respuesta = $model->saveRemuneraciones();
             Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
             if ($respuesta == "OK") {
@@ -195,7 +193,6 @@ class ModalController extends Controller {
             }
         } catch (Exception $ex) {
             echo $ex->getMessage();
-            die;
         }
     }
 
@@ -222,9 +219,5 @@ class ModalController extends Controller {
         return $this->renderAjax('_uploadDTE', [
             "model" => $model
         ]);
-    }
-
-    public function actionGetOperByMachine() {
-        $tipo = $_POST[""];
     }
 }

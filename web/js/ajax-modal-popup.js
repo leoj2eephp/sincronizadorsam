@@ -4,7 +4,8 @@ $(function () {
   //have multiple classes therefore you can have multiple open modal buttons on a page all with or without
   //the same link.
   //we use on so the dom element can be called again if they are nested, otherwise when we load the content once it kills the dom element and wont let you load anther modal on click without a page refresh
-  $(document).on("click", ".showModalButton", function () {
+  $(document).on("click", ".showModalButton", function (e) {
+    e.stopPropagation();
     //check if the modal is open. if it's open just reload content not whole modal
     //also this allows you to nest buttons inside of modals to reload the content it is in
     //the if else are intentionally separated instead of put into a function to get the
@@ -103,6 +104,35 @@ $(function () {
         "Los montos de los vehículos deben coincidir con el valor del gasto."
       );
     }
+  });
+
+  $(document).on("click", "#upload-remuneracion", function (e) {
+    e.stopPropagation();
+    $.ajax({
+      url: "/sincronizadorsam/web/remuneraciones-sam/actualizar-remuneracion",
+      type: "post",
+      data: $("#remuneraciones-form").serialize(),
+      dataType: "html",
+      success: function (data) {
+        $("#modalContent").html(data);
+      },
+    });
+  });
+
+  $(document).on("click", "#delete-remuneracion", function (e) {
+    var id = $("#remuneracionessam-id").val();
+    $.ajax({
+      url: "/sincronizadorsam/web/remuneraciones-sam/eliminar-remuneracion",
+      type: "post",
+      data: $("#remuneraciones-form").serialize(),
+      dataType: "html",
+      success: function (data) {
+        $("#modalContent").html(data);
+        if (data.indexOf("exitosa") > -1) {
+          $("#remu_" + id).remove();
+        }
+      },
+    });
   });
 
   $(document).on("submit", "#uploadDTE", function (e) {
@@ -259,7 +289,8 @@ function refrescarSubtotales() {
     let nuevoValor = Math.trunc(parseInt(totalPrimeraFila) / 2);
     $(".valor")[cantidadVehiculos - 1].value = nuevoValor;
     // Para solucionar el problema del peso faltante cuando la división por 2 se hace sobre un número impar
-    nuevoValor = parseInt(totalPrimeraFila) % 2 == 0 ? nuevoValor : nuevoValor + 1;
+    nuevoValor =
+      parseInt(totalPrimeraFila) % 2 == 0 ? nuevoValor : nuevoValor + 1;
     $(".primera-fila-vehiculos").find(".valor").val(nuevoValor);
   } else {
     let subNetos = Math.trunc(montoNeto / cantidadVehiculos);
