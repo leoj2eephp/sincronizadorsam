@@ -30,6 +30,7 @@ use Yii;
  * @property int|null $equipoArrendado_id
  * @property int|null $camionPropio_id
  * @property int|null $camionArrendado_id
+ * @property int $gasto_id
  *
  * @property Camionarrendado $camionArrendado
  * @property Camionpropio $camionPropio
@@ -63,6 +64,7 @@ class RemuneracionesSam extends \yii\db\ActiveRecord {
             [['nombre', 'nombre_proveedor'], 'string', 'max' => 100],
             [['rut_rinde', 'rut_proveedor'], 'string', 'max' => 15],
             [['tipo_documento'], 'string', 'max' => 40],
+            [["gasto_id"], "safe"],
             [['camionArrendado_id'], 'exist', 'skipOnError' => true, 'targetClass' => Camionarrendado::class, 'targetAttribute' => ['camionArrendado_id' => 'id']],
             [['camionPropio_id'], 'exist', 'skipOnError' => true, 'targetClass' => Camionpropio::class, 'targetAttribute' => ['camionPropio_id' => 'id']],
             [['equipoArrendado_id'], 'exist', 'skipOnError' => true, 'targetClass' => Equipoarrendado::class, 'targetAttribute' => ['equipoArrendado_id' => 'id']],
@@ -179,4 +181,24 @@ class RemuneracionesSam extends \yii\db\ActiveRecord {
         }
     }
 
+    public function deleteRemuneracion() {
+        $result = $this->delete();
+        if (is_bool($result)) {
+            return false;
+        }
+        
+        $gc = GastoCompleta::find(["gasto_id" => $this->gasto_id])->one();
+        $result = $gc->delete();
+        if (is_bool($result)) {
+            return false;
+        }
+
+        $g = Gasto::findOne($this->gasto_id);
+        $result = $g->delete();
+        if (is_bool($result)) {
+            return false;
+        }
+
+        return $result;
+    }
 }

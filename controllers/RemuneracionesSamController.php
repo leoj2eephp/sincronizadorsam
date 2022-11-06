@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use app\components\Helper;
 use app\models\Chofer;
+use app\models\Gasto;
+use app\models\GastoCompleta;
 use app\models\Operador;
 use app\models\PoliticaGastosForm;
 use app\models\RemuneracionesSam;
@@ -169,15 +171,23 @@ class RemuneracionesSamController extends Controller {
 
     public function actionEliminarRemuneracion($id = null) {
         if (Yii::$app->request->isPost) {
-            $model = RemuneracionesSam::findOne($_POST["RemuneracionesSam"]["id"]);
-            $result = $model->delete();
-            if (!is_bool($result)) {
-                return $this->renderAjax('/modal/_sincroOK', [
-                    "message" => "Eliminación exitosa!",
-                ]);
-            } else {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $gasto_id = $_POST["RemuneracionesSam"]["id"];
+                $model = RemuneracionesSam::findOne($gasto_id);
+
+                if ($model->deleteRemuneracion()) {
+                    $transaction->commit();
+                    return $this->renderAjax('/modal/_sincroOK', [
+                        "message" => "Eliminación exitosa!",
+                    ]);
+                } else {
+                    throw new Exception("No se pudo eliminar los registros de Gasto ni GastoCompleta");
+                }
+            } catch (Exception $ex) {
+                $transaction->rollBack();
                 return $this->renderAjax('/modal/_sincroError', [
-                    "message" => join(",", $model->getFirstErrors()),
+                    "message" => $ex,
                 ]);
             }
         }
