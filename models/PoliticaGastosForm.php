@@ -227,14 +227,12 @@ class PoliticaGastosForm extends Model {
                 $remuneracion->gasto_id = $gasto->id;
 
                 if (!$remuneracion->save()) {
-                    $mensaje = 'VEHÍCULO: ' . $remuneracion->equipoPropio_id ?? $remuneracion->equipoArrendado_id ?? $remuneracion->camionPropio_id ?? $remuneracion->camionArrendado_id;
+                 /*    $mensaje = 'VEHÍCULO: ' . $remuneracion->equipoPropio_id ?? $remuneracion->equipoArrendado_id ?? $remuneracion->camionPropio_id ?? $remuneracion->camionArrendado_id;
                     $mensaje .= "<br / >";
                     $mensaje .= 'OPERADOR: ' . $remuneracion->operador_id ?? $remuneracion->chofer_id;
-                    throw new Exception($mensaje);
-                    // throw new Exception(join(", ", $remuneracion->getFirstErrors()));
+                    throw new Exception($mensaje); */
+                    throw new Exception(join(", ", $remuneracion->getFirstErrors()));
                 }
-
-                echo "OK " . $vehiculo->operador_id;
             }
         } catch (Exception $ex) {
             $transaction->rollBack();
