@@ -41,7 +41,7 @@ Select2Asset::register($this);
             }
             ?>
         </select>
-        <select name="PoliticaGastosForm[operador_id]" class="select-style" style="background-color: white;" id="operador">
+        <select name="PoliticaGastosForm[operadores_id][]" class="select-style" style="background-color: white;" id="operador">
         </select>
     </div>
     <div class="col col-sm-6">

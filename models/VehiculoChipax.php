@@ -11,4 +11,6 @@ class VehiculoChipax {
 
     public $nombre;
     public $valor;
+    public $operador_id;
+
 }

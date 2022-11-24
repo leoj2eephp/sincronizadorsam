@@ -48,6 +48,7 @@ class PoliticaGastosForm extends Model {
     public $neto;
     public $html_factura;
     public $operador_id;
+    public $operadores_id;
 
     /**
      * @return array the validation rules.
@@ -59,7 +60,7 @@ class PoliticaGastosForm extends Model {
             [[
                 "vehiculos_seleccionados", "valores_vehiculos", "unidad_seleccionada", "tipo_documento_seleccionado", "tipo_combustibles",
                 "rendidor_seleccionado", "faena_seleccionada", "cantidad", "nro_documento", "fecha", "neto", "folio",
-                "tipo_combustible_id", "categoria_id", "linea_negocio_id", "carguio", "operador_id"
+                "tipo_combustible_id", "categoria_id", "linea_negocio_id", "carguio", "operador_id", "operadores_id"
             ], "safe"],
         ];
     }
@@ -212,29 +213,35 @@ class PoliticaGastosForm extends Model {
                 $remuneracion->rindegastos = 0;
                 if ($equipo_camion == "EP") {
                     $remuneracion->equipoPropio_id = $v->equipopropio_id;
-                    $remuneracion->operador_id = $this->operador_id;
+                    $remuneracion->operador_id = $vehiculo->operador_id;
                 } else if ($equipo_camion == "EA") {
                     $remuneracion->equipoArrendado_id = $v->equipoarrendado_id;
-                    $remuneracion->operador_id = $this->operador_id;
+                    $remuneracion->operador_id = $vehiculo->operador_id;
                 } else if ($equipo_camion == "CP") {
                     $remuneracion->camionPropio_id = $v->camionpropio_id;
-                    $remuneracion->chofer_id = $this->operador_id;
+                    $remuneracion->chofer_id = $vehiculo->operador_id;
                 } else if ($equipo_camion == "CA") {
                     $remuneracion->camionArrendado_id = $v->camionarrendado_id;
-                    $remuneracion->chofer_id = $this->operador_id;
+                    $remuneracion->chofer_id = $vehiculo->operador_id;
                 }
                 $remuneracion->gasto_id = $gasto->id;
 
                 if (!$remuneracion->save()) {
-                    throw new Exception(join(", ", $remuneracion->getFirstErrors()));
+                    $mensaje = 'VEHÍCULO: ' . $remuneracion->equipoPropio_id ?? $remuneracion->equipoArrendado_id ?? $remuneracion->camionPropio_id ?? $remuneracion->camionArrendado_id;
+                    $mensaje .= "<br / >";
+                    $mensaje .= 'OPERADOR: ' . $remuneracion->operador_id ?? $remuneracion->chofer_id;
+                    throw new Exception($mensaje);
+                    // throw new Exception(join(", ", $remuneracion->getFirstErrors()));
                 }
+
+                echo "OK " . $vehiculo->operador_id;
             }
         } catch (Exception $ex) {
             $transaction->rollBack();
             return $ex->getMessage();
         }
 
-        $transaction->commit();
+        $transaction->rollBack();
         return "OK";
     }
 

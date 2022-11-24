@@ -175,6 +175,7 @@ class ModalController extends Controller {
                 $vehiculo = new \app\models\VehiculoChipax();
                 $vehiculo->nombre = $v;
                 $vehiculo->valor = $model->valores_vehiculos[$i];
+                $vehiculo->operador_id = $model->operadores_id[$i];
 
                 $vehiculosValores[] = $vehiculo;
             }
