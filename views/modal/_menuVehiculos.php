@@ -28,7 +28,7 @@ Select2Asset::register($this);
           ],
           ])->label(false); */
         ?>
-        <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style" style="background-color: white;" id="vehis">
+        <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style" style="background-color: white;">
             <?php
             foreach ($model->vehiculos as $vehi) {
                 $tipo = null;
@@ -41,7 +41,7 @@ Select2Asset::register($this);
             }
             ?>
         </select>
-        <select name="PoliticaGastosForm[operadores_id][]" class="select-style" style="background-color: white;" id="operador">
+        <select name="PoliticaGastosForm[operadores_id][]" class="select-style operador" style="background-color: white;" >
         </select>
     </div>
     <div class="col col-sm-6">
@@ -81,29 +81,30 @@ $script = <<< JS
         const listaOperadores = $opes;
         const listaChoferes = $chofs;
 
-        $("#vehis").on("change", function() {
-            let tipoVehiculo = vehis.options[this.selectedIndex];
-            $("#operador").empty();
+        $(document).on("change", ".vehiculo", function() {
+            let tipoVehiculo = this.options[this.selectedIndex];
+            $(".operador").empty();
+            var operador = $(this).parent().children(".operador");
             if ($(tipoVehiculo).attr("tipo") == "equipo") {
-                operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
+                operador.html("<option value=0>NO ASIGNADO</option>");
                 listaOperadores.forEach((ope, index) => {
                     let option = "<option value='" + ope.id + "' rut='" + ope.rut + "'>"
                                     + ope.nombre + " - " + ope.rut + "</option>";
-                    operador.innerHTML += option;
+                    operador.append(option);
                 });
             } else if ($(tipoVehiculo).attr("tipo") == "camion") {
-                operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
+                operador.html("<option value=0>NO ASIGNADO</option>");
                 listaChoferes.forEach((ope, index) => {
                     let option = "<option value='" + ope.id + "' rut='" + ope.rut + "'>"
                                     + ope.nombre + " - " + ope.rut + "</option>";
-                    operador.innerHTML += option;
+                                    operador.append(option);
                 });
             } else {
-                operador.innerHTML = "<option value=0>NO ASIGNADO</option>";
+                operador.html("<option value=0>NO ASIGNADO</option>");
             }
         });
         
-        $("#operador").on("change", function() {
+        $(".operador").on("change", function() {
             let opeSelected = this.options[this.selectedIndex];
             if ($("#politicagastosform-rut_proveedor").val().toUpperCase() != $(opeSelected).attr("rut").toUpperCase()) {
                 $("#alertaDiferencia").removeClass("d-none");
@@ -112,7 +113,7 @@ $script = <<< JS
             }
         });
 
-        $("#vehis").change();
+        $(".vehiculo").change();
     });
    
 JS;

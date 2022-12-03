@@ -62,3 +62,4 @@ config/web_local.php
 web/index.php
 .vscode/settings.json
 /nbproject/private/
+.vscode/launch.json
