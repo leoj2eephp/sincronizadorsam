@@ -83,8 +83,8 @@ $script = <<< JS
 
         $(document).on("change", ".vehiculo", function() {
             let tipoVehiculo = this.options[this.selectedIndex];
-            $(".operador").empty();
             var operador = $(this).parent().children(".operador");
+            operador.empty();
             if ($(tipoVehiculo).attr("tipo") == "equipo") {
                 operador.html("<option value=0>NO ASIGNADO</option>");
                 listaOperadores.forEach((ope, index) => {
