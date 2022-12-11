@@ -230,6 +230,7 @@ class PoliticaGastosForm extends Model {
                     throw new Exception(join(", ", $remuneracion->getFirstErrors()));
                 }
             }
+            $transaction->commit();
         } catch (Exception $ex) {
             $transaction->rollBack();
             return $ex->getMessage();
