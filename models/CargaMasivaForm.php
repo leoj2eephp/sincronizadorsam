@@ -53,7 +53,7 @@ class CargaMasivaForm extends \yii\base\Model {
                 $posicion = strpos($fila->centro_costo, 'Costo Directo');
                 $polit = trim(substr($fila->centro_costo, 0, $posicion));
             } else if (strpos($fila->centro_costo, 'Gastos Generales') !== false) {
-                $posicion = strpos($fila->centro_costo, 'Costo Directo');
+                $posicion = strpos($fila->centro_costo, 'Gastos Generales');
                 $polit = trim(substr($fila->centro_costo, 0, $posicion));
             } else if ($fila->centro_costo === "Oficina Central Gerencia") {
                 $polit = $fila->centro_costo;
