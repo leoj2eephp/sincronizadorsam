@@ -109,6 +109,7 @@ class ModalController extends Controller {
             $model->categoria = $categoria->nombre;
             $model->linea_negocio = $prorrata->linea_negocio;
             $model->neto = $prorrata->monto;
+            $model->tipo_documento_seleccionado = "Remuneración";
             $remu = true;
         }
 
@@ -118,6 +119,7 @@ class ModalController extends Controller {
         } else {
             $vista = "_sincronizacionSamRemuneraciones";
         }
+        
         return $this->renderAjax($vista, [
             "model" => $model,
             "indice" => $_GET["i"],

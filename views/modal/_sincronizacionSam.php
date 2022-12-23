@@ -21,6 +21,7 @@ use yii\helpers\ArrayHelper;
             <?= $form->field($model, "nombre_proveedor")->hiddenInput()->label(false) ?>
             <?= $form->field($model, "rut_proveedor")->hiddenInput()->label(false) ?>
             <?= $form->field($model, "nro_documento")->hiddenInput()->label(false) ?>
+            <?= $form->field($model, "tipo_documento_seleccionado")->hiddenInput()->label(false) ?>
             <?= $form->field($model, "nota")->hiddenInput()->label(false) ?>
             <?= $form->field($model, "neto")->hiddenInput(["id" => "montoNeto"])->label(false) ?>
             <?= $form->field($model, "fecha")->hiddenInput()->label(false) ?>
