@@ -92,7 +92,9 @@ class SincronizadorController extends Controller {
                             //$montoProrrata = $p->monto_sumado > 0 ? $p->monto_sumado : $p->monto;
                             if ($p->monto_sumado > 0) {
                                 if (
-                                    $gastoCompleta->monto_neto == $p->monto_sumado &&
+                                    ($gastoCompleta->monto_neto >= $p->monto_sumado - 2
+                                        && $gastoCompleta->monto_neto <= $p->monto_sumado + 2
+                                    ) &&
                                     $gastoCompleta->nro_documento == $compra->folio
                                 ) {
                                     $compra->sincronizado = 1;
@@ -100,7 +102,10 @@ class SincronizadorController extends Controller {
                                 }
                             } else {
                                 if (
-                                    $gastoCompleta->monto_neto == $p->monto &&
+                                    ($gastoCompleta->monto_neto >= $p->monto - 2
+                                        && $gastoCompleta->monto_neto <= $p->monto + 2
+                                    ) &&
+                                    // $gastoCompleta->monto_neto == $p->monto &&
                                     $compra->fecha_gasto == $compra->fecha_emision &&
                                     $gastoCompleta->nro_documento == $compra->folio
                                 ) {
@@ -151,7 +156,9 @@ class SincronizadorController extends Controller {
                         if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
                             // COMPRA
                             if (
-                                $gastoCompleta->monto_neto == $p->monto &&
+                                ($gastoCompleta->monto_neto >= $p->monto - 2
+                                    && $gastoCompleta->monto_neto <= $p->monto + 2
+                                ) &&
                                 $gasto->fecha_gasto == $gasto->fecha &&
                                 $gastoCompleta->nro_documento == $gasto->num_documento
                             ) {
