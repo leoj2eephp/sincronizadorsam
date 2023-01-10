@@ -102,6 +102,7 @@ class CompraChipax extends \yii\db\ActiveRecord {
             $pro->linea_negocio = $fila["linea_negocio"];
             $pro->modelo = $fila["modelo"];
             $pro->monto = $fila["monto"];            
+            $pro->neto_impuesto = $fila["neto_impuesto"];
             $pro->monto_sumado = $fila["monto_sumado"];
             $pro->periodo = $fila["periodo"];
             $pro->compra_chipax_id = $fila["compra_chipax_id"];

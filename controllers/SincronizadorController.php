@@ -102,8 +102,8 @@ class SincronizadorController extends Controller {
                                 }
                             } else {
                                 if (
-                                    ($gastoCompleta->monto_neto >= $p->monto - 2
-                                        && $gastoCompleta->monto_neto <= $p->monto + 2
+                                    ($gastoCompleta->monto_neto >= $p->neto_impuesto - 2
+                                        && $gastoCompleta->monto_neto <= $p->neto_impuesto + 2
                                     ) &&
                                     // $gastoCompleta->monto_neto == $p->monto &&
                                     $compra->fecha_gasto == $compra->fecha_emision &&

@@ -26,6 +26,7 @@ use Yii;
  */
 class ProrrataChipax extends \yii\db\ActiveRecord {
 
+    public $neto_impuesto;   // Para las compras, que siempre son combustible, y deben sumar el impuesto al valor neto
     public $monto_sumado;   // Para los casos en que desde chipax viene una factura dividida en 2 montos, pero RindeGastos lo tiene como 1 solo
 
     /**
@@ -42,13 +43,13 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'linea_negocio', 'modelo', 'monto', 'periodo'], 'required'],
             [['id', 'cuenta_id', 'filtro_id', 'monto', 'compra_chipax_id', 'gasto_chipax_id', 'honorario_chipax_id', 'remuneracion_chipax_id'], 'integer'],
-            [['periodo', 'monto_sumado'], 'safe'],
+            [['periodo', 'monto_sumado', 'neto_impuesto'], 'safe'],
             [['linea_negocio', 'modelo'], 'string', 'max' => 45],
             [['id'], 'unique'],
-            [['compra_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => CompraChipax::className(), 'targetAttribute' => ['compra_chipax_id' => 'id']],
-            [['gasto_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => GastoChipax::className(), 'targetAttribute' => ['gasto_chipax_id' => 'id']],
-            [['honorario_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => HonorarioChipax::className(), 'targetAttribute' => ['honorario_chipax_id' => 'id']],
-            [['remuneracion_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => RemuneracionChipax::className(), 'targetAttribute' => ['remuneracion_chipax_id' => 'id']],
+            [['compra_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => CompraChipax::class, 'targetAttribute' => ['compra_chipax_id' => 'id']],
+            [['gasto_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => GastoChipax::class, 'targetAttribute' => ['gasto_chipax_id' => 'id']],
+            [['honorario_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => HonorarioChipax::class, 'targetAttribute' => ['honorario_chipax_id' => 'id']],
+            [['remuneracion_chipax_id'], 'exist', 'skipOnError' => true, 'targetClass' => RemuneracionChipax::class, 'targetAttribute' => ['remuneracion_chipax_id' => 'id']],
         ];
     }
 
