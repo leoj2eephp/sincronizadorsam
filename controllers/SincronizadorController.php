@@ -103,8 +103,8 @@ class SincronizadorController extends Controller {
                             } else {
                                 $valor = $p->neto_impuesto > 0 ? $p->neto_impuesto : $p->monto;
                                 if (
-                                    ($gastoCompleta->monto_neto >= $valor - 2
-                                        && $gastoCompleta->monto_neto <= $valor + 2
+                                    ($valor >= $p->monto - 2
+                                        && $valor <= $p->monto + 2
                                     ) &&
                                     // $gastoCompleta->monto_neto == $p->monto &&
                                     $compra->fecha_gasto == $compra->fecha_emision &&
