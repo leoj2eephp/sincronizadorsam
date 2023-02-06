@@ -33,7 +33,7 @@ class CategoriaChipax extends \yii\db\ActiveRecord {
         return [
             [['id', 'nombre'], 'required'],
             [['id', 'depth'], 'integer'],
-            [['nombre'], 'string', 'max' => 60],
+            [['nombre'], 'string', 'max' => 100],
             [['model_name'], 'string', 'max' => 45],
             [['has_children', 'parent_model_name', 'comp_id', 'parent_comp_id', 'parent_id', 'tipo_cuenta_id'], "safe"],
             [['id'], 'unique'],

@@ -8,6 +8,8 @@ use yii\httpclient\Client;
 
 class ChipaxApiService {
 
+    public $token;
+
     public function sincronizarChipaxData() {
         $client = new Client(["baseUrl" => "https://api.chipax.com/flujo-caja/cartolas"]);
 
