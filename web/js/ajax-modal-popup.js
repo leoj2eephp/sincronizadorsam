@@ -224,6 +224,52 @@ $(function () {
       refrescarPrimerPorcentaje();
     }
   });
+
+  $(".delete-gasto").click(function (e) {
+    console.log("hola");
+    var url = $(this).val();
+    Swal.fire({
+      title: "Eliminar Gasto",
+      text: "¿Está seguro de eliminar este gasto?",
+      // icon: 'info',
+      showConfirmButton: true,
+      showDenyButton: true,
+      // showCancelButton: true,
+      confirmButtonText: "Borrar",
+      denyButtonText: "Cancelar",
+      dangerMode: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "POST",
+          url: url,
+        }).done(function (msg) {
+          var respuesta = JSON.parse(msg);
+          console.log(respuesta);
+          if (respuesta != "SUCCESS") {
+            Swal.fire({
+              title: "ERROR",
+              text: "No se pudo eliminar el gasto. Error: " + respuesta.message,
+              icon: "error",
+            });
+          } else {
+            Swal.fire({
+              title: "Registro Gasto Eliminado",
+              text: "Se eliminó el gasto exitosamente",
+              icon: "success",
+            });
+            location.reload();
+          }
+        });
+      } else {
+        Swal.fire({
+          title: "Acción Cancelada",
+          text: "Se canceló la eliminación del Gasto",
+          icon: "info",
+        });
+      }
+    });
+  });
 });
 
 function validaTotal() {

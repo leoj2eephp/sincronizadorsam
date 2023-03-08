@@ -166,11 +166,11 @@ $rindeGastosParaExcel = array();
                             foreach ($compra->spProrrataChipax as $p) :
                                 $cantidad_registros++;
                                 $color = "bg-info-light";
+                                $gastoCompletaCompra = count($compra->gastoCompleta) > 0 ? $compra->gastoCompleta[0] : null;
                     ?>
                                 <tr <?php
                                     if ($compra->sincronizado) {
                                         //$compra->sincronizado = true;
-                                        $gastoCompletaCompra = count($compra->gastoCompleta) > 0 ? $compra->gastoCompleta[0] : null;
                                         if (!isset($gastoCompletaCompra)) {
                                             // Esto solo sucede para los folios con ceros adelante.. como ya los marqué como sincronizados
                                             // ahora tengo que darles el objeto gastoCompleta..
@@ -206,8 +206,8 @@ $rindeGastosParaExcel = array();
                                                     $rinde->total_calculado != $compra->monto_total ||
                                                     $compra->fecha_gasto != $compra->fecha_emision ||
                                                     $rinde->nro_documento != $compra->folio
-                                               ) continue;
-                                             }
+                                                ) continue;
+                                            }
 
                                             $color = $p->monto_sumado > 0 ? "bg-warning" : "bg-info-light";
                                             $css_totales = "text-info font-weight-bold";
@@ -286,6 +286,15 @@ $rindeGastosParaExcel = array();
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);
                                         }
+
+                                        if (isset($gastoCompletaCompra))
+                                            echo Html::button('<i class="fa fa-trash"></i>', [
+                                                "class" => "btn btn-sm btn-danger delete-gasto",
+                                                'title' => "Sincronizar con SAM",
+                                                'value' => Url::to([
+                                                    "/modal/delete-gasto", "id" => $gastoCompletaCompra["id"],
+                                                ]),
+                                            ]);
                                         ?>
                                     </td>
                                 </tr>

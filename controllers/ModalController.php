@@ -7,6 +7,7 @@ use app\models\CategoriaChipax;
 use app\models\Chofer;
 use app\models\CompraChipax;
 use app\models\GastoChipax;
+use app\models\GastoCompleta;
 use app\models\HonorarioChipax;
 use app\models\Operador;
 use app\models\PoliticaGastosForm;
@@ -119,7 +120,7 @@ class ModalController extends Controller {
         } else {
             $vista = "_sincronizacionSamRemuneraciones";
         }
-        
+
         return $this->renderAjax($vista, [
             "model" => $model,
             "indice" => $_GET["i"],
@@ -222,5 +223,16 @@ class ModalController extends Controller {
         return $this->renderAjax('_uploadDTE', [
             "model" => $model
         ]);
+    }
+
+    public function actionDeleteGasto($id) {
+        if (Yii::$app->request->isAjax) {
+            $model = GastoCompleta::find()->where(["id" => $id])->one();
+            $model->delete();
+            echo json_encode("SUCCESS");
+        }
+        else {
+            echo "pillín pillín";
+        }
     }
 }

@@ -169,7 +169,7 @@ class SincronizadorController extends Controller {
                         } else {
                             // REMUNERACIÓN
                             if (
-                                $gastoCompleta->total_calculado != $gasto->monto_total ||
+                                $gastoCompleta->total_calculado != $gasto->monto ||
                                 $gasto->fecha_gasto != $gasto->fecha ||
                                 $gastoCompleta->nro_documento != $gasto->num_documento
                             ) {
