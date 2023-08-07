@@ -168,7 +168,7 @@ $rindeGastosParaExcel = array();
                                 $color = "bg-info-light";
                                 $gastoCompletaCompra = count($compra->gastoCompleta) > 0 ? $compra->gastoCompleta[0] : null;
                     ?>
-                                <tr <?php
+                                <tr nroDcto="<?= $compra->folio ?>" fecha="<?= $compra->fecha_emision ?>" <?php
                                     if ($compra->sincronizado) {
                                         //$compra->sincronizado = true;
                                         if (!isset($gastoCompletaCompra)) {
@@ -229,6 +229,18 @@ $rindeGastosParaExcel = array();
                                             }
                                             break;   // esto para los casos en que haya más de un gasto asociado a un mismo folio..
                                         endforeach;
+                                        if ($compra->rindeGastoDividido) {
+                                            $color = "bg-warning-light";
+                                            $css_totales = "text-info font-weight-bold";
+                                            foreach ($compra->rindeGastoData as $rinde) {
+                                                echo '<div><b>Fecha: </b>' . Helper::formatToLocalDate($rinde->gasto->issue_date) . '</div>
+                                                    <div class=' . "'" . $css_totales . "'" . '><b>Neto: </b>' . number_format($rinde->gasto->net, 0, ",", ".") . '</div>
+                                                    <div class=' . "'" . $css_totales . "'" . '><b>Total: </b>' . number_format($rinde->gasto->total, 0, ",", ".") . '</div>
+                                                    <div><b>Centro de Costo: </b>' . $rinde->centro_costo_faena . '</div>
+                                                    <div><b>Vehículo: </b>' . $rinde->vehiculo_equipo . '</div>
+                                                    <br />';
+                                            }
+                                        }
                                         echo '"';
                                         echo ' class="' . $color . '"';
                                     }

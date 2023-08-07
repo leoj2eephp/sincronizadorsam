@@ -7,6 +7,7 @@ use app\models\ComentariosSincronizador;
 use app\models\CompraChipax;
 use app\models\FlujoCajaCartola;
 use app\models\GastoChipax;
+use app\models\GastoCompleta;
 use app\models\GastoRindegastos;
 use app\models\HonorarioChipax;
 use app\models\RemuneracionChipax;
@@ -90,6 +91,7 @@ class SincronizadorController extends Controller {
                             // COMPRA
                             // Esto es para los casos en que en chipax viene el monto dividido en 2 registros..
                             //$montoProrrata = $p->monto_sumado > 0 ? $p->monto_sumado : $p->monto;
+                            $valor = 0;
                             if ($p->monto_sumado > 0) {
                                 if (
                                     ($gastoCompleta->monto_neto >= $p->monto_sumado - 2
@@ -114,6 +116,28 @@ class SincronizadorController extends Controller {
                                     break;
                                 }
                             }
+
+                            // Si aún no se marca como sincronizada, busco si coincide con el valor sumado
+                            $sumadoRindeGasto = GastoCompleta::find()
+                                ->innerJoin("gasto", "gasto.id = gasto_completa.gasto_id")
+                                ->where(["nro_documento" => $gastoCompleta->nro_documento, "gasto.issue_date" => $compra->fecha_gasto])
+                                ->sum("monto_neto");
+                            $sincDobleRindeGastos = 0;
+                            if ($sumadoRindeGasto >= $p->monto_sumado - 2 && $sumadoRindeGasto <= $p->monto_sumado + 2) {
+                                $sincDobleRindeGastos = 1;
+                            } else if ($sumadoRindeGasto >= $valor - 2 && $sumadoRindeGasto <= $valor + 2) {
+                                $sincDobleRindeGastos = 1;
+                            }
+
+                            $compra->sincronizado = $sincDobleRindeGastos;
+                            $compra->rindeGastoDividido = $sincDobleRindeGastos;
+                            if ($sincDobleRindeGastos) {
+                                $gastoCompleta = GastoCompleta::find()
+                                    ->innerJoin("gasto", "gasto.id = gasto_completa.gasto_id")
+                                    ->where(["nro_documento" => $gastoCompleta->nro_documento, "gasto.issue_date" => $compra->fecha_gasto])->all();
+                                $compra->rindeGastoData = $gastoCompleta;
+                            }
+                            break;
                         } else {
                             // REMUNERACIÓN
                             if (
