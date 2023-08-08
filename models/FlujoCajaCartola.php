@@ -417,6 +417,7 @@ class FlujoCajaCartola {
                     $log = new LogError();
                     $log->mensaje = $ex->getMessage();
                     $log->compra_chipax_id = $compras->id;
+                    $log->save();
                     Yii::error("Error al insertar en CompraChipax");
                     Yii::error($ex->getMessage());
                 }
@@ -471,6 +472,7 @@ class FlujoCajaCartola {
                     $log = new LogError();
                     $log->mensaje = $ex->getMessage();
                     $log->gasto_chipax_id = $gasto->id;
+                    $log->save();
                     Yii::error("Error al insertar en GastoChipax");
                     Yii::error($ex->getMessage());
                 }
@@ -523,6 +525,7 @@ class FlujoCajaCartola {
                     $log = new LogError();
                     $log->mensaje = $ex->getMessage();
                     $log->honorario_chipax_id = $honorario->id;
+                    $log->save();
                     Yii::error("Error al insertar en HonorarioChipax");
                     Yii::error($ex->getMessage());
                 }
@@ -580,6 +583,7 @@ class FlujoCajaCartola {
                     $log = new LogError();
                     $log->mensaje = $ex->getMessage();
                     $log->remuneracion_chipax_id = $remuneracion->id;
+                    $log->save();
                     Yii::error("Error al insertar en RemuneracionChipax");
                     Yii::error($ex->getMessage());
                 }
