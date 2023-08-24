@@ -143,6 +143,8 @@ class GastoRindegastos extends \yii\db\ActiveRecord {
                 }
                 if (!$gastoCompletaRG->save()) {
                     echo "ERROR al sincronizar GastoCompleta: " . join(", ", $gastoCompletaRG->getFirstErrors());
+                    if (isset ($gastoCompletaRG->nro_documento))
+                        echo "Nro Documento: " . $gastoCompletaRG->nro_documento;
                     $transaction->rollBack();
                     return;
                 }
