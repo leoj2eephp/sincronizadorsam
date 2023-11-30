@@ -62,7 +62,7 @@ class SincronizadorController extends Controller {
             $fecha_desde = Helper::formatToDBDate(null !== (\Yii::$app->request->post("fecha_desde")) ? \Yii::$app->request->post("fecha_desde") : "");
             $fecha_hasta = Helper::formatToDBDate(null !== (\Yii::$app->request->post("fecha_hasta")) ? \Yii::$app->request->post("fecha_hasta") : "");
         }
-        
+
         $model = new FlujoCajaCartola();
         $result = Yii::$app->db->createCommand("CALL compras_maquinarias_combustibles(:from_date, :to_date)")
             ->bindValue(':from_date', $fecha_desde)
@@ -91,6 +91,14 @@ class SincronizadorController extends Controller {
                         $compra->rindeGastoDividido = 1;
                         $compra->rindeGastoData = $gastoCompletaReintento;
                         break;
+                    }
+                }
+                // Si spProrrataChipax no trae los valores divididos, pero sí sumados, entonces comparo por el valor sumado
+                if (count($compra->spProrrataChipax) == 1) {
+                    if ($compra->spProrrataChipax[0]->monto_sumado == $sumaGastoCompleta) {
+                        $compra->sincronizado = 1;
+                        $compra->rindeGastoDividido = 1;
+                        $compra->rindeGastoData = $gastoCompletaReintento;
                     }
                 }
             } else if (count($compra->gastoCompleta) > 0) {
@@ -224,7 +232,7 @@ class SincronizadorController extends Controller {
                 $honorario->sincronizado = 0;
             }
         }
-        
+
         $result = Yii::$app->db->createCommand("CALL remuneracion_maquinarias_combustibles(:from_date, :to_date)")
             ->bindValue(':from_date', $fecha_desde)
             ->bindValue(':to_date', $fecha_hasta)
