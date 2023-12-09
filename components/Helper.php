@@ -387,4 +387,12 @@ class Helper {
         $encrypted = md5($secret);
         return $encrypted;
     }
+
+    public static function diferenciaOchoPesos($montoNeto, $montoSumado) {
+        if ($montoNeto >= $montoSumado - 8 && $montoNeto <= $montoSumado + 8) {
+            return true;
+        }
+        return false;
+    }
+    
 }

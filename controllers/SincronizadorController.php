@@ -73,7 +73,7 @@ class SincronizadorController extends Controller {
         foreach ($model->compras as $compra) {
             // FIX! Este bloque es para aquellos casos que por SQL no pude traer a la vez datos que sí tenían asociados gastos, pero que
             // por la condición LEFT JOIN nunca pude traerlos. Sucede en pocos casos en que los gastos de rinde gastos vienen divididos
-            if (!isset($compra->fecha_gasto)) {
+            if (!isset($compra->fecha_gasto) && count($compra->gastoCompleta) > 0) {
                 $gastoCompletaReintento = GastoCompleta::find()
                     ->innerJoin("gasto", "gasto.id = gasto_completa.gasto_id")
                     ->where([
@@ -82,11 +82,11 @@ class SincronizadorController extends Controller {
                     ])->all();
                 $sumaGastoCompleta = 0;
                 foreach ($gastoCompletaReintento as $gastoCompleta) {
-                    $sumaGastoCompleta += $gastoCompleta->monto_neto;
+                    $sumaGastoCompleta += $gastoCompleta->monto_neto + $gastoCompleta->impuesto_especifico;
                 }
 
                 foreach ($compra->spProrrataChipax as $p) {
-                    if ($p->monto == $sumaGastoCompleta) {
+                    if (Helper::diferenciaOchoPesos($p->monto, $sumaGastoCompleta)) {
                         $compra->sincronizado = 1;
                         $compra->rindeGastoDividido = 1;
                         $compra->rindeGastoData = $gastoCompletaReintento;
@@ -95,7 +95,7 @@ class SincronizadorController extends Controller {
                 }
                 // Si spProrrataChipax no trae los valores divididos, pero sí sumados, entonces comparo por el valor sumado
                 if (count($compra->spProrrataChipax) == 1) {
-                    if ($compra->spProrrataChipax[0]->monto_sumado == $sumaGastoCompleta) {
+                    if (Helper::diferenciaOchoPesos($compra->spProrrataChipax[0]->monto_sumado, $sumaGastoCompleta)) {
                         $compra->sincronizado = 1;
                         $compra->rindeGastoDividido = 1;
                         $compra->rindeGastoData = $gastoCompletaReintento;
@@ -113,10 +113,11 @@ class SincronizadorController extends Controller {
                             $valor = 0;
                             if ($p->monto_sumado > 0) {
                                 if (
-                                    ($gastoCompleta->monto_neto >= $p->monto_sumado - 2
-                                        && $gastoCompleta->monto_neto <= $p->monto_sumado + 2
-                                    ) &&
-                                    $gastoCompleta->nro_documento == $compra->folio
+                                    // ($gastoCompleta->monto_neto >= $p->monto_sumado - 2
+                                    //     && $gastoCompleta->monto_neto <= $p->monto_sumado + 2
+                                    // ) &&
+                                    Helper::diferenciaOchoPesos($gastoCompleta->monto_neto, $p->monto_sumado)
+                                    && $gastoCompleta->nro_documento == $compra->folio
                                 ) {
                                     $compra->sincronizado = 1;
                                     break;
@@ -124,10 +125,10 @@ class SincronizadorController extends Controller {
                             } else {
                                 $valor = $p->neto_impuesto > 0 ? $p->neto_impuesto : $p->monto;
                                 if (
-                                    ($valor >= $p->monto - 2
-                                        && $valor <= $p->monto + 2
-                                    ) &&
-                                    // $gastoCompleta->monto_neto == $p->monto &&
+                                    // ($valor >= $p->monto - 2
+                                    //     && $valor <= $p->monto + 2
+                                    // ) &&
+                                    Helper::diferenciaOchoPesos($gastoCompleta->monto_neto, $p->monto_sumado) &&
                                     $compra->fecha_gasto == $compra->fecha_emision &&
                                     $gastoCompleta->nro_documento == $compra->folio
                                 ) {
@@ -142,9 +143,11 @@ class SincronizadorController extends Controller {
                                 ->where(["nro_documento" => $gastoCompleta->nro_documento, "gasto.issue_date" => $compra->fecha_gasto])
                                 ->sum("monto_neto");
                             $sincDobleRindeGastos = 0;
-                            if ($sumadoRindeGasto >= $p->monto_sumado - 2 && $sumadoRindeGasto <= $p->monto_sumado + 2) {
+                            // if ($sumadoRindeGasto >= $p->monto_sumado - 2 && $sumadoRindeGasto <= $p->monto_sumado + 2) {
+                            if (Helper::diferenciaOchoPesos($sumadoRindeGasto, $p->monto_sumado)) {
                                 $sincDobleRindeGastos = 1;
-                            } else if ($sumadoRindeGasto >= $valor - 2 && $sumadoRindeGasto <= $valor + 2) {
+                            // } else if ($sumadoRindeGasto >= $valor - 2 && $sumadoRindeGasto <= $valor + 2) {
+                            } else if (Helper::diferenciaOchoPesos($sumadoRindeGasto, $valor)) {
                                 $sincDobleRindeGastos = 1;
                             }
 
