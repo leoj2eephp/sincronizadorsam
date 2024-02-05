@@ -81,79 +81,81 @@ class GastoRindegastos extends \yii\db\ActiveRecord {
 
     public static function sincronizarGastos($json) {
         $transaction = Yii::$app->db->beginTransaction();
-        // BORRAR todos los datos anteriores..
-        foreach ($json->Expenses as $gasto) {
-            $gastoRindeGastos = new GastoRindegastos();
-            $gastoRindeGastos->id = $gasto->Id;
-            $gastoRindeGastos->supplier = $gasto->Supplier;
-            $gastoRindeGastos->issue_date = $gasto->IssueDate;
-            $gastoRindeGastos->net = $gasto->Net;
-            $gastoRindeGastos->total = $gasto->Total;
-            $gastoRindeGastos->category = $gasto->Category;
-            $gastoRindeGastos->category_code = $gasto->CategoryCode;
-            $gastoRindeGastos->note = $gasto->Note;
-            $gastoRindeGastos->expense_policy_id = $gasto->ExpensePolicyId;
-            $gastoRindeGastos->report_id = $gasto->ReportId;
-            $gastoRindeGastos->status = $gasto->Status;
-            $gastoRindeGastos->tax = $gasto->Tax;
-            $gastoRindeGastos->other_taxes = $gasto->OtherTaxes;
+        try {
+            // BORRAR todos los datos anteriores..
+            foreach ($json->Expenses as $gasto) {
+                $gastoRindeGastos = new GastoRindegastos();
+                $gastoRindeGastos->id = $gasto->Id;
+                $gastoRindeGastos->supplier = $gasto->Supplier;
+                $gastoRindeGastos->issue_date = $gasto->IssueDate;
+                $gastoRindeGastos->net = $gasto->Net;
+                $gastoRindeGastos->total = $gasto->Total;
+                $gastoRindeGastos->category = $gasto->Category;
+                $gastoRindeGastos->category_code = $gasto->CategoryCode;
+                $gastoRindeGastos->note = $gasto->Note;
+                $gastoRindeGastos->expense_policy_id = $gasto->ExpensePolicyId;
+                $gastoRindeGastos->report_id = $gasto->ReportId;
+                $gastoRindeGastos->status = $gasto->Status;
+                $gastoRindeGastos->tax = $gasto->Tax;
+                $gastoRindeGastos->other_taxes = $gasto->OtherTaxes;
 
-            if ($gastoRindeGastos->save()) {
-                $gastoCompletaRG = new GastoCompletaRindegastos();
-                $gastoCompletaRG->gasto_rindegastos_id = $gastoRindeGastos->id;
-                $gastoCompletaRG->retenido = "" . $gasto->Retention;
-                $gastoCompletaRG->iva = "" . $gasto->Tax;
-                $gastoCompletaRG->total_calculado = $gasto->Total;
+                if ($gastoRindeGastos->save()) {
+                    $gastoCompletaRG = new GastoCompletaRindegastos();
+                    $gastoCompletaRG->gasto_rindegastos_id = $gastoRindeGastos->id;
+                    $gastoCompletaRG->retenido = "" . $gasto->Retention;
+                    $gastoCompletaRG->iva = "" . $gasto->Tax;
+                    $gastoCompletaRG->total_calculado = $gasto->Total;
 
-                if (isset($gasto->ExtraFields)) {
-                    foreach ($gasto->ExtraFields as $extra) {
-                        switch (trim($extra->Name)) {
-                            case "Centro de Costo / Faena":
-                                $gastoCompletaRG->centro_costo_faena = $extra->Value;
-                                break;
-                            case "Km.Carguío":
-                                $gastoCompletaRG->km_carguio = $extra->Value;
-                                break;
-                            case "Litros Combustible":
-                                $gastoCompletaRG->litros_combustible = $extra->Value;
-                                break;
-                            case "Nombre quien rinde":
-                                $gastoCompletaRG->nombre_quien_rinde = $extra->Value;
-                                break;
-                            case "Vehiculo o Equipo":
-                                $gastoCompletaRG->vehiculo_equipo = $extra->Value;
-                                break;
-                            case "RUT proveedor":
-                                $gastoCompletaRG->rut_proveedor = $extra->Value;
-                                break;
-                            case "Tipo de Documento":
-                                $gastoCompletaRG->tipo_documento = $extra->Value;
-                                break;
-                            case "Número de Documento":
-                                $gastoCompletaRG->nro_documento = $extra->Value;
-                                break;
-                            case "Cantidad ":
-                                $gastoCompletaRG->cantidad = $extra->Value;
-                                break;
-                            case "Unidad":
-                                $gastoCompletaRG->unidad = $extra->Value;
-                                break;
+                    if (isset($gasto->ExtraFields)) {
+                        foreach ($gasto->ExtraFields as $extra) {
+                            switch (trim($extra->Name)) {
+                                case "Centro de Costo / Faena":
+                                    $gastoCompletaRG->centro_costo_faena = $extra->Value;
+                                    break;
+                                case "Km.Carguío":
+                                    $gastoCompletaRG->km_carguio = $extra->Value;
+                                    break;
+                                case "Litros Combustible":
+                                    $gastoCompletaRG->litros_combustible = $extra->Value;
+                                    break;
+                                case "Nombre quien rinde":
+                                    $gastoCompletaRG->nombre_quien_rinde = $extra->Value;
+                                    break;
+                                case "Vehiculo o Equipo":
+                                    $gastoCompletaRG->vehiculo_equipo = $extra->Value;
+                                    break;
+                                case "RUT proveedor":
+                                    $gastoCompletaRG->rut_proveedor = $extra->Value;
+                                    break;
+                                case "Tipo de Documento":
+                                    $gastoCompletaRG->tipo_documento = $extra->Value;
+                                    break;
+                                case "Número de Documento":
+                                    $gastoCompletaRG->nro_documento = $extra->Value;
+                                    break;
+                                case "Cantidad ":
+                                    $gastoCompletaRG->cantidad = $extra->Value;
+                                    break;
+                                case "Unidad":
+                                    $gastoCompletaRG->unidad = $extra->Value;
+                                    break;
+                            }
                         }
                     }
+                    if (!$gastoCompletaRG->save()) {
+                        $ndoc = "";
+                        if (isset($gastoCompletaRG->nro_documento))
+                            $ndoc = "Nro Documento: $gastoCompletaRG->nro_documento";
+                        throw new \Exception("ERROR al sincronizar GastoCompleta ($ndoc): " . join(", ", $gastoCompletaRG->getFirstErrors()));
+                    }
+                } else {
+                    throw new \Exception("ERROR al sincronizar Gasto: " . join(", ", $gastoRindeGastos->getFirstErrors()));
                 }
-                if (!$gastoCompletaRG->save()) {
-                    echo "ERROR al sincronizar GastoCompleta: " . join(", ", $gastoCompletaRG->getFirstErrors());
-                    if (isset ($gastoCompletaRG->nro_documento))
-                        echo "Nro Documento: " . $gastoCompletaRG->nro_documento;
-                    // $transaction->rollBack();
-                    continue;
-                }
-            } else {
-                echo "ERROR al sincronizar: " . join(", ", $gastoRindeGastos->getFirstErrors());
-                $transaction->rollBack();
-                continue;
             }
+            $transaction->commit();
+        } catch (\Exception $e) {
+            echo 'Se produjo un error: ' . $e->getMessage();
+            $transaction->rollBack();
         }
-        $transaction->commit();
     }
 }
