@@ -98,7 +98,7 @@ class InformeGastoRindegastos extends \yii\db\ActiveRecord {
                 $informeRindeGastos->nro_gastos_rechazados = $informe->NbrRejectedExpenses;
                 $informeRindeGastos->nota = $informe->Note;
                 if (!$informeRindeGastos->save()) {
-                    throw new Exception("Error al insertar informe");
+                    echo "Error al insertar Informe: " . join(", ", $informeRindeGastos->getFirstErrors());
                 }
             }
         } catch (Exception $ex) {
