@@ -81,9 +81,9 @@ class GastoRindegastos extends \yii\db\ActiveRecord {
 
     public static function sincronizarGastos($json) {
         $transaction = Yii::$app->db->beginTransaction();
-        try {
-            // BORRAR todos los datos anteriores..
-            foreach ($json->Expenses as $gasto) {
+        // BORRAR todos los datos anteriores..
+        foreach ($json->Expenses as $gasto) {
+            try {
                 $gastoRindeGastos = new GastoRindegastos();
                 $gastoRindeGastos->id = $gasto->Id;
                 $gastoRindeGastos->supplier = $gasto->Supplier;
@@ -151,11 +151,12 @@ class GastoRindegastos extends \yii\db\ActiveRecord {
                 } else {
                     throw new \Exception("ERROR al sincronizar Gasto: " . join(", ", $gastoRindeGastos->getFirstErrors()));
                 }
+            } catch (\Exception $e) {
+                echo 'Se produjo un error: ' . $e->getMessage();
+                $transaction->rollBack();
+                continue;
             }
-            $transaction->commit();
-        } catch (\Exception $e) {
-            echo 'Se produjo un error: ' . $e->getMessage();
-            $transaction->rollBack();
         }
+        $transaction->commit();
     }
 }
