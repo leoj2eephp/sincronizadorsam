@@ -134,15 +134,29 @@ class ModalController extends Controller {
             $model = new \app\models\PoliticaGastosForm();
             $model->load(Yii::$app->request->post());
 
-            $vehiculosValores = array();
-            foreach ($model->vehiculos_seleccionados as $i => $v) {
+            $vehiculosSeleccionados = [];
+            $nombres = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['nombres'];
+            $notas = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['notas'];
+            $valores = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['valores'];
+            if ($nombres && $valores) {
+                $cantidadVehiculos = count($nombres);
+                for ($i = 0; $i < $cantidadVehiculos; $i++) {
+                    $vehiculo = new \app\models\VehiculoChipax();
+                    $vehiculo->nombre = $nombres[$i];
+                    $vehiculo->nota = $notas[$i];
+                    $vehiculo->valor = $valores[$i];
+                    $vehiculosSeleccionados[] = $vehiculo;
+                }
+            }
+            $model->vehiculos_seleccionados = $vehiculosSeleccionados;
+            /* foreach ($model->vehiculos_seleccionados as $v) {
                 $vehiculo = new \app\models\VehiculoChipax();
-                $vehiculo->nombre = $v;
-                $vehiculo->valor = $model->valores_vehiculos[$i];
+                $vehiculo->nombre = $v['nombres'];
+                $vehiculo->nota = $v['notas'];
+                $vehiculo->valor = $v['valores'];
 
                 $vehiculosValores[] = $vehiculo;
-            }
-            $model->vehiculos_seleccionados = $vehiculosValores;
+            } */
 
             $result = $model->sendData();
             $respuesta = json_decode($result);
@@ -230,8 +244,7 @@ class ModalController extends Controller {
             $model = GastoCompleta::find()->where(["id" => $id])->one();
             $model->delete();
             echo json_encode("SUCCESS");
-        }
-        else {
+        } else {
             echo "pillín pillín";
         }
     }

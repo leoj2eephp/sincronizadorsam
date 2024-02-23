@@ -96,8 +96,8 @@ use yii\helpers\ArrayHelper;
               ],
               ]); */
             ?>
-            <?=
-            $form->field($model, 'nota')->textarea(['maxlength' => true, "class" => "form-control text-uppercase"])
+            <?php
+            // $form->field($model, 'nota')->textarea(['maxlength' => true, "class" => "form-control text-uppercase"])
             ?>
             <div class="row pb-2">
                 <div class="col col-sm-6">
@@ -112,24 +112,14 @@ use yii\helpers\ArrayHelper;
             </div>
             <div class="row fila-vehiculos mb-1">
                 <div class="col col-sm-6">
-                    <?php /*
-                      $form->field($model, 'vehiculos_seleccionados[]')->widget(\kartik\select2\Select2::classname(), [
-                      'data' => ArrayHelper::map($model->vehiculos, "value", "value"),
-                      'options' => ['placeholder' => 'Vehículo o Equipo', "class" => "vehiculo"],
-                      'theme' => 'default',
-                      //'size' => 'sm',
-                      'pluginOptions' => [
-                      'allowClear' => true,
-                      ],
-                      ])->label(false); */
-                    ?>
-                    <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style bg-white" id="vehis">
+                    <select name="PoliticaGastosForm[vehiculos_seleccionados][nombres][]" class="vehiculo select-style bg-white" id="vehis">
                         <?php
                         foreach ($model->vehiculos as $vehi) {
                             echo "<option value='" . $vehi["vehiculo"] . "'>" . $vehi["vehiculo"] . "</option>";
                         }
                         ?>
                     </select>
+                    <input type="text" name="PoliticaGastosForm[vehiculos_seleccionados][notas][]" class="vehiculo select-style bg-white" placeholder="Nota">
                 </div>
                 <div class="col col-sm-6">
                     <div class="row">
@@ -147,7 +137,7 @@ use yii\helpers\ArrayHelper;
                             </button>
                         </div>
                     </div>
-                    <input type="number" class="form-control valor" name="PoliticaGastosForm[valores_vehiculos][]" placeholder="Valor" value="<?= $model->neto ?>" />
+                    <input type="number" class="form-control valor" name="PoliticaGastosForm[vehiculos_seleccionados][valores][]" placeholder="Valor" value="<?= $model->neto ?>" />
                 </div>
             </div>
         </div>

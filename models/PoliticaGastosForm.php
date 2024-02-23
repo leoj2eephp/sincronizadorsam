@@ -24,7 +24,6 @@ class PoliticaGastosForm extends Model {
     public $tipo_combustible_id;
     public $vehiculos = array();
     public $vehiculos_seleccionados = array();  // Arreglo de instancias de VehiculoChipax
-    public $valores_vehiculos = array();    // Arreglo con el valor asociado a los vehículos
     public $unidades = array();
     public $unidad_seleccionada;
     public $tipoDocumento = array();
@@ -58,7 +57,7 @@ class PoliticaGastosForm extends Model {
             [["nombre", "rut_proveedor", "nombre_proveedor", "categoria", "linea_negocio", "html_factura"], "string"],
             [["nota",], "string", 'max' => 250],
             [[
-                "vehiculos_seleccionados", "valores_vehiculos", "unidad_seleccionada", "tipo_documento_seleccionado", "tipo_combustibles",
+                "vehiculos_seleccionados", "unidad_seleccionada", "tipo_documento_seleccionado", "tipo_combustibles",
                 "rendidor_seleccionado", "faena_seleccionada", "cantidad", "nro_documento", "fecha", "neto", "folio",
                 "tipo_combustible_id", "categoria_id", "linea_negocio_id", "carguio", "operador_id", "operadores_id"
             ], "safe"],
@@ -82,7 +81,6 @@ class PoliticaGastosForm extends Model {
 
     public function sendData() {
         $ch = curl_init();
-        //$this->detalle = "TESTING API!!";
         $jsonData = json_encode($this);
 
         //$url = "http://" . self::SERVER . "/SAMQA/index.php/chipax/add?hash=" . $this->getSamHash();
@@ -263,9 +261,9 @@ class PoliticaGastosForm extends Model {
             ->join("INNER JOIN", "equipoArrendado", 'equipoArrendado.id = vehiculo_rindegasto.equipoarrendado_id AND equipoArrendado.vigente = "SÍ"');
 
         $form->vehiculos = (new \yii\db\Query())
-                        ->select("*")
-                        ->from($camionPropio->union($camionArrendado)->union($equipoPropio)->union($equipoArrendado))
-                        ->orderBy("vehiculo")->all();
+            ->select("*")
+            ->from($camionPropio->union($camionArrendado)->union($equipoPropio)->union($equipoArrendado))
+            ->orderBy("vehiculo")->all();
 
         $form->unidades = (new \yii\db\Query())
             ->select(['id', 'nombre'])
