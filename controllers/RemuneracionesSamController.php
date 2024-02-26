@@ -4,15 +4,11 @@ namespace app\controllers;
 
 use app\components\Helper;
 use app\models\Chofer;
-use app\models\Gasto;
-use app\models\GastoCompleta;
 use app\models\Operador;
 use app\models\PoliticaGastosForm;
 use app\models\RemuneracionesSam;
-use app\models\VehiculoRindegasto;
 use Exception;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

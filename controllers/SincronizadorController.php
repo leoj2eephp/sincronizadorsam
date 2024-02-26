@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\commands\ChipaxController;
 use app\components\Helper;
 use app\models\ComentariosSincronizador;
 use app\models\CompraChipax;
@@ -146,7 +147,7 @@ class SincronizadorController extends Controller {
                             // if ($sumadoRindeGasto >= $p->monto_sumado - 2 && $sumadoRindeGasto <= $p->monto_sumado + 2) {
                             if (Helper::diferenciaOchoPesos($sumadoRindeGasto, $p->monto_sumado)) {
                                 $sincDobleRindeGastos = 1;
-                            // } else if ($sumadoRindeGasto >= $valor - 2 && $sumadoRindeGasto <= $valor + 2) {
+                                // } else if ($sumadoRindeGasto >= $valor - 2 && $sumadoRindeGasto <= $valor + 2) {
                             } else if (Helper::diferenciaOchoPesos($sumadoRindeGasto, $valor)) {
                                 $sincDobleRindeGastos = 1;
                             }
@@ -325,43 +326,70 @@ class SincronizadorController extends Controller {
         ]);
     }
 
-    public function actionSincronizar() {
+    public function actionSincronizarChipaxData() {
         // if (Yii::$app->user->can("administrador")) {
         Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
         if (Yii::$app->request->isPost) {
-            /* set_time_limit(0);
-                $chipaxApiService = new ChipaxApiService();
-                $lineasNegocio = $chipaxApiService->getLineasNegocio();
-                LineaNegocioChipax::sincronizarDatos($lineasNegocio);
-                $chipaxApiService->sincronizarCategorias();
-                $result = $chipaxApiService->sincronizarChipaxData(); */
             set_time_limit(0);
-            Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 0")->execute();
-            Yii::$app->db->createCommand()->truncateTable("gasto_rindegastos")->execute();
-            Yii::$app->db->createCommand()->truncateTable("gasto_completa_rindegastos")->execute();
-            Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 1")->execute();
-            $json = $this->getExpenses();
-            $header = $json->Records;
-            for ($i = 1; $i <= $header->Pages; $i++) {
-                if ($i == 1) {
-                    GastoRindegastos::sincronizarGastos($json);
-                } else {
-                    $otherjson = $this->getExpenses($i);
-                    GastoRindegastos::sincronizarGastos($otherjson);
-                }
+            $mensaje = "";
+            // $commandChipax = 'php ' . Yii::getAlias('@app/yii') . ' chipax';
+            $commandChipax = '/usr/local/bin/php ' . Yii::getAlias('@app/yii') . ' chipax';
+            $output = [];
+            $exitCode = null;
+            exec($commandChipax, $output, $exitCode);
+            if ($exitCode === 0) {
+                return '<p ok="ok" class="text-center text-xl">
+                                Sincronización con Chipax completada! <i class="fa fa-10x fa-check text-success"></i>
+                            </p>';
+            } else {
+                return '<p ok="ok" class="text-center text-xl">
+                                Error al sincronizar con Chipax! <i class="fa fa-10x fa-warning text-danger"></i>
+                            </p>';
             }
-            return '<p ok="ok" class="text-center text-xl">
-                Sincronización completada!
-            </p>
-            <div class="d-flex justify-content-center">
-                <i class="fa fa-10x fa-check text-success"></i>
-            </div>';
         } else {
             // return $this->render("_sincronizando");
+            return "error";
         }
-        /* } else {
-            return Yii::$app->response->redirect(Yii::$app->request->referrer);
-        } */
+    }
+
+    public function actionSincronizarRindeGastosData() {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
+        if (Yii::$app->request->isPost) {
+            set_time_limit(0);
+            $commandRindeGastos = '/usr/local/bin/php ' . Yii::getAlias('@app/yii') . ' rinde-gastos';
+            $output = [];
+            $exitCode = null;
+            exec($commandRindeGastos, $output, $exitCode);
+            if ($exitCode === 0) {
+                return '<p ok="ok" class="text-center text-xl">
+                                Sincronización con Rinde Gastos completada! <i class="fa fa-10x fa-check text-success"></i>
+                            </p>';
+            } else {
+                return '<p ok="ok" class="text-center text-xl">
+                                Error al sincronizar con Rinde Gastos! <i class="fa fa-10x fa-warning text-danger"></i>
+                            </p>';
+            }
+        }
+    }
+
+    public function actionSincronizarInformesData() {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
+        if (Yii::$app->request->isPost) {
+            set_time_limit(0);
+            $commandInforme = '/usr/local/bin/php ' . Yii::getAlias('@app/yii') . ' informe';
+            $output = [];
+            $exitCode = null;
+            exec($commandInforme, $output, $exitCode);
+            if ($exitCode === 0) {
+                return '<p ok="ok" class="text-center text-xl">
+                                Sincronización de Informes completada! <i class="fa fa-10x fa-check text-success"></i>
+                            </p>';
+            } else {
+                return '<p ok="ok" class="text-center text-xl">
+                                Error al sincronizar Informes! <i class="fa fa-10x fa-warning text-danger"></i>
+                            </p>';
+            }
+        }
     }
 
     private function getExpenses($page = 1) {

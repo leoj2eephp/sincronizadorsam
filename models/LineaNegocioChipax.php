@@ -48,7 +48,8 @@ class LineaNegocioChipax extends \yii\db\ActiveRecord {
     }
 
     public static function sincronizarDatos($jsonData) {
-        LineaNegocioChipax::deleteAll();
+        // LineaNegocioChipax::deleteAll();
+        Yii::$app->db->createCommand()->truncateTable("linea_negocio_chipax")->execute();
         foreach ($jsonData as $linea) {
             if (!$linea->save()) {
                 echo "Hubo un error al sincronizar las líneas de negocio.";

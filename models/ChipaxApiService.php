@@ -79,6 +79,7 @@ class ChipaxApiService {
             ->addHeaders(['Authorization' => 'JWT ' . $this->getToken()["token"]])
             ->send();
 
+        Yii::$app->db->createCommand()->truncateTable("categoria_chipax")->execute();
         foreach ($request->getData() as $categoria) {
             if (!is_string($categoria["id"])) {
                 $cat = new CategoriaChipax();
