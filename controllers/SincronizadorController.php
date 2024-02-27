@@ -129,7 +129,7 @@ class SincronizadorController extends Controller {
                                     // ($valor >= $p->monto - 2
                                     //     && $valor <= $p->monto + 2
                                     // ) &&
-                                    Helper::diferenciaOchoPesos($gastoCompleta->monto_neto, $p->monto_sumado) &&
+                                    Helper::diferenciaOchoPesos($p->monto, $valor) &&
                                     $compra->fecha_gasto == $compra->fecha_emision &&
                                     $gastoCompleta->nro_documento == $compra->folio
                                 ) {
