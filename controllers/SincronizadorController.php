@@ -105,6 +105,16 @@ class SincronizadorController extends Controller {
             } else if (count($compra->gastoCompleta) > 0) {
                 // BUSCO dentro de cada Prorrata asociada para encontrar asociaciones erróneas de datos sincronizados
                 foreach ($compra->spProrrataChipax as $p) {
+                    // Hay ocasiones en que el monto sumado está tomando en cuenta gastos de diferentes fechas. Así que reviso
+                    // cuando hay monto sumado que todas sus fechas apunten al mismo día.
+                    if ($p->monto_sumado > 0) {
+                        foreach ($compra->spProrrataChipax as $p2) {
+                            if ($compra->fecha_emision == $p2->periodo) {
+                                $p->monto_sumado += $p2->monto;
+                            }
+                        }
+                    }
+
                     // BUSCO todas las coincidencias registradas en GastoCompleta (que podrían ser erróneas por el nro_documento)
                     foreach ($compra->gastoCompleta as $gastoCompleta) {
                         if (!array_key_exists($p->cuenta_id, FlujoCajaCartola::CATEGORIAS_REMUNERACIONES_CHIPAX)) {
@@ -297,13 +307,13 @@ class SincronizadorController extends Controller {
         $rindeGastos = GastoRindegastos::find()->joinWith(["gastoCompletaRindegastos"])
             //->innerJoin("gasto_completa_rindegastos", "gasto_completa_rindegastos.gasto_rindegastos_id = gasto_rindegastos.id")
             ->leftJoin("compra_chipax", "compra_chipax.folio = gasto_completa_rindegastos.nro_documento
-                            AND compra_chipax.monto_total = gasto_rindegastos.net
+                            AND compra_chipax.monto_total = gasto_rindegastos.total
 							AND compra_chipax.fecha_emision = gasto_rindegastos.issue_date")
             ->leftJoin("gasto_chipax", "gasto_completa_rindegastos.nro_documento = gasto_chipax.num_documento
-                        AND gasto_chipax.monto = gasto_rindegastos.net
+                        AND gasto_chipax.monto = gasto_rindegastos.total
                         AND gasto_chipax.fecha = gasto_rindegastos.issue_date")
             ->leftJoin("honorario_chipax", "honorario_chipax.numero_boleta = gasto_completa_rindegastos.nro_documento
-                        AND honorario_chipax.monto_liquido = gasto_rindegastos.net
+                        AND honorario_chipax.monto_liquido = gasto_rindegastos.total
                         AND honorario_chipax.fecha_emision = gasto_rindegastos.issue_date")
             ->leftJoin("remuneracion_chipax", "remuneracion_chipax.id LIKE gasto_completa_rindegastos.nro_documento", [])
             ->where(
