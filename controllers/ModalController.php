@@ -188,14 +188,27 @@ class ModalController extends Controller {
             $model->fecha = Helper::formatToLastDayInMonth($model->fecha);
 
             $vehiculosValores = array();
-            foreach ($model->vehiculos_seleccionados as $i => $v) {
+            $nombres = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['nombres'];
+            $operadores = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['operadores_id'];
+            $valores = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['valores'];
+            if ($nombres && $valores) {
+                $cantidadVehiculos = count($nombres);
+                for ($i = 0; $i < $cantidadVehiculos; $i++) {
+                    $vehiculo = new \app\models\VehiculoChipax();
+                    $vehiculo->nombre = $nombres[$i];
+                    $vehiculo->nota = $operadores[$i];
+                    $vehiculo->valor = $valores[$i];
+                    $vehiculosValores[] = $vehiculo;
+                }
+            }
+            /* foreach ($model->vehiculos_seleccionados as $i => $v) {
                 $vehiculo = new \app\models\VehiculoChipax();
                 $vehiculo->nombre = $v;
                 $vehiculo->valor = $model->valores_vehiculos[$i];
                 $vehiculo->operador_id = $model->operadores_id[$i];
 
                 $vehiculosValores[] = $vehiculo;
-            }
+            } */
             $model->vehiculos_seleccionados = $vehiculosValores;
 
             $respuesta = $model->saveRemuneraciones();

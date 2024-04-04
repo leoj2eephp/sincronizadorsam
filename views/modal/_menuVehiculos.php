@@ -28,7 +28,7 @@ Select2Asset::register($this);
           ],
           ])->label(false); */
         ?>
-        <select name="PoliticaGastosForm[vehiculos_seleccionados][]" class="vehiculo select-style" style="background-color: white;">
+        <select name="PoliticaGastosForm[vehiculos_seleccionados][nombres][]" class="vehiculo select-style" style="background-color: white;">
             <?php
             foreach ($model->vehiculos as $vehi) {
                 $tipo = null;
@@ -41,7 +41,7 @@ Select2Asset::register($this);
             }
             ?>
         </select>
-        <select name="PoliticaGastosForm[operadores_id][]" class="select-style operador" style="background-color: white;" >
+        <select name="PoliticaGastosForm[vehiculos_seleccionados][operadores_id][]" class="select-style operador" style="background-color: white;" >
         </select>
     </div>
     <div class="col col-sm-6">
@@ -60,7 +60,7 @@ Select2Asset::register($this);
                 </button>
             </div>
         </div>
-        <input type="number" class="form-control valor" name="PoliticaGastosForm[valores_vehiculos][]" placeholder="Valor" value="<?= $model->neto ?>" />
+        <input type="number" class="form-control valor" name="PoliticaGastosForm[vehiculos_seleccionados][valores][]" placeholder="Valor" value="<?= $model->neto ?>" />
     </div>
 </div>
 <?php
