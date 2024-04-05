@@ -12,8 +12,8 @@ use yii\base\Model;
  */
 class PoliticaGastosForm extends Model {
 
-    // const SERVER = "www.otzi.cl";
-    const SERVER = "localhost";
+    const SERVER = "www.otzi.cl";
+    // const SERVER = "localhost";
     //const SERVER = "cristhianmoya.com";
 
     public $id;
