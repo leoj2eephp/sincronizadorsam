@@ -138,6 +138,10 @@ class ModalController extends Controller {
             $nombres = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['nombres'];
             $notas = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['notas'];
             $valores = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['valores'];
+            $cantidad = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['cantidad'];
+            $unidad_seleccionada = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['unidad_seleccionada'];
+            $tipo_combustible_id = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['tipo_combustible_id'];
+            $carguio = Yii::$app->request->post('PoliticaGastosForm')['vehiculos_seleccionados']['carguio'];
             if ($nombres && $valores) {
                 $cantidadVehiculos = count($nombres);
                 for ($i = 0; $i < $cantidadVehiculos; $i++) {
@@ -145,19 +149,14 @@ class ModalController extends Controller {
                     $vehiculo->nombre = $nombres[$i];
                     $vehiculo->nota = $notas[$i];
                     $vehiculo->valor = $valores[$i];
+                    $vehiculo->cantidad = $cantidad[$i];
+                    $vehiculo->unidad_seleccionada = $unidad_seleccionada[$i];
+                    $vehiculo->tipo_combustible_id = $tipo_combustible_id[$i];
+                    $vehiculo->carguio = $carguio[$i];
                     $vehiculosSeleccionados[] = $vehiculo;
                 }
             }
             $model->vehiculos_seleccionados = $vehiculosSeleccionados;
-            /* foreach ($model->vehiculos_seleccionados as $v) {
-                $vehiculo = new \app\models\VehiculoChipax();
-                $vehiculo->nombre = $v['nombres'];
-                $vehiculo->nota = $v['notas'];
-                $vehiculo->valor = $v['valores'];
-
-                $vehiculosValores[] = $vehiculo;
-            } */
-
             $result = $model->sendData();
             $respuesta = json_decode($result);
 

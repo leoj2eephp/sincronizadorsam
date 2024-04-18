@@ -11,9 +11,7 @@ use yii\helpers\ArrayHelper;
     ]);
     ?>
 
-    <p>
-        Llene el siguiente formulario para sincronizar la información con SAM
-    </p>
+    <h4>Llene el siguiente formulario para sincronizar la información con SAM</h4>
 
     <div class="row">
         <div class="col col-sm-6" id="form-column" style="border-right: 1px solid #ccc; padding-right: 10px;">
@@ -35,69 +33,7 @@ use yii\helpers\ArrayHelper;
                 'pluginOptions' => [
                     'allowClear' => true,
                 ],
-            ]);
-            ?>
-            <?php
-            if (array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX)) : ?>
-                <div class="row">
-                    <div class="col col-sm-6">
-                        <?= $form->field($model, 'tipo_combustible_id')->widget(\kartik\select2\Select2::class, [
-                            'data' => ArrayHelper::map($model->tipo_combustibles, "id", "nombre"),
-                            'options' => ['placeholder' => 'Tipo de Combustible', "id" => "tipoCombustible"],
-                            'theme' => 'default',
-                            //'size' => 'sm',
-                            'pluginOptions' => [
-                                'allowClear' => true,
-                            ],
-                        ]) ?>
-                    </div>
-                    <div class="col col-sm-6">
-                        <?= $form->field($model, "carguio")->textInput(["type" => "number"]) ?>
-                    </div>
-                </div>
-            <?php
-            else :
-                echo $form->field($model, "tipo_combustible_id")->hiddenInput()->label(false);
-                echo $form->field($model, "carguio")->hiddenInput()->label(false);
-            endif;
-            ?>
-            <?php /*
-              $form->field($model, 'nro_documento')->input("text", []);
-              $form->field($model, 'rut_proveedor')->input("text", []); */
-            ?>
-            <div class="row">
-                <div class="col col-sm-6">
-                    <?=
-                    $form->field($model, 'cantidad')->input("number", []);
-                    ?>
-                </div>
-                <div class="col col-sm-6">
-                    <?=
-                    $form->field($model, 'unidad_seleccionada')->widget(\kartik\select2\Select2::class, [
-                        'data' => ArrayHelper::map($model->unidades, "nombre", "nombre"),
-                        'options' => ['placeholder' => 'Unidad', "id" => "unidad"],
-                        'theme' => 'default',
-                        //'size' => 'sm',
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]);
-                    ?>
-                </div>
-            </div>
-            <?php /*
-              $form->field($model, 'tipo_documento_seleccionado')->widget(\kartik\select2\Select2::classname(), [
-              'data' => ArrayHelper::map($model->tipoDocumento, "value", "value"),
-              'options' => ['placeholder' => 'Tipo de Documento', "id" => "tipoDocumento"],
-              'theme' => 'default',
-              //'size' => 'sm',
-              'pluginOptions' => [
-              'allowClear' => true,
-              ],
-              ]); */
-            ?>
-            <?php
-            // $form->field($model, 'nota')->textarea(['maxlength' => true, "class" => "form-control text-uppercase"])
+            ])->label(false);
             ?>
             <div class="row pb-2">
                 <div class="col col-sm-6">
@@ -119,7 +55,7 @@ use yii\helpers\ArrayHelper;
                         }
                         ?>
                     </select>
-                    <input type="text" name="PoliticaGastosForm[vehiculos_seleccionados][notas][]" class="vehiculo select-style bg-white" placeholder="Nota">
+                    <input type="text" name="PoliticaGastosForm[vehiculos_seleccionados][notas][]" class="notas select-style bg-white" placeholder="Nota">
                 </div>
                 <div class="col col-sm-6">
                     <div class="row">
@@ -139,6 +75,37 @@ use yii\helpers\ArrayHelper;
                     </div>
                     <input type="number" class="form-control valor" name="PoliticaGastosForm[vehiculos_seleccionados][valores][]" placeholder="Valor" value="<?= $model->neto ?>" />
                 </div>
+                <!-- NUEVO!! -->
+                <div class="col col-sm-6">
+                    <input type="number" name="PoliticaGastosForm[vehiculos_seleccionados][cantidad][]" class="cantidad select-style bg-white" placeholder="Cantidad">
+                </div>
+                <div class="col col-sm-6">
+                    <select name="PoliticaGastosForm[vehiculos_seleccionados][unidad_seleccionada][]" class="unidad_seleccionada select-style bg-white" placeholder="Unidad">
+                        <?php
+                        foreach ($model->unidades as $unidad) {
+                            echo "<option value='" . $unidad["nombre"] . "'>" . $unidad["nombre"] . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <?php
+                if (array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX)) : ?>
+                    <div class="col col-sm-6">
+                        <select name="PoliticaGastosForm[vehiculos_seleccionados][tipo_combustible_id][]" class="tipo_combustible select-style bg-white" placeholder="Unidad">
+                            <?php
+                            foreach ($model->tipo_combustibles as $tipoComb) {
+                                echo "<option value='" . $tipoComb["id"] . "'>" . $tipoComb["nombre"] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col col-sm-6">
+                        <input type="text" name="PoliticaGastosForm[vehiculos_seleccionados][carguio][]" class="carguio select-style bg-white" placeholder="Carguío">
+                    </div>
+                <?php else : ?>
+                    <input type="hidden" name="PoliticaGastosForm[vehiculos_seleccionados][tipo_combustible_id][]">
+                    <input type="hidden" name="PoliticaGastosForm[vehiculos_seleccionados][carguio][]">
+                <?php endif; ?>
             </div>
         </div>
         <div class="col col-sm-6">

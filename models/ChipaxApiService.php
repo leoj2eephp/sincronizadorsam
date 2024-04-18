@@ -13,7 +13,7 @@ class ChipaxApiService {
     public function sincronizarChipaxData() {
         $client = new Client(["baseUrl" => "https://api.chipax.com/flujo-caja/cartolas"]);
 
-        $fecha_desde = date("Y-m-d", strtotime("2018-01-01"));
+        $fecha_desde = date("Y-m-d", strtotime("2022-01-01"));
         $fecha_hasta = date("Y-m-d");
         $request = $client->createRequest()
             ->setHeaders(['content-type' => 'application/json'])
