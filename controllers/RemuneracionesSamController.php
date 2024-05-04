@@ -8,6 +8,8 @@ use app\models\Operador;
 use app\models\PoliticaGastosForm;
 use app\models\RemuneracionesSam;
 use Exception;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -228,6 +230,66 @@ class RemuneracionesSamController extends Controller {
             "remuneracionManual",
             ["model" => $model, "operadores" => $operadores, "choferes" => $choferes]
         );
+    }
+
+    public function actionExportToExcel() {
+        $fecha_desde = isset($_GET["fecha_desde"]) && $_GET["fecha_desde"] != "" ? Helper::formatToDBDate($_GET["fecha_desde"]) : date("Y-01-01");
+        $fecha_hasta = isset($_GET["fecha_hasta"]) && $_GET["fecha_hasta"] != "" ? Helper::formatToDBDate($_GET["fecha_hasta"]) : date("Y-m-d");
+
+        $paramsFecha = [":desde" => $fecha_desde, ":hasta" => $fecha_hasta];
+        $remuneraciones = RemuneracionesSam::find()
+            ->joinWith(["camionArrendado", "camionPropio", "equipoArrendado", "equipoPropio"])
+            ->leftJoin("faena", "faena.id = remuneraciones_sam.faena_id AND faena.vigente = :si", [":si" => "SÍ"])
+            ->where("fecha_rendicion >= :desde AND fecha_rendicion <= :hasta", $paramsFecha)
+            ->all();
+        
+        $spreadsheet = new Spreadsheet();
+        // Establecer las propiedades del documento
+        /* $spreadsheet->getProperties()
+            ->setCreator('Your Name')
+            ->setLastModifiedBy('Your Name')
+            ->setTitle('Remuneraciones')
+            ->setDescription('Archivo de remuneraciones en formato Excel'); */
+        // Crear una hoja de cálculo activa
+        $spreadsheet->setActiveSheetIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+        // Agregar datos a la hoja de cálculo
+        $sheet->setCellValue('A1', 'Máquina/Camión');
+        $sheet->setCellValue('B1', 'Operador/Chofer');
+        $sheet->setCellValue('C1', 'Centro Gestión');
+        $sheet->setCellValue('D1', 'Gasto ($)');
+        $sheet->setCellValue('E1', 'Equipo Camión');
+
+        $row = 2;
+        foreach ($remuneraciones as $remu) {
+            $sheet->setCellValue('A' . $row, $remu->getCamionEquipoNombre());
+            $sheet->setCellValue('B' . $row, $remu->nombre_proveedor);
+            $sheet->setCellValue('C' . $row, isset($remu->faena) ? $remu->faena->nombre : "");
+            $sheet->setCellValue('D' . $row, number_format($remu->neto, 0, ",", "."));
+            $sheet->setCellValue('E' . $row, $remu->tipo_equipo_camion);
+            $row++;
+        }
+
+        // Configurar el ancho de las columnas
+        $sheet->getColumnDimension('A')->setWidth(25);
+        $sheet->getColumnDimension('B')->setWidth(25);
+        $sheet->getColumnDimension('C')->setWidth(25);
+        $sheet->getColumnDimension('D')->setWidth(15);
+        $sheet->getColumnDimension('E')->setWidth(25);
+        $sheet->getColumnDimension('F')->setWidth(15);
+        $sheet->getColumnDimension('G')->setWidth(15);
+        $sheet->getColumnDimension('H')->setWidth(15);
+        $sheet->getColumnDimension('I')->setWidth(15);
+        $sheet->getColumnDimension('J')->setWidth(15);
+        
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+        Yii::$app->response->headers->add('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        Yii::$app->response->headers->add('Content-Disposition', 'attachment;filename="remuneraciones.xlsx"');
+        Yii::$app->response->headers->add('Cache-Control', 'max-age=0');
+        Yii::$app->response->send();
+        // Guardar el archivo en la salida de PHP (no se guarda en el servidor)
+        $writer->save('php://output');
     }
 
     /**

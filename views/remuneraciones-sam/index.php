@@ -77,7 +77,9 @@ $this->title = 'Remuneraciones SAM';
                     <div class="col-md-4 mt-4 pt-1">
                         <?= Html::submitButton("Buscar <i class='fa fa-search'></i>", ["class" => "btn btn-primary"]) ?>
                         <?=
-                        Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success", "id" => "syncExcel"])
+                        // Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success", "id" => "exportToExcel"])
+                        Html::a("Descargar Excel <i class='fa fa-file-excel'></i>", ["remuneraciones-sam/export-to-excel",
+                            'fecha_desde' => $fecha_desde, 'fecha_hasta' => $fecha_hasta], ['class' => 'btn btn-success'])
                         ?>
                         <?=
                         Html::button('Remuneración Manual <i class="fa fa-sync"></i>', [
@@ -152,13 +154,6 @@ $script = <<< JS
 $(document).ready(function() {        
     const tabla = $('#tabla').dataTable({  
         "columnDefs": [
-            /* {
-                targets: 0,
-                className: 'dt-control',
-                orderable: false,
-                data: null,
-                defaultContent: '',
-            }, */
            {   targets: 4, visible: false },
            {   targets: 5, visible: false },
            {   targets: 6, visible: false },
