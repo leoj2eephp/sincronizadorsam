@@ -33,7 +33,9 @@ class RindeGastosController extends Controller {
 
 	private function getExpenses($page = 1) {
         $rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
-        //$params["Since"] = "2020-01-01";
+        # Desde noviembre 2024 RindeGastos exige los parámetros Since y Until
+        $params["Since"] = "2020-01-01";
+        $params["Until"] = date("Y-m-d");
         $params["Status"] = 1;
         $params["Page"] = $page;
         return json_decode($rindeApi->getExpenses($params));

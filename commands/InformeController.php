@@ -34,7 +34,8 @@ class InformeController extends Controller {
 
 	private function getInforme($page = 1) {
 		$rindeApi = new RindeGastosApiService(Yii::$app->params["rindeGastosToken"]);
-		//$params["Since"] = "2020-01-01";
+		$params["Since"] = "2020-01-01";
+		$params["Until"] = date("Y-m-d");
 		//$params["Status"] = 1;
 		$params["Page"] = $page;
 		return json_decode($rindeApi->getExpenseReports($params));
