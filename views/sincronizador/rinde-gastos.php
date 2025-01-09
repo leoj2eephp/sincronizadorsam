@@ -173,13 +173,15 @@ $rindeGastosParaExcel = array();
                                     <input type="hidden" name="ForExcel[Rindegastos][moneda]" value="<?= 1000 ?>" />
                                     <?php
                                     $rindeGastosParaExcel = $rinde;
-                                    echo '<div class="custom-control custom-switch" style="padding: 0px !important;">
-                                                <label class="switch-sm">
-                                                    <input type="checkbox" class="cargaMasiva">
-                                                    <span class="slider-sm round"></span>
-                                                </label>
-                                                <label style="font-weight: normal">Sincronizar Excel</label>
-                                            </div>';
+                                    if (isset($informe)) {
+                                            echo '<div class="custom-control custom-switch" style="padding: 0px !important;">
+                                                    <label class="switch-sm">
+                                                        <input type="checkbox" class="cargaMasiva">
+                                                        <span class="slider-sm round"></span>
+                                                    </label>
+                                                    <label style="font-weight: normal">Sincronizar Excel</label>
+                                                </div>';
+                                        }
                                     ?>
                                 </td>
                             </tr>
