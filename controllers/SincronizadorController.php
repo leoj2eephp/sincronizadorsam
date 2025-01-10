@@ -17,6 +17,7 @@ use app\models\User;
 use Yii;
 use yii\base\Controller;
 use yii\filters\VerbFilter;
+use app\models\InformeGastoRindegastos;
 
 class SincronizadorController extends Controller {
 
@@ -329,10 +330,25 @@ class SincronizadorController extends Controller {
             ->andWhere("remuneracion_chipax.id IS NULL AND compra_chipax.id IS NULL AND gasto_chipax.id IS NULL AND honorario_chipax.id IS NULL")
             ->all();
 
+        $mostrarConInforme = Yii::$app->request->post('mostrar_con_informe') === '1';
+        if($mostrarConInforme) {
+            $rindeGastos = array_filter($rindeGastos, function ($rinde) {
+                $informe = InformeGastoRindegastos::findOne($rinde->report_id);
+                return isset($informe);
+            });
+        }
+        
+        // $rindeGastosFiltrados = array_filter($rindeGastos, function ($rinde) use ($mostrarConInforme) {
+        //     $informe = InformeGastoRindegastos::findOne($rinde->report_id);
+        //     $tieneInforme = isset($informe);
+        //     return $mostrarConInforme ? $tieneInforme : true;
+        // });
+
         return $this->render("rinde-gastos", [
             "fecha_desde" => $fecha_desde,
             "fecha_hasta" => $fecha_hasta,
-            "model" => $rindeGastos
+            "model" => $rindeGastos,
+            "mostrarConInforme" => $mostrarConInforme
         ]);
     }
 

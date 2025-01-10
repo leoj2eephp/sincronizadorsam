@@ -73,24 +73,33 @@ $rindeGastosParaExcel = array();
                 <div class="row">
                     <div class="offset-2"></div>
                     <div class="col-md-8">
-                        <?= Html::submitButton("Buscar <i class='fa fa-search'></i>", ["class" => "btn btn-primary"]) ?>
-                        <?php   /*
-                        Html::button('Subir DTEs <i class="fa fa-file-upload"></i>', [
-                            'class' => 'showModalButton btn btn-success pull-center',
-                            'title' => "Subir archivo XML del SII",
-                            'value' => \yii\helpers\Url::to(["/modal/upload-dte"]), 'data-toggle' => 'modal', 'data-target' => '#modalvote'
-                        ])  */
-                        ?>
-                        <?=
-                        Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success", "id" => "syncExcel"])
-                        ?>
-                        <div class="col-md-4 float-right">
-                            <h5>Seleccionar Todos Rinde Gastos</h5>
-                            <div class="custom-control custom-switch">
-                                <label class="switch">
-                                    <input type="checkbox" id="chkRindeGastosAll">
-                                    <span class="slider round"></span>
-                                </label>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <?= Html::submitButton("Buscar <i class='fa fa-search'></i>", ["class" => "btn btn-primary mr-3"]) ?>
+                            <?php   /*
+                            Html::button('Subir DTEs <i class="fa fa-file-upload"></i>', [
+                                'class' => 'showModalButton btn btn-success pull-center',
+                                'title' => "Subir archivo XML del SII",
+                                'value' => \yii\helpers\Url::to(["/modal/upload-dte"]), 'data-toggle' => 'modal', 'data-target' => '#modalvote'
+                            ])  */
+                            ?>
+                            <?=
+                                Html::button("Generar Excel <i class='fa fa-file-excel'></i>", ["class" => "btn btn-success mr-2", "id" => "syncExcel"])
+                            ?>
+                            <div class="custom-control custom-switch mr-2">
+                                <?= Html::checkbox('mostrar_con_informe', $mostrarConInforme, [
+                                    'id' => 'toggleTieneInforme',
+                                    'class' => 'custom-control-input',
+                                ]); ?>
+                                <?= Html::label('Mostrar solo gastos con Informe', 'toggleTieneInforme', ['class' => 'custom-control-label']); ?>                      
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="custom-control custom-switch mr-2 d-flex align-items-center">
+                                    <label class="switch-sm mb-0">
+                                        <input type="checkbox" id="chkRindeGastosAll" class="mb-0">
+                                        <span class="slider-sm round mb-0"></span>
+                                    </label>
+                                </div>
+                                <label class="mb-0">Seleccionar Todos Rinde Gastos</label>
                             </div>
                         </div>
                     </div>
@@ -121,11 +130,11 @@ $rindeGastosParaExcel = array();
                 </thead>
                 <tbody>
                     <?php
-                    $indice = 0;
-                    if (count($model) > 0) :
-                        foreach ($model as $rinde) :
-                            $informe = InformeGastoRindegastos::findOne($rinde->report_id);
-                            $nro_informe = isset($informe) ? $informe->numero : $rinde->report_id;
+                        $indice = 0;
+                        if (count($model) > 0) :
+                            foreach ($model as $rinde) :
+                                $informe = InformeGastoRindegastos::findOne($rinde->report_id);
+                                $nro_informe = isset($informe) ? $informe->numero : $rinde->report_id;
                     ?>
                             <tr>
                                 <td style="text-overflow: ellipsis; width: 250px;"><?= $rinde->supplier ?></td>
@@ -204,7 +213,10 @@ $rindeGastosParaExcel = array();
 </div>
 <?php
 $script = <<< JS
-$(document).ready(function() {        
+$(document).ready(function() {     
+    $('#toggleTieneInforme').on('change', function() {
+        $(this).closest('form').submit();
+    });
     $("#syncExcel").on("click", function() {
         $(this).attr("disabled", true);
         $("#syncExcel>i").removeClass("fa-file-excel");
