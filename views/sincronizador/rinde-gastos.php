@@ -202,6 +202,13 @@ $rindeGastosParaExcel = array();
             </table>
         </div>
 
+        <div class="col-md-12 bg-info">
+            Registros con informe <b><?= $cantidadConInforme ?></b>
+        </div>
+        <div class="col-md-12 bg-secondary">
+            Registros sin informe <b><?= $cantidadSinInforme ?></b>
+        </div>
+        <br>
         <div class="col-md-12 bg-success">
             Cantidad de Registros <b>Procesados: <?= $cantidad_sincronizados ?></b>
         </div>

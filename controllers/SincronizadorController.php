@@ -338,17 +338,24 @@ class SincronizadorController extends Controller {
             });
         }
         
-        // $rindeGastosFiltrados = array_filter($rindeGastos, function ($rinde) use ($mostrarConInforme) {
-        //     $informe = InformeGastoRindegastos::findOne($rinde->report_id);
-        //     $tieneInforme = isset($informe);
-        //     return $mostrarConInforme ? $tieneInforme : true;
-        // });
+        $cantidadConInforme = 0;
+        $cantidadTotal = count($rindeGastos);
+
+        foreach ($rindeGastos as $rinde) {
+            $informe = InformeGastoRindegastos::findOne($rinde->report_id);
+            if (isset($informe)) {
+                $cantidadConInforme++;
+            }
+        }
+        $cantidadSinInforme = $cantidadTotal - $cantidadConInforme;
 
         return $this->render("rinde-gastos", [
             "fecha_desde" => $fecha_desde,
             "fecha_hasta" => $fecha_hasta,
             "model" => $rindeGastos,
-            "mostrarConInforme" => $mostrarConInforme
+            "mostrarConInforme" => $mostrarConInforme,
+            "cantidadConInforme" => $cantidadConInforme,
+            "cantidadSinInforme" => $cantidadSinInforme
         ]);
     }
 
