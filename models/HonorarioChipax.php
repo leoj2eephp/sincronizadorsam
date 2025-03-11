@@ -15,6 +15,7 @@ use Yii;
  * @property string $nombre_emisor
  * @property string $rut_emisor
  * @property int|null $usuario_id
+ * @property int $empresa_chipax_id
  *
  * @property ProrrataChipax[] $prorrataChipax
  * @property GastoCompleta $gastoCompleta
@@ -37,7 +38,7 @@ class HonorarioChipax extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['id', 'fecha_emision', 'moneda_id', 'monto_liquido', 'numero_boleta', 'nombre_emisor', 'rut_emisor'], 'required'],
-            [['id', 'moneda_id', 'monto_liquido', 'numero_boleta', 'usuario_id'], 'integer'],
+            [['id', 'moneda_id', 'monto_liquido', 'numero_boleta', 'usuario_id', "empresa_chipax_id"], 'integer'],
             [['fecha_emision', 'sincronizado', 'spProrrataChipax'], 'safe'],
             [['nombre_emisor'], 'string', 'max' => 45],
             [['rut_emisor'], 'string', 'max' => 12],
@@ -58,6 +59,7 @@ class HonorarioChipax extends \yii\db\ActiveRecord {
             'nombre_emisor' => 'Nombre Emisor',
             'rut_emisor' => 'Rut Emisor',
             'usuario_id' => 'Usuario ID',
+            'empresa_chipax_id' => 'Empresa Chipax',
         ];
     }
 
@@ -92,6 +94,10 @@ class HonorarioChipax extends \yii\db\ActiveRecord {
             $honorario->nombre_emisor = $fila["nombre_emisor"];
             $honorario->rut_emisor = $fila["rut_emisor"];
             $honorario->usuario_id = $fila["usuario_id"];
+            // Este nuevo flag identificará la empresa de la que proviene el gasto de Chipax.
+            // 1. Otzi
+            // 2. Conejero Maquinarias SPA
+            $honorario->empresa_chipax_id = $fila["empresa_chipax_id"];
             
             $pro = new ProrrataChipax();
             $pro->id = $fila["prorrataId"];
@@ -102,6 +108,7 @@ class HonorarioChipax extends \yii\db\ActiveRecord {
             $pro->monto = $fila["monto"];
             $pro->periodo = $fila["periodo"];
             $pro->gasto_chipax_id = $fila["gasto_chipax_id"];
+            $pro->empresa_chipax_id = $fila["empresa_chipax_id"];
             
             $honorario->spProrrataChipax[] = $pro;
             $honorarios[] = $honorario;

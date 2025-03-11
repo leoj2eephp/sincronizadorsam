@@ -12,6 +12,7 @@ use Yii;
  * @property int|null $default
  * @property string|null $cerrada
  * @property int|null $deleted
+ * @property int $empresa_chipax_id
  */
 class LineaNegocioChipax extends \yii\db\ActiveRecord {
     /**
@@ -27,7 +28,7 @@ class LineaNegocioChipax extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['id', 'nombre'], 'required'],
-            [['id', 'default', 'deleted'], 'integer'],
+            [['id', 'default', 'deleted', 'empresa_chipax_id'], 'integer'],
             [['cerrada'], 'safe'],
             [['nombre'], 'string', 'max' => 60],
             [['id'], 'unique'],
@@ -44,15 +45,21 @@ class LineaNegocioChipax extends \yii\db\ActiveRecord {
             'default' => 'Default',
             'cerrada' => 'Cerrada',
             'deleted' => 'Deleted',
+            'empresa_chipax_id' => 'Empresa Chipax',
         ];
     }
 
     public static function sincronizarDatos($jsonData) {
         // LineaNegocioChipax::deleteAll();
-        Yii::$app->db->createCommand()->truncateTable("linea_negocio_chipax")->execute();
         foreach ($jsonData as $linea) {
             if (!$linea->save()) {
-                echo "Hubo un error al sincronizar las líneas de negocio.";
+                echo "Hubo un error al sincronizar las líneas de negocio.\n";
+                foreach ($linea->errors as $attribute => $errors) {
+                    foreach ($errors as $error) {
+                        echo "Error en $attribute: $error\n";
+                    }
+                }
+                echo "\n";
             }
         }
     }

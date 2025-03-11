@@ -17,6 +17,7 @@ use Yii;
  * @property string|null $responsable
  * @property string|null $tipo_cambio
  * @property int|null $usuario_id
+ * @property int $empresa_chipax_id
  *
  * @property ProrrataChipax[] $prorrataChipax
  * @property GastoCompleta $gastoCompleta
@@ -40,7 +41,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['id', 'descripcion', 'fecha', 'moneda_id', 'monto', 'proveedor'], 'required'],
-            [['id', 'moneda_id', 'monto', 'usuario_id'], 'integer'],
+            [['id', 'moneda_id', 'monto', 'usuario_id', "empresa_chipax_id"], 'integer'],
             [['fecha', 'sincronizado', 'spProrrataChipax', 'fecha_gasto'], 'safe'],
             [['proveedor', 'responsable'], 'string', 'max' => 100],
             [['descripcion'], 'string', 'max' => 200],
@@ -64,6 +65,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
             'responsable' => 'Responsable',
             'tipo_cambio' => 'Tipo Cambio',
             'usuario_id' => 'Usuario ID',
+            'empresa_chipax_id' => 'Empresa Chipax',
         ];
     }
 
@@ -101,6 +103,10 @@ class GastoChipax extends \yii\db\ActiveRecord {
             $gastito->tipo_cambio = $fila["tipo_cambio"];
             $gastito->usuario_id = $fila["usuario_id"];
             $gastito->fecha_gasto = $fila["fecha_gasto"];
+            // Este nuevo flag identificará la empresa de la que proviene el gasto de Chipax.
+            // 1. Otzi
+            // 2. Conejero Maquinarias SPA
+            $gastito->empresa_chipax_id = $fila["empresa_chipax_id"];
 
             $pro = new ProrrataChipax();
             $pro->id = $fila["prorrataId"];
@@ -111,6 +117,7 @@ class GastoChipax extends \yii\db\ActiveRecord {
             $pro->monto = $fila["monto"];
             $pro->periodo = $fila["periodo"];
             $pro->gasto_chipax_id = $fila["gasto_chipax_id"];
+            $pro->empresa_chipax_id = $fila["empresa_chipax_id"];
 
             $gastito->spProrrataChipax[] = $pro;
             $gastos[] = $gastito;

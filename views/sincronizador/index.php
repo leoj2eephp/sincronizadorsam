@@ -3,9 +3,8 @@
 use yii\helpers\Html;
 use app\components\Helper;
 use app\models\ComentariosSincronizador;
-use app\models\CompraChipax;
+use app\models\EmpresaChipax;
 use app\models\FlujoCajaCartola;
-use app\models\GastoCompleta;
 use kartik\date\DatePicker;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -72,7 +71,6 @@ $rindeGastosParaExcel = array();
                         </p>
                     </div>
                     <div class="offset-2"></div>
-                    <div class="offset-2"></div>
                     <div class="col-md-2">
                         <h5>Solo sincronizados</h5>
                         <div class="custom-control custom-switch">
@@ -87,6 +85,24 @@ $rindeGastosParaExcel = array();
                         <div class="custom-control custom-switch">
                             <label class="switch">
                                 <input type="checkbox" id="chkChipax">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <h5>Solo Otzi</h5>
+                        <div class="custom-control custom-switch">
+                            <label class="switch">
+                                <input type="checkbox" id="chkOtzi">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <h5>Solo COMA</h5>
+                        <div class="custom-control custom-switch">
+                            <label class="switch">
+                                <input type="checkbox" id="chkComa">
                                 <span class="slider round"></span>
                             </label>
                         </div>
@@ -140,6 +156,7 @@ $rindeGastosParaExcel = array();
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr class="bg-info">
+                        <th style="text-overflow: ellipsis;">Empresa</th>
                         <th style="text-overflow: ellipsis; width: 250px;">Razón Social</th>
                         <th>Rut Emisor</th>
                         <th>Folio</th>
@@ -245,6 +262,7 @@ $rindeGastosParaExcel = array();
                                         echo ' class="' . $color . '"';
                                     }
                                     ?>>
+                                    <td style="text-overflow: ellipsis;"><?= EmpresaChipax::getName($compra->empresa_chipax_id)?></td>
                                     <td style="text-overflow: ellipsis; width: 250px;"><?= $compra->razon_social ?></td>
                                     <td><?= $compra->rut_emisor ?></td>
                                     <td></td>
@@ -374,6 +392,7 @@ $rindeGastosParaExcel = array();
                                         echo ' class="' . $color . '"';
                                     }
                                     ?>>
+                                    <td style="text-overflow: ellipsis;"><?= EmpresaChipax::getName($gastos->empresa_chipax_id)?></td>
                                     <td style="text-overflow: ellipsis; width: 250px;"><?= $gastos->proveedor ?></td>
                                     <td><?= isset($gastos->proveedor) ? $gastos->proveedor : "" ?></td>
                                     <td></td>
@@ -470,6 +489,7 @@ $rindeGastosParaExcel = array();
                                         echo ' class="' . $color . '"';
                                     }
                                     ?>>
+                                    <td style="text-overflow: ellipsis;"><?= EmpresaChipax::getName($honorarios->empresa_chipax_id)?></td>
                                     <td style="text-overflow: ellipsis; width: 250px;"><?= $honorarios->nombre_emisor ?></td>
                                     <td><?= $honorarios->rut_emisor ?></td>
                                     <td></td>
@@ -537,6 +557,7 @@ $rindeGastosParaExcel = array();
                                 $cantidad_registros++;
                             ?>
                                 <tr>
+                                <td style="text-overflow: ellipsis;"><?= EmpresaChipax::getName($remuneraciones->empresa_chipax_id)?></td>
                                     <td style="text-overflow: ellipsis; width: 250px;">
                                         <?= $remuneraciones->nombre_empleado . ' ' . $remuneraciones->apellido_empleado ?>
                                     </td>
@@ -661,7 +682,7 @@ $(document).ready(function() {
 //            {   targets: 6, "searchable": true, width: "150px" },
 //            {   targets: 7, "searchable": true, width: "150px" },
             {
-                "targets": [9],
+                "targets": [10],
                 //searchable: true,
                 "visible": false
             },
@@ -706,9 +727,9 @@ $(document).ready(function() {
                 $("#chkChipax").click();
             if ($("#chkRinde").is(":checked"))
                 $("#chkRinde").click();
-            tabla.DataTable().columns(9).search("sync").draw();
+            tabla.DataTable().columns(10).search("sync").draw();
         } else {
-            tabla.DataTable().columns(9).search("").draw();
+            tabla.DataTable().columns(10).search("").draw();
         }
     });
     $("#chkChipax").click(function(){
@@ -717,30 +738,28 @@ $(document).ready(function() {
                 $("#chkSincronizados").click();
         if ($("#chkRinde").is(":checked"))
                 $("#chkRinde").click();
-            tabla.DataTable().columns(9).search("mogli").draw();
+            tabla.DataTable().columns(10).search("mogli").draw();
         } else {
-            tabla.DataTable().columns(9).search("").draw();
+            tabla.DataTable().columns(10).search("").draw();
         }
     });
-    $("#chkRinde").click(function(){
+    $("#chkOtzi").click(function(){
         if (this.checked) {
-            if ($("#chkSincronizados").is(":checked"))
-                $("#chkSincronizados").click();
-            if ($("#chkChipax").is(":checked"))
-                $("#chkChipax").click();
-            tabla.DataTable().columns(9).search("rinde").draw();
+            if ($("#chkComa").is(":checked"))
+                $("#chkComa").click();
+            tabla.DataTable().columns(0).search("Otzi").draw();
         } else {
-            tabla.DataTable().columns(9).search("").draw();
+            tabla.DataTable().columns(0).search("").draw();
         }
     });
-    $("#chkRindeGastosAll").click(function(){
-        let estado = $("#chkRindeGastosAll").prop("checked");
-        if (estado === true && !$("#chkRinde").prop("checked")) {
-            $("#chkRinde").click();
+    $("#chkComa").click(function(){
+        if (this.checked) {
+            if ($("#chkOtzi").is(":checked"))
+                $("#chkOtzi").click();
+            tabla.DataTable().columns(0).search("SPA").draw();
+        } else {
+            tabla.DataTable().columns(0).search("").draw();
         }
-        $(".cargaMasiva").each(function(index, obj) {
-            $(obj).prop("checked", estado);
-        });
     });
         
     // aplicando estilos al add

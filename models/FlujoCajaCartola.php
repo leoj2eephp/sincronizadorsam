@@ -47,6 +47,21 @@ class FlujoCajaCartola {
         86680 => 'CG.- 02 Petróleo',
     ];
 
+    const CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA = [
+        602166 => "01 Bencina",
+        602168 => "02 Petróleo",
+        602171 => "02.a Gas Licuado Vehicular",
+        602172 => "02. Otros Combustibles",
+        602197 => "Cop. 01 Bencina",
+        602198 => "Cop. 02 Petróleo",
+        602199 => "Cop. 02.a Gas Licuado Vehicular",
+        602200 => "Cop. 02.b Otros Combustibles",
+        602274 => "CG.- 02 Petróleo",
+        602275 => "CG.- 01 Bencina",
+        602276 => "CG.- 03.1 Parafina",
+        602222 => "Cop. 03.1 Parafina",
+    ];
+
     const CATEGORIAS_REMUNERACIONES_CHIPAX = [
         75818 => '13 Remuneraciónes del Personal',
         95432 => '13.2 Remuneraciones Personal externo',
@@ -120,8 +135,12 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($c["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671) {
-                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
+                        // Si no es Maquinaria Otzi ni tampoco es Maquinaria SPA
+                        if ($pro["linea_negocio_id"] != 5671 && $pro["linea_negocio_id"] != 38296) {
+                            if (
+                                !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX) &&
+                                !array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA)
+                            ) continue;
                         }
                         if ($compras->save()) {
                             $prorrata = new ProrrataChipax();
@@ -178,8 +197,9 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($g["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671) {
+                        if ($pro["linea_negocio_id"] != 5671 && $pro["linea_negocio_id"] != 38296) {
                             if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
+                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA)) continue;
                         }
                         if ($gasto->save()) {
                             $prorrata = new ProrrataChipax();
@@ -236,11 +256,15 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($h["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671) {
+                        if ($pro["linea_negocio_id"] != 5671 && $pro["linea_negocio_id"] != 38296) {
                             if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
+                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA)) continue;
                         }
                         if ($honorario->save()) {
-                            if ($pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
+                            if (
+                                $pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX) ||
+                                $pro["linea_negocio_id"] == 38296 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA)
+                            ) {
                                 $prorrata = new ProrrataChipax();
                                 $prorrata->cuenta_id = $pro["cuenta_id"];
                                 $prorrata->filtro_id = $pro["filtro_id"];
@@ -301,11 +325,15 @@ class FlujoCajaCartola {
 
                 try {
                     foreach ($r["Prorratas"] as $pro) {
-                        if ($pro["linea_negocio_id"] != 5671) {
+                        if ($pro["linea_negocio_id"] != 5671 && $pro["linea_negocio_id"] != 38296) {
                             if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) continue;
+                            if (!array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA)) continue;
                         }
                         if ($remuneracion->save()) {
-                            if ($pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX)) {
+                            if (
+                                $pro["linea_negocio_id"] == 5671 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX) ||
+                                $pro["linea_negocio_id"] == 38296 || array_key_exists($pro["cuenta_id"], self::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA)
+                            ) {
                                 $prorrata = new ProrrataChipax();
                                 $prorrata->cuenta_id = $pro["cuenta_id"];
                                 $prorrata->filtro_id = $pro["filtro_id"];
@@ -351,9 +379,10 @@ class FlujoCajaCartola {
      * Ahora se deben hacer esos filtros al momento de llenar la tabla del sincronizador
      * 
      * @param array $jsonArreglo json respuesta de la llamada a la API de Chipax
+     * @param int $empId ID de la empresa (1: Otzi, 2: Conejero Maquinarias SPA)
      * @return boolean que indica si la operación fue exitosa
      */
-    public static function convertAll2Model($jsonArreglo) {
+    public static function convertAll2Model($jsonArreglo, $empId) {
         $flujoCajaCartola = null;
         $folios = array();   // para verificar si existe algún folio repetido
         $gastosFolios = array();
@@ -393,6 +422,7 @@ class FlujoCajaCartola {
                 $compras->razon_social = $c["razon_social"];
                 $compras->rut_emisor = $c["rut_emisor"];
                 $compras->tipo = $c["tipo"];
+                $compras->empresa_chipax_id = $empId;
 
                 try {
                     if ($compras->save()) {
@@ -407,6 +437,8 @@ class FlujoCajaCartola {
                             $prorrata->modelo = $pro["modelo"];
                             $prorrata->monto = $pro["monto"];
                             $prorrata->periodo = $pro["periodo"];
+                            $prorrata->empresa_chipax_id = $empId;
+
                             if (!$prorrata->save()) {
                                 echo "Hubo un error al insertar las prorratas";
                                 echo join(", ", $prorrata->getFirstErrors());
@@ -447,6 +479,7 @@ class FlujoCajaCartola {
                 $gasto->responsable = $g["responsable"];
                 $gasto->tipo_cambio = $g["tipo_cambio"];
                 $gasto->usuario_id = $g["usuario_id"];
+                $gasto->empresa_chipax_id = $empId;
 
                 try {
                     if ($gasto->save()) {
@@ -461,6 +494,7 @@ class FlujoCajaCartola {
                             $prorrata->modelo = $pro["modelo"];
                             $prorrata->monto = $pro["monto"];
                             $prorrata->periodo = $pro["periodo"];
+                            $prorrata->empresa_chipax_id = $empId;
 
                             if (!$prorrata->save()) {
                                 echo "Hubo un error al insertar las prorratas";
@@ -500,6 +534,7 @@ class FlujoCajaCartola {
                 $honorario->nombre_emisor = $h["nombre_emisor"];
                 $honorario->rut_emisor = $h["rut_emisor"];
                 $honorario->usuario_id = $h["usuario_id"];
+                $honorario->empresa_chipax_id = $empId;
 
                 try {
                     if ($honorario->save()) {

@@ -18,6 +18,7 @@ use Yii;
  * @property int|null $gasto_chipax_id
  * @property int|null $honorario_chipax_id
  * @property int|null $remuneracion_chipax_id
+ * @property int $empresa_chipax_id
  *
  * @property CompraChipax $compraChipax
  * @property GastoChipax $gastoChipax
@@ -42,7 +43,7 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['id', 'linea_negocio', 'modelo', 'monto', 'periodo'], 'required'],
-            [['id', 'cuenta_id', 'filtro_id', 'monto', 'compra_chipax_id', 'gasto_chipax_id', 'honorario_chipax_id', 'remuneracion_chipax_id'], 'integer'],
+            [['id', 'cuenta_id', 'filtro_id', 'monto', 'compra_chipax_id', 'gasto_chipax_id', 'honorario_chipax_id', 'remuneracion_chipax_id', "empresa_chipax_id"], 'integer'],
             [['periodo', 'monto_sumado', 'neto_impuesto'], 'safe'],
             [['linea_negocio', 'modelo'], 'string', 'max' => 100],
             [['id'], 'unique'],
@@ -59,16 +60,17 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'id' => 'ID',
-            'cuenta_id' => 'Cuenta ID',
-            'filtro_id' => 'Filtro ID',
+            'cuenta_id' => 'Cuenta',
+            'filtro_id' => 'Filtro',
             'linea_negocio' => 'Linea Negocio',
             'modelo' => 'Modelo',
             'monto' => 'Monto',
             'periodo' => 'Periodo',
-            'compra_chipax_id' => 'Compra Chipax ID',
-            'gasto_chipax_id' => 'Gasto Chipax ID',
-            'honorario_chipax_id' => 'Honorario Chipax ID',
-            'remuneracion_chipax_id' => 'Remuneracion Chipax ID',
+            'compra_chipax_id' => 'Compra Chipax',
+            'gasto_chipax_id' => 'Gasto Chipax',
+            'honorario_chipax_id' => 'Honorario Chipax',
+            'remuneracion_chipax_id' => 'Remuneracion Chipax',
+            'empresa_chipax_id' => 'Empresa Chipax',
         ];
     }
 
@@ -78,7 +80,7 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getCompraChipax() {
-        return $this->hasOne(CompraChipax::className(), ['id' => 'compra_chipax_id']);
+        return $this->hasOne(CompraChipax::class, ['id' => 'compra_chipax_id']);
     }
 
     /**
@@ -87,7 +89,7 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getGastoChipax() {
-        return $this->hasOne(GastoChipax::className(), ['id' => 'gasto_chipax_id']);
+        return $this->hasOne(GastoChipax::class, ['id' => 'gasto_chipax_id']);
     }
 
     /**
@@ -96,7 +98,7 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getHonorarioChipax() {
-        return $this->hasOne(HonorarioChipax::className(), ['id' => 'honorario_chipax_id']);
+        return $this->hasOne(HonorarioChipax::class, ['id' => 'honorario_chipax_id']);
     }
 
     /**
@@ -105,6 +107,6 @@ class ProrrataChipax extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getRemuneracionChipax() {
-        return $this->hasOne(RemuneracionChipax::className(), ['id' => 'remuneracion_chipax_id']);
+        return $this->hasOne(RemuneracionChipax::class, ['id' => 'remuneracion_chipax_id']);
     }
 }
