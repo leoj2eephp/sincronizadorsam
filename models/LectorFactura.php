@@ -56,12 +56,21 @@ class LectorFactura {
                         "<td>" . "$" . number_format((float)$encabezado->Totales->MntTotal, 0, '', '.') . "</td>" .
                         "</tr>";
                     $this->output .= "</table>";
-                    $this->output .= "<hr />";
                     $this->output .= "<table class='table'>";
                     $this->output .=      "<tr>" .
                         "<th>Proveedor</th>" .
                         "<td>" . $encabezado->Emisor->RUTEmisor . "</td>" .
                         "<td>" . $encabezado->Emisor->RznSoc . "</td>" .
+                        "</tr>";
+                    $this->output .= "</table>";
+
+                    $this->output .= "</table>";
+                    $this->output .= "<table class='table'>";
+                    $this->output .=      "<tr>" .
+                        "<th>Patente</th>" .
+                        "<td>" . $encabezado->Transporte->Patente . "</td>" .
+                        "<th>Nro Guia</th>" .
+                        "<td>" . $documento->Referencia[0]->FolioRef . "</td>" .
                         "</tr>";
                     $this->output .= "</table>";
 
@@ -73,6 +82,7 @@ class LectorFactura {
                             "<td>Descripción</td>" .
                             "<td>Cantidad</td>" .
                             "<td>Precio</td>" .
+                            "<td>Litros</td>" .
                             "<td>Total</td>" .
                             "</tr>";
                         foreach ($documento->Detalle as $detalle) {
@@ -80,6 +90,7 @@ class LectorFactura {
                                 "<td>" . $detalle->NmbItem . "</td>" .
                                 "<td>" . $detalle->QtyItem . "</td>" .
                                 "<td>" . "$" . number_format((float)$detalle->PrcItem, 0, '', '.') . "</td>" .
+                                "<td>" . $detalle->DscItem . "</td>" .
                                 "<td>" . "$" . number_format((float)$detalle->MontoItem, 0, '', '.') . "</td>" .
                                 "</tr>";
                         }
