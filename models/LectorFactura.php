@@ -71,6 +71,10 @@ class LectorFactura {
                         "<td>" . $encabezado->Transporte->Patente . "</td>" .
                         "<th>Nro Guia</th>" .
                         "<td>" . $documento->Referencia[0]->FolioRef . "</td>" .
+                        "</tr>" .
+                        "<tr>" .
+                        "<th> Litros </th>" .
+                        "<td>" . $documento->Detalle[2]->DscItem . "</td>" .
                         "</tr>";
                     $this->output .= "</table>";
 
@@ -82,7 +86,6 @@ class LectorFactura {
                             "<td>Descripción</td>" .
                             "<td>Cantidad</td>" .
                             "<td>Precio</td>" .
-                            "<td>Litros</td>" .
                             "<td>Total</td>" .
                             "</tr>";
                         foreach ($documento->Detalle as $detalle) {
@@ -90,7 +93,6 @@ class LectorFactura {
                                 "<td>" . $detalle->NmbItem . "</td>" .
                                 "<td>" . $detalle->QtyItem . "</td>" .
                                 "<td>" . "$" . number_format((float)$detalle->PrcItem, 0, '', '.') . "</td>" .
-                                "<td>" . $detalle->DscItem . "</td>" .
                                 "<td>" . "$" . number_format((float)$detalle->MontoItem, 0, '', '.') . "</td>" .
                                 "</tr>";
                         }
