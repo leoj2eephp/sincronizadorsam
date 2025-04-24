@@ -268,7 +268,10 @@ class PoliticaGastosForm extends Model {
         $form->unidades = (new \yii\db\Query())
             ->select(['id', 'nombre'])
             ->from('unidad')
-            ->orderBy("nombre")
+            ->orderBy([
+                new \yii\db\Expression("CASE WHEN nombre = 'Litros' THEN 0 ELSE 1 END"),
+                'nombre' => SORT_ASC
+            ])
             ->all();
         /*         $form->tipoDocumento = (new \yii\db\Query())
             ->select(['id', 'vehiculo'])
