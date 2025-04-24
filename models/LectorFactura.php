@@ -20,7 +20,7 @@ class LectorFactura {
     const PATH = "documents";
     public $output;
 
-    public function print($Folio, $RutProveedor) {
+    public function print($Folio, $RutProveedor, $getOnlyTable = false) {
         $this->output = "";
 
         $xmls = scandir(Yii::$app->basePath . DIRECTORY_SEPARATOR . self::PATH);
@@ -115,6 +115,9 @@ class LectorFactura {
                     $continue = false;
                 }
             }
+        }
+        if($getOnlyTable){
+            return $this->output;
         }
         echo $this->output;
     }

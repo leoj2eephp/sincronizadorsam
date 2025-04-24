@@ -6,9 +6,39 @@ use yii\helpers\ArrayHelper;
 ?>
 <div class="profesional-create">
     <?php
-    $form = ActiveForm::begin([
-        "id" => "sam-modal",
-    ]);
+        $form = ActiveForm::begin([
+            "id" => "sam-modal",
+        ]);
+        $litrosText = '';
+        $litros = '';
+        $lector = new \app\models\LectorFactura();
+        $lector->print($model->nro_documento, $model->rut_proveedor, true);
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($lector->output);
+        libxml_clear_errors();
+        $xpath = new \DOMXPath($dom);
+
+        $litrosNode = $xpath->query("//th[contains(text(),'Litros')]/following-sibling::td[1]");
+        if ($litrosNode->length > 0) {
+            $litrosText = trim($litrosNode->item(0)->textContent);
+            preg_match('/\|\s*([\d.]+)\s*\|L/', $litrosText, $matches);
+            $litros = isset($matches[1]) ? $matches[1]: '';
+        }
+        $tipoCombustibleDetectado = '';
+        if (strpos($litrosText, 'GASOLINA') !== false) {
+            $tipoCombustibleDetectado = 'Bencina';
+        } elseif (strpos($litrosText, 'PETROLEO') !== false || strpos($litrosText, 'PETRÓLEO') !== false) {
+            $tipoCombustibleDetectado = 'Petróleo';
+        }
+
+        $tipoCombustibleIdSeleccionado = '';
+        foreach ($model->tipo_combustibles as $tipoComb) {
+            if (stripos($tipoComb['nombre'], $tipoCombustibleDetectado) !== false) {
+                $tipoCombustibleIdSeleccionado = $tipoComb['id'];
+                break;
+            }
+        }
     ?>
 
     <h4>Llene el siguiente formulario para sincronizar la información con SAM</h4>
@@ -92,11 +122,12 @@ use yii\helpers\ArrayHelper;
                 if (array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX)) : ?>
                     <div class="col col-sm-6">
                         <select name="PoliticaGastosForm[vehiculos_seleccionados][tipo_combustible_id][]" class="tipo_combustible select-style bg-white" placeholder="Unidad">
-                            <?php
+                        <?php
                             foreach ($model->tipo_combustibles as $tipoComb) {
-                                echo "<option value='" . $tipoComb["id"] . "'>" . $tipoComb["nombre"] . "</option>";
+                                $selected = ($tipoComb['id'] == $tipoCombustibleIdSeleccionado) ? "selected" : "";
+                                echo "<option value='{$tipoComb["id"]}' $selected>{$tipoComb["nombre"]}</option>";
                             }
-                            ?>
+                        ?>
                         </select>
                     </div>
                     <div class="col col-sm-6">
@@ -110,9 +141,13 @@ use yii\helpers\ArrayHelper;
         </div>
         <div class="col col-sm-6">
             <?php
-            $lector = new \app\models\LectorFactura();
             $lector->print($model->nro_documento, $model->rut_proveedor);
             $model->html_factura = $lector->output;
+
+            $patenteNode = $xpath->query("//th[contains(text(),'Patente')]/following-sibling::td[1]");
+            $patente = $patenteNode->length > 0 ? trim($patenteNode->item(0)->textContent) : '';
+ 
+            $notaCombustible = $litrosText . ' - ' . $patente;
             ?>
             <?= $form->field($model, "html_factura")->hiddenInput()->label(false) ?>
         </div>
@@ -135,6 +170,8 @@ use yii\helpers\ArrayHelper;
 $script = <<< JS
         
     $(document).ready(function() {
+        $(".notas").first().val("$notaCombustible");
+        $(".cantidad").first().val("$litros");
         //$("#vehis").select2({dropdownCssClass : 'bigdrop'});
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
@@ -164,6 +201,7 @@ $script = <<< JS
             }
         
             $(".fila-vehiculos").find(".porcentaje").removeAttr("readonly");
+            // $(".fila-vehiculos").find(".notas").val(notaCombustible);
             $(".fila-vehiculos").find(".valor").removeAttr("readonly");
             $(".fila-vehiculos").find(".porcentaje").val(0);
             $(".fila-vehiculos").find(".valor").val(0);
@@ -282,5 +320,6 @@ $script = <<< JS
     });
         
 JS;
+
 $this->registerJs($script);
 ?>
