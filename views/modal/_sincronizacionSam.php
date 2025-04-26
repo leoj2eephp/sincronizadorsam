@@ -15,28 +15,31 @@ use yii\helpers\ArrayHelper;
         $lector->print($model->nro_documento, $model->rut_proveedor, true);
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
-        $dom->loadHTML($lector->output);
-        libxml_clear_errors();
-        $xpath = new \DOMXPath($dom);
-
-        $litrosNode = $xpath->query("//th[contains(text(),'Litros')]/following-sibling::td[1]");
-        if ($litrosNode->length > 0) {
-            $litrosText = trim($litrosNode->item(0)->textContent);
-            preg_match('/\|\s*([\d.]+)\s*\|L/', $litrosText, $matches);
-            $litros = isset($matches[1]) ? $matches[1]: '';
-        }
-        $tipoCombustibleDetectado = '';
-        if (strpos($litrosText, 'GASOLINA') !== false) {
-            $tipoCombustibleDetectado = 'Bencina';
-        } elseif (strpos($litrosText, 'PETROLEO') !== false || strpos($litrosText, 'PETRÓLEO') !== false) {
-            $tipoCombustibleDetectado = 'Petróleo';
-        }
-
-        $tipoCombustibleIdSeleccionado = '';
-        foreach ($model->tipo_combustibles as $tipoComb) {
-            if (stripos($tipoComb['nombre'], $tipoCombustibleDetectado) !== false) {
-                $tipoCombustibleIdSeleccionado = $tipoComb['id'];
-                break;
+        $xpath = null;
+        if(isset($lector->output) && $lector->output != "") {
+            $dom->loadHTML($lector->output);
+            libxml_clear_errors();
+            $xpath = new \DOMXPath($dom);
+            
+            $litrosNode = $xpath->query("//th[contains(text(),'Litros')]/following-sibling::td[1]");
+            if ($litrosNode->length > 0) {
+                $litrosText = trim($litrosNode->item(0)->textContent);
+                preg_match('/\|\s*([\d.]+)\s*\|L/', $litrosText, $matches);
+                $litros = isset($matches[1]) ? $matches[1]: '';
+            }
+            $tipoCombustibleDetectado = '';
+            if (strpos($litrosText, 'GASOLINA') !== false) {
+                $tipoCombustibleDetectado = 'Bencina';
+            } elseif (strpos($litrosText, 'PETROLEO') !== false || strpos($litrosText, 'PETRÓLEO') !== false) {
+                $tipoCombustibleDetectado = 'Petróleo';
+            }
+    
+            $tipoCombustibleIdSeleccionado = '';
+            foreach ($model->tipo_combustibles as $tipoComb) {
+                if (stripos($tipoComb['nombre'], $tipoCombustibleDetectado) !== false) {
+                    $tipoCombustibleIdSeleccionado = $tipoComb['id'];
+                    break;
+                }
             }
         }
     ?>
@@ -143,11 +146,13 @@ use yii\helpers\ArrayHelper;
             <?php
             $lector->print($model->nro_documento, $model->rut_proveedor);
             $model->html_factura = $lector->output;
-
-            $patenteNode = $xpath->query("//th[contains(text(),'Patente')]/following-sibling::td[1]");
-            $patente = $patenteNode->length > 0 ? trim($patenteNode->item(0)->textContent) : '';
- 
-            $notaCombustible = $litrosText . ' - ' . $patente;
+            $notaCombustible = '';
+            if(isset($xpath)) {
+                $patenteNode = $xpath->query("//th[contains(text(),'Patente')]/following-sibling::td[1]");
+                $patente = $patenteNode->length > 0 ? trim($patenteNode->item(0)->textContent) : '';
+     
+                $notaCombustible = $litrosText . ' - ' . $patente;
+            }
             ?>
             <?= $form->field($model, "html_factura")->hiddenInput()->label(false) ?>
         </div>
