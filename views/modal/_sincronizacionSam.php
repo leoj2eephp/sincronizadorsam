@@ -124,8 +124,10 @@ use yii\helpers\ArrayHelper;
                         ?>
                     </select>
                 </div>
-                <?php
-                if (array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX)) : ?>
+                <?php if (
+                    array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX) || 
+                    array_key_exists($model->categoria_id, app\models\FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA)
+                ) : ?>
                     <div class="col col-sm-6">
                         <select name="PoliticaGastosForm[vehiculos_seleccionados][tipo_combustible_id][]" class="tipo_combustible select-style bg-white" placeholder="Unidad">
                         <?php
