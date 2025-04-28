@@ -11,6 +11,7 @@ use yii\helpers\ArrayHelper;
         ]);
         $litrosText = '';
         $litros = '';
+        $isBIDO = false;
         $lector = new \app\models\LectorFactura();
         $lector->print($model->nro_documento, $model->rut_proveedor, true);
         $dom = new \DOMDocument();
@@ -27,6 +28,19 @@ use yii\helpers\ArrayHelper;
                 preg_match('/\|\s*([\d.]+)\s*\|L/', $litrosText, $matches);
                 $litros = isset($matches[1]) ? $matches[1]: '';
             }
+
+            $notaCombustible = '';
+            if(isset($xpath)) {
+                $patenteNode = $xpath->query("//th[contains(text(),'Patente')]/following-sibling::td[1]");
+                $patente = $patenteNode->length > 0 ? trim($patenteNode->item(0)->textContent) : '';
+
+                if($patente && strpos($patente, 'BIDO') !== false) {
+                    $isBIDO = true;
+                }
+     
+                $notaCombustible = $litrosText . ' - ' . $patente;
+            }
+
             $tipoCombustibleDetectado = '';
             if (strpos($litrosText, 'GASOLINA') !== false) {
                 $tipoCombustibleDetectado = 'Bencina';
@@ -68,9 +82,11 @@ use yii\helpers\ArrayHelper;
                 ],
             ])->label(false);
             ?>
-            <!-- <div class="alert alert-info" role="alert">
-                Esto es un Bidón. El llenado debe ser manual en algunos campos
-            </div> -->
+            <?php if ($isBIDO) { ?>
+                <div class="alert alert-info" role="alert">
+                    Esto es un Bidón. El llenado debe ser manual en algunos campos
+                </div>
+            <?php } ?>
             <div class="row pb-2">
                 <div class="col col-sm-6">
                     <h4>Vehículos Seleccionados</h4>
@@ -151,13 +167,7 @@ use yii\helpers\ArrayHelper;
             <?php
             $lector->print($model->nro_documento, $model->rut_proveedor);
             $model->html_factura = $lector->output;
-            $notaCombustible = '';
-            if(isset($xpath)) {
-                $patenteNode = $xpath->query("//th[contains(text(),'Patente')]/following-sibling::td[1]");
-                $patente = $patenteNode->length > 0 ? trim($patenteNode->item(0)->textContent) : '';
-     
-                $notaCombustible = $litrosText . ' - ' . $patente;
-            }
+            
             ?>
             <?= $form->field($model, "html_factura")->hiddenInput()->label(false) ?>
         </div>
