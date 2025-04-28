@@ -68,9 +68,9 @@ use yii\helpers\ArrayHelper;
                 ],
             ])->label(false);
             ?>
-            <div class="alert alert-info" role="alert">
+            <!-- <div class="alert alert-info" role="alert">
                 Esto es un Bidón. El llenado debe ser manual en algunos campos
-            </div>
+            </div> -->
             <div class="row pb-2">
                 <div class="col col-sm-6">
                     <h4>Vehículos Seleccionados</h4>
