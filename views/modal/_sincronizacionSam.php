@@ -100,13 +100,21 @@ use yii\helpers\ArrayHelper;
             </div>
             <div class="row fila-vehiculos mb-1">
                 <div class="col col-sm-6">
-                    <select name="PoliticaGastosForm[vehiculos_seleccionados][nombres][]" class="vehiculo select-style bg-white" id="vehis">
-                        <?php
-                        foreach ($model->vehiculos as $vehi) {
-                            echo "<option value='" . $vehi["vehiculo"] . "'>" . $vehi["vehiculo"] . "</option>";
-                        }
-                        ?>
-                    </select>
+                    <?php
+                    echo \kartik\select2\Select2::widget([
+                        'name' => 'PoliticaGastosForm[vehiculos_seleccionados][nombres][]',
+                        'data' => ArrayHelper::map($model->vehiculos, 'vehiculo', 'vehiculo'),
+                        'options' => [
+                            'placeholder' => 'Seleccione vehículo',
+                            'class' => 'vehiculo',
+                            'id' => 'vehis'
+                        ],
+                        'theme' => 'default',
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]);
+                    ?>
                     <input type="text" name="PoliticaGastosForm[vehiculos_seleccionados][notas][]" class="notas select-style bg-white" placeholder="Nota">
                 </div>
                 <div class="col col-sm-6">
@@ -212,35 +220,49 @@ $script = <<< JS
         $(".valor").attr("readonly", "readonly");
         
         $(".addCar").on("click", function() {
-            $($(".fila-vehiculos")[0]).clone().appendTo("#form-column");
+            // Destruir todos los Select2 existentes
+            $('.vehiculo').each(function() {
+                if ($(this).data('select2')) {
+                    $(this).select2('destroy');
+                }
+            });
+
+            // Obtener el elemento a clonar y clonarlo
+            let original = $($(".fila-vehiculos")[0]);
+            let newRow = original.clone(true);
+            
+            // Limpiar el Select2 del elemento clonado
+            newRow.find('.select2').remove();
+            newRow.find('.vehiculo')
+                .removeAttr('data-select2-id')
+                .removeAttr('id');
+            
+            // Agregar la nueva fila al formulario
+            newRow.appendTo("#form-column");
+            
+            // Reinicializar Select2 en TODOS los elementos
+            $('.vehiculo').each(function() {
+                $(this).select2({
+                    placeholder: 'Seleccione vehículo',
+                    allowClear: true,
+                    theme: 'default',
+                    width: '100%'  // Asegurar que el ancho sea correcto
+                });
+            });
+            
             // si hay más de un vehículo, entonces duplico primero, pero cambio el nombre de la clase de la primera fila
-            // para dejarla intocable.. así evito estar agregando y quitando readonly para la primera fila a cada rato
             if ($(".primera-fila-vehiculos").length == 0) {
                 $($(".fila-vehiculos")[0]).addClass("primera-fila-vehiculos");
                 $($(".fila-vehiculos")[0]).removeClass("fila-vehiculos");
             }
         
             $(".fila-vehiculos").find(".porcentaje").removeAttr("readonly");
-            // $(".fila-vehiculos").find(".notas").val(notaCombustible);
             $(".fila-vehiculos").find(".valor").removeAttr("readonly");
             $(".fila-vehiculos").find(".porcentaje").val(0);
             $(".fila-vehiculos").find(".valor").val(0);
             $(".fila-vehiculos").find(".delete-vehiculo").css("display", "block");
             refrescarSubtotales();
-            refreshSelect2Dataset();
         });
-        
-        function refreshSelect2Dataset() {
-            $(".vehiculo").each(function(index, obj) {
-                let dataKrajee = eval($(obj).data('krajee-select2'));
-                $(obj).attr("id", "id_" + index);
-        
-                delete obj.dataset.select2Id;
-                obj.dataset.select2Id = "id_" + index;
-        
-                //$(obj).select2(dataKrajee); Esta línea estaba provocando un error al clonar más de 1 vez
-            });
-        }
         
         $(document).on("change", ".porcentaje", function() {
             let porcentaje = $(this).val();
