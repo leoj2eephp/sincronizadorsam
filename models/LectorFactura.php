@@ -1,8 +1,8 @@
 <?php
 
 namespace app\models;
-
 use Yii;
+use app\models\FlujoCajaCartola;
 
 /**
  * Description of LectorFactura
@@ -20,7 +20,7 @@ class LectorFactura {
     const PATH = "documents";
     public $output;
 
-    public function print($Folio, $RutProveedor, $getOnlyTable = false) {
+    public function print($Folio, $RutProveedor, $getOnlyTable = false, $categoria_id = null) {
         $this->output = "";
 
         $xmls = scandir(Yii::$app->basePath . DIRECTORY_SEPARATOR . self::PATH);
@@ -64,19 +64,25 @@ class LectorFactura {
                         "</tr>";
                     $this->output .= "</table>";
 
-                    $this->output .= "</table>";
-                    $this->output .= "<table class='table'>";
-                    $this->output .=      "<tr>" .
-                        "<th>Patente</th>" .
-                        "<td>" . $encabezado->Transporte->Patente . "</td>" .
-                        "<th>Nro Guia</th>" .
-                        "<td>" . $documento->Referencia[0]->FolioRef . "</td>" .
-                        "</tr>" .
-                        "<tr>" .
-                        "<th> Litros </th>" .
-                        "<td>" . $documento->Detalle[2]->DscItem . "</td>" .
-                        "</tr>";
-                    $this->output .= "</table>";
+                    if (
+                        array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX) || 
+                        array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA) ||
+                        array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_RINDEGASTOS)
+                    ) {
+                        $this->output .= "</table>";
+                        $this->output .= "<table class='table'>";
+                        $this->output .=      "<tr>" .
+                            "<th>Patente</th>" .
+                            "<td>" . $encabezado->Transporte->Patente . "</td>" .
+                            "<th>Nro Guia</th>" .
+                            "<td>" . $documento->Referencia[0]->FolioRef . "</td>" .
+                            "</tr>" .
+                            "<tr>" .
+                            "<th> Litros </th>" .
+                            "<td>" . $documento->Detalle[2]->DscItem . "</td>" .
+                            "</tr>";
+                        $this->output .= "</table>";
+                    }
 
                     if (count($documento->Detalle) > 0) {
                         $this->output .= "<b>Detalles</b>";

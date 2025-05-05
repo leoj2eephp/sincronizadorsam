@@ -11,9 +11,12 @@ use yii\helpers\ArrayHelper;
         ]);
         $litrosText = '';
         $litros = '';
+        $notaCombustible = '';
+        $tipoCombustibleDetectado = '';
+        $tipoCombustibleIdSeleccionado = '';
         $isBIDO = false;
         $lector = new \app\models\LectorFactura();
-        $lector->print($model->nro_documento, $model->rut_proveedor, true);
+        $lector->print($model->nro_documento, $model->rut_proveedor, true, $model->categoria_id);
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $xpath = null;
@@ -28,8 +31,7 @@ use yii\helpers\ArrayHelper;
                 preg_match('/\|\s*([\d.]+)\s*\|L/', $litrosText, $matches);
                 $litros = isset($matches[1]) ? $matches[1]: '';
             }
-
-            $notaCombustible = '';
+            
             if(isset($xpath)) {
                 $patenteNode = $xpath->query("//th[contains(text(),'Patente')]/following-sibling::td[1]");
                 $patente = $patenteNode->length > 0 ? trim($patenteNode->item(0)->textContent) : '';
@@ -41,14 +43,12 @@ use yii\helpers\ArrayHelper;
                 $notaCombustible = $litrosText . ' - ' . $patente;
             }
 
-            $tipoCombustibleDetectado = '';
             if (strpos($litrosText, 'GASOLINA') !== false) {
                 $tipoCombustibleDetectado = 'Bencina';
             } elseif (strpos($litrosText, 'PETROLEO') !== false || strpos($litrosText, 'PETRÓLEO') !== false) {
                 $tipoCombustibleDetectado = 'Petróleo';
             }
     
-            $tipoCombustibleIdSeleccionado = '';
             foreach ($model->tipo_combustibles as $tipoComb) {
                 if (stripos($tipoComb['nombre'], $tipoCombustibleDetectado) !== false) {
                     $tipoCombustibleIdSeleccionado = $tipoComb['id'];
@@ -101,9 +101,20 @@ use yii\helpers\ArrayHelper;
             <div class="row fila-vehiculos mb-1">
                 <div class="col col-sm-6">
                     <?php
+                    $selectedVehiculo = '';
+                    if (isset($patente) && !empty($patente)) {
+                        foreach ($model->vehiculos as $vehiculo) {
+                            if (strpos($vehiculo['vehiculo'], $patente) !== false) {
+                                $selectedVehiculo = $vehiculo['vehiculo'];
+                                break;
+                            }
+                        }
+                    }
+
                     echo \kartik\select2\Select2::widget([
                         'name' => 'PoliticaGastosForm[vehiculos_seleccionados][nombres][]',
                         'data' => ArrayHelper::map($model->vehiculos, 'vehiculo', 'vehiculo'),
+                        'value' => $selectedVehiculo,
                         'options' => [
                             'placeholder' => 'Seleccione vehículo',
                             'class' => 'vehiculo',
@@ -173,7 +184,7 @@ use yii\helpers\ArrayHelper;
         </div>
         <div class="col col-sm-6">
             <?php
-            $lector->print($model->nro_documento, $model->rut_proveedor);
+            $lector->print($model->nro_documento, $model->rut_proveedor, false, $model->categoria_id);
             $model->html_factura = $lector->output;
             
             ?>
