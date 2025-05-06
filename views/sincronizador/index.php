@@ -287,13 +287,44 @@ $rindeGastosParaExcel = array();
                                                 ":n" => isset($gastoCompletaCompra) ? $gastoCompletaCompra->nro_documento : ""
                                             ]
                                         )->one();
+
+                                        // Check if XML exists and get patente
+                                        $lector = new \app\models\LectorFactura();
+                                        $xmlContent = $lector->print($compra->folio, $compra->rut_emisor, true);
+                                        $hasXml = !empty($xmlContent);
+                                        $isBidon = false;
+                                        
+                                        if ($hasXml) {
+                                            $dom = new \DOMDocument();
+                                            libxml_use_internal_errors(true);
+                                            $dom->loadHTML($xmlContent);
+                                            libxml_clear_errors();
+                                            $xpath = new \DOMXPath($dom);
+                                            
+                                            $patenteNode = $xpath->query("//th[contains(text(),'Patente')]/following-sibling::td[1]");
+                                            $patente = $patenteNode->length > 0 ? trim($patenteNode->item(0)->textContent) : '';
+                                            
+                                            if($patente && strpos($patente, 'BIDO') !== false) {
+                                                $isBidon = true;
+                                            }
+                                        }
+
                                         if (isset($comentario)) :
+                                            $comentarioText = $comentario->comentario;
+                                            if ($isBidon && strpos($comentarioText, 'Bidon') === false) {
+                                                $comentarioText .= ' Bidon. Llenado manual.';
+                                            }
+                                            if ($compra->sincronizado) {
+                                                $comentarioText = str_replace('Bidon. Llenado manual.', '', $comentarioText);
+                                                $comentarioText = trim($comentarioText);
+                                            }
                                         ?>
-                                            <textarea class="form-control comentario" idComentario="<?= $comentario->id ?>" rows="3"><?= $comentario->comentario ?></textarea>
+                                            <textarea class="form-control comentario" idComentario="<?= $comentario->id ?>" rows="3"><?= $comentarioText ?></textarea>
                                         <?php
                                         else :
+                                            $defaultComment = ($isBidon && !$compra->sincronizado) ? 'Bidon. Llenado manual.' : '';
                                         ?>
-                                            <input type="text" class="form-control comentario" monto="<?= $compra->monto_total ?>" fecha="<?= $compra->fecha_emision ?>" nroDoc="<?= isset($gastoCompletaCompra) ? $gastoCompletaCompra->nro_documento : "" ?>" />
+                                            <input type="text" class="form-control comentario" monto="<?= $compra->monto_total ?>" fecha="<?= $compra->fecha_emision ?>" nroDoc="<?= isset($gastoCompletaCompra) ? $gastoCompletaCompra->nro_documento : "" ?>" value="<?= $defaultComment ?>" />
                                         <?php
                                         endif;
                                         ?>
@@ -337,7 +368,7 @@ $rindeGastosParaExcel = array();
                                         if (isset($gastoCompletaCompra))
                                             echo Html::button('<i class="fa fa-trash"></i>', [
                                                 "class" => "btn btn-sm btn-danger delete-gasto",
-                                                'title' => "Sincronizar con SAM",
+                                                'title' => "Eliminar",
                                                 'value' => Url::to([
                                                     "/modal/delete-gasto", "id" => $gastoCompletaCompra["id"],
                                                 ]),
