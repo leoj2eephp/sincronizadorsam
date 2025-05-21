@@ -16,12 +16,12 @@ use yii\helpers\ArrayHelper;
         $tipoCombustibleIdSeleccionado = '';
         $isBIDO = false;
         $lector = new \app\models\LectorFactura();
-        $lector->print($model->nro_documento, $model->rut_proveedor, true, $model->categoria_id);
+        $htmlFactura = $lector->getHtml($model->nro_documento, $model->rut_proveedor, $model->categoria_id);
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $xpath = null;
-        if(isset($lector->output) && $lector->output != "") {
-            $dom->loadHTML($lector->output);
+        if(isset($htmlFactura) && $htmlFactura != "") {
+            $dom->loadHTML($htmlFactura);
             libxml_clear_errors();
             $xpath = new \DOMXPath($dom);
             
@@ -184,7 +184,7 @@ use yii\helpers\ArrayHelper;
         </div>
         <div class="col col-sm-6">
             <?php
-            $lector->print($model->nro_documento, $model->rut_proveedor, false, $model->categoria_id);
+            $lector->print($model->nro_documento, $model->rut_proveedor, $model->categoria_id);
             $model->html_factura = $lector->output;
             
             ?>

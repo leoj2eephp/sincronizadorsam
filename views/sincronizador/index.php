@@ -320,7 +320,7 @@ $rindeGastosParaExcel = array();
                                         if (isset($gastoCompletaCompra))
                                             echo Html::button('<i class="fa fa-trash"></i>', [
                                                 "class" => "btn btn-sm btn-danger delete-gasto",
-                                                'title' => "Sincronizar con SAM",
+                                                'title' => "Eliminar",
                                                 'value' => Url::to([
                                                     "/modal/delete-gasto", "id" => $gastoCompletaCompra["id"],
                                                 ]),
