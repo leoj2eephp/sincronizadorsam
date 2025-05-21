@@ -261,4 +261,12 @@ class ModalController extends Controller {
             echo "pillín pillín";
         }
     }
+
+        public function actionViewXml($folio, $rut, $categoria_id = null) {
+        $lector = new \app\models\LectorFactura();
+        $html = $lector->getHtml($folio, $rut, $categoria_id);
+        return $this->renderAjax('_view_xml', [
+            'xmlContent' => $html
+        ]);
+    }
 }
