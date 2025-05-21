@@ -19,8 +19,6 @@ dist/
 # Package files
 *.jar
 
-*.xml
-
 # Maven
 target/
 dist/

@@ -304,10 +304,6 @@ $rindeGastosParaExcel = array();
                                         if ($compra->sincronizado) {
                                             echo "";
                                         } else {
-                                            $lector = new \app\models\LectorFactura();
-                                            $lector->xmlExists($compra->folio, $compra->rut_emisor);
-                                            $hasXml = !empty($lector->output);
-                                            
                                             echo Html::button('<i class="fa fa-sync"></i>', [
                                                 'class' => 'showModalButton btn btn-sm btn-primary',
                                                 'title' => "Sincronizar con SAM", "id" => "sync_" . $indice,
@@ -319,19 +315,6 @@ $rindeGastosParaExcel = array();
                                                 ]),
                                                 'data-toggle' => 'modal', 'data-target' => '#modalvote'
                                             ]);
-                                            
-                                            if ($hasXml) {
-                                                echo Html::button('<i class="fa fa-file-alt"></i>', [
-                                                    'class' => 'showModalButton btn btn-sm btn-info ml-1',
-                                                    'title' => "Ver XML", "id" => "xml_" . $indice,
-                                                    'value' => Url::to([
-                                                        "/modal/view-xml", 
-                                                        "folio" => $compra->folio, 
-                                                        "rut" => $compra->rut_emisor
-                                                    ]),
-                                                    'data-toggle' => 'modal', 'data-target' => '#modalvote'
-                                                ]);
-                                            }
                                         }
 
                                         if (isset($gastoCompletaCompra))

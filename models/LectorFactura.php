@@ -19,38 +19,6 @@ class LectorFactura {
 
     const PATH = "documents";
     public $output;
-    public function xmlExists($folio, $rut) {
-        $this->output = "";
-        $xmls = scandir(Yii::$app->basePath . DIRECTORY_SEPARATOR . self::PATH);
-        foreach ($xmls as $xml) {
-            if ($xml == "." || $xml == "..") {
-                continue;
-            }
-            $rutadoc = pathinfo($xml);
-            $extension = $rutadoc['extension'];
-            if ($extension == "xml") {
-                try {
-                    $lector = simplexml_load_file(realpath(Yii::$app->basePath . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $xml));
-                    if ($lector === false) {
-                        Yii::error("Error loading XML file: " . $xml);
-                        continue;
-                    }
-                    foreach ($lector as $dte) {
-                        $documento = $dte->Documento;
-                        $encabezado = $documento->Encabezado;
-                        if ($encabezado->IdDoc->Folio == $folio && $encabezado->Emisor->RUTEmisor == $rut) {
-                            $this->output = $lector->asXML();
-                            return true;
-                        }
-                    }
-                } catch (Exception $e) {
-                    Yii::error("Error processing XML file: " . $xml . " - " . $e->getMessage());
-                    continue;
-                }
-            }
-        }
-        return false;
-    }
 
     public function print($Folio, $RutProveedor, $getOnlyTable = false, $categoria_id = null) {
         $this->output = "";
