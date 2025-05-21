@@ -302,16 +302,7 @@ $rindeGastosParaExcel = array();
                                     <!--<td><? $color === "bg-warning" ? '<a href="#"><i class="fa fa-sync"></i></a>' : '' ?></td>-->
                                     <td><?php
                                         if ($compra->sincronizado) {
-                                            echo Html::button('<i class="fa fa-file-alt"></i>', [
-                                                'class' => 'showModalButton btn btn-sm btn-info ml-1',
-                                                'title' => "Ver XML", "id" => "xml_" . $indice,
-                                                'value' => Url::to([
-                                                    "/modal/view-xml", 
-                                                    "folio" => $compra->folio, 
-                                                    "rut" => $compra->rut_emisor,
-                                                ]),
-                                                'data-toggle' => 'modal', 'data-target' => '#modalvote'
-                                            ]);                                            
+                                            echo "";
                                         } else {
                                             echo Html::button('<i class="fa fa-sync"></i>', [
                                                 'class' => 'showModalButton btn btn-sm btn-primary',
