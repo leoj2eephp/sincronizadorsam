@@ -71,10 +71,43 @@ use yii\helpers\ArrayHelper;
             <?= $form->field($model, "neto")->hiddenInput(["id" => "montoNeto"])->label(false) ?>
             <?= $form->field($model, "fecha")->hiddenInput()->label(false) ?>
             <input type="hidden" id="indiceTabla" value="<?= $indice ?>" />
-            <?=
-            $form->field($model, 'faena_seleccionada')->widget(\kartik\select2\Select2::class, [
+            <?php
+            $selectedFaenaId = '';
+            if (isset($model->linea_negocio) && !empty($model->linea_negocio)) {
+                if (strpos($model->linea_negocio, 'Departamento Maquinaria') !== false && strpos($model->categoria, 'Cop') !== false) {
+                    foreach ($model->faena as $faena) {
+                        if ($faena['nombre'] === 'Taller Central') {
+                            $selectedFaenaId = $faena['id'];
+                            break;
+                        }
+                    }
+                } else if (strpos($model->linea_negocio, 'Departamento Maquinaria') !== false && strpos($model->categoria, 'Cop') === false) {
+                    foreach ($model->faena as $faena) {
+                        if ($faena['nombre'] === 'Taller Central Gastos Generales') {
+                            $selectedFaenaId = $faena['id'];
+                            break;
+                        }
+                    }
+                }
+                
+                if(!isset($selectedFaenaId) || empty($selectedFaenaId)) {
+                    foreach ($model->faena as $faena) {
+                        if ($faena['nombre'] === 'Taller Central') {
+                            $selectedFaenaId = $faena['id'];
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Widget con valor seleccionado
+            echo $form->field($model, 'faena_seleccionada')->widget(\kartik\select2\Select2::class, [
                 'data' => ArrayHelper::map($model->faena, "id", "nombre"),
-                'options' => ['placeholder' => 'Centro de Costo / Faena', "id" => "faena"],
+                'options' => [
+                    'placeholder' => 'Centro de Costo / Faena',
+                    'id' => 'faena',
+                    'value' => $selectedFaenaId,
+                ],
                 'theme' => 'default',
                 //'size' => 'sm',
                 'pluginOptions' => [

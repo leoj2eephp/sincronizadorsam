@@ -83,6 +83,7 @@ class ModalController extends Controller {
             $model->rut_proveedor = $compra->rut_emisor;
             $model->nro_documento = $compra->folio;
             $model->fecha = $compra->fecha_emision;
+            $model->linea_negocio = $prorrata->linea_negocio;
             if ($compra->tipo == 33) {
                 $model->tipo_documento_seleccionado = "Factura Afecta";
             } else {
