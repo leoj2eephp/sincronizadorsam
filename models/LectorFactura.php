@@ -19,6 +19,7 @@ class LectorFactura {
 
     const PATH = "documents";
     public $output;
+    
     public function xmlExists($folio, $rut) {
         $this->output = "";
         $xmls = scandir(Yii::$app->basePath . DIRECTORY_SEPARATOR . self::PATH);
@@ -54,20 +55,23 @@ class LectorFactura {
 
     public function print($Folio, $RutProveedor, $getOnlyTable = false, $categoria_id = null) {
         $this->output = "";
-
         $xmls = scandir(Yii::$app->basePath . DIRECTORY_SEPARATOR . self::PATH);
         $continue = true;
         foreach ($xmls as $xml) {
             if (!$continue) {
                 break;
             }
-            if ($xml == "." || $xml == ".") {
+            if ($xml == "." || $xml == "..") {
                 continue;
             }
             $rutadoc = pathinfo($xml);
             $extension = $rutadoc['extension'];
             if ($extension == "xml") {
                 $lector = simplexml_load_file(realpath(Yii::$app->basePath . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $xml));
+                if ($lector === false) {
+                    Yii::error("Error loading XML file: " . $xml);
+                    continue;
+                }
                 foreach ($lector as $dte) {
                     $documento = $dte->Documento;
                     $encabezado = $documento->Encabezado;
