@@ -97,10 +97,9 @@ class LectorFactura {
                     $this->output .= "</table>";
 
                     if (
-                        (array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX) || 
+                        array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX) || 
                         array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_CHIPAX_SPA) ||
-                        array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_RINDEGASTOS)) || 
-                        $categoria_id == null    
+                        array_key_exists($categoria_id, FlujoCajaCartola::CATEGORIAS_COMBUSTIBLES_RINDEGASTOS)
                     ) {
                         $this->output .= "</table>";
                         $this->output .= "<table class='table'>";
