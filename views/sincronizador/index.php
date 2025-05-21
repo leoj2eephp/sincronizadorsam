@@ -288,11 +288,11 @@ $rindeGastosParaExcel = array();
                                             ]
                                         )->one();
 
+                                        // Check if XML exists and get patente
                                         $lector = new \app\models\LectorFactura();
                                         $xmlContent = $lector->print($compra->folio, $compra->rut_emisor, true);
                                         $hasXml = !empty($xmlContent);
                                         $isBidon = false;
-                                        $patente = '';
                                         
                                         if ($hasXml) {
                                             $dom = new \DOMDocument();
@@ -335,6 +335,10 @@ $rindeGastosParaExcel = array();
                                         if ($compra->sincronizado) {
                                             echo "";
                                         } else {
+                                            $lector = new \app\models\LectorFactura();
+                                            $lector->xmlExists($compra->folio, $compra->rut_emisor);
+                                            $hasXml = !empty($lector->output);
+                                            
                                             echo Html::button('<i class="fa fa-sync"></i>', [
                                                 'class' => 'showModalButton btn btn-sm btn-primary',
                                                 'title' => "Sincronizar con SAM", "id" => "sync_" . $indice,
