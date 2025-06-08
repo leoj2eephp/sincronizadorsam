@@ -252,7 +252,21 @@ class SincronizadorController extends Controller {
             ->bindValue(':from_date', $fecha_desde)
             ->bindValue(':to_date', $fecha_hasta)
             ->queryAll();
-        $model->remuneracions = RemuneracionChipax::convertSPResultToArrayModel($result);
+        // $agrupados junta los valores que tienen el mismo monto basandose en remuneracion_chipax_id
+        // Mejorar esto modificando el procedimiento almacenado u otra forma
+        $agrupados = [];
+        foreach ($result as $item) {
+            $key = $item['remuneracion_chipax_id'];
+            
+            if (!isset($agrupados[$key])) {
+                $agrupados[$key] = $item;
+            } else {
+                // Sumar el monto
+                $agrupados[$key]['monto'] += $item['monto'];
+            }
+        }
+        $model->remuneracions = RemuneracionChipax::convertSPResultToArrayModel($agrupados);
+        
         foreach ($model->remuneracions as $remu) {
             //$gasto = GastoCompleta::find()->where("nro_documento LIKE :id", [":id" => $remu->id])->one();
             if (count($remu->gastoCompleta) > 0) {
