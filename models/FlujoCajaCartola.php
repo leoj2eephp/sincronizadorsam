@@ -593,6 +593,7 @@ class FlujoCajaCartola {
                 $remuneracion->apellido_empleado = $r["Empleado"]["apellido"];
                 $remuneracion->rut_empleado = $r["Empleado"]["rut"];
                 $remuneracion->email_empleado = $r["Empleado"]["email"];
+                $remuneracion->empresa_chipax_id = $empId;
 
                 try {
                     if ($remuneracion->save()) {
